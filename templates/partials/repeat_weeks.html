@@ -1,0 +1,22 @@
+<!-- templates/partials/repeat_weeks.html -->
+<!-- HTMX partial: 반복 예약 주차 가용 여부 확인 결과 -->
+<!-- hx-get="/booking/partials/repeat-check?room_idx=...&base_date=..." 로 호출 -->
+{% for week in repeat_weeks %}
+<div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm
+     {% if week.idx == 0 %}ring-2 ring-nv-400 bg-nv-50{% endif %}
+     {% if week.disabled %}opacity-30{% endif %}">
+  <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center text-[10px]
+       {% if week.idx == 0 %}bg-nv-500 border-nv-500 text-white
+       {% elif week.checked %}bg-nv-500 border-nv-500 text-white
+       {% else %}border-g-300{% endif %}">
+    {% if week.idx == 0 or week.checked %}&#10003;{% endif %}
+  </div>
+  <span class="flex-1 text-[13px] font-medium text-g-700">{{ week.label }}</span>
+  <span class="text-[10px] font-bold
+       {% if week.idx == 0 %}text-nv-600
+       {% elif week.disabled %}text-red-400
+       {% else %}text-g-300{% endif %}">
+    {% if week.idx == 0 %}기본{% elif week.disabled %}마감{% else %}선택{% endif %}
+  </span>
+</div>
+{% endfor %}

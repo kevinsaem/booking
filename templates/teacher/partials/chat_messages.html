@@ -1,0 +1,27 @@
+<!-- templates/teacher/partials/chat_messages.html -->
+<!-- HTMX partial: 채팅 메시지 영역 -->
+{% for msg in messages %}
+{% if msg.is_mine %}
+<div class="flex justify-end">
+  <div class="flex flex-col items-end">
+    <span class="text-[10px] text-g-400 mb-1">{{ msg.time }}</span>
+    <div class="bg-nv-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[260px] text-[14px]">{{ msg.content }}</div>
+  </div>
+</div>
+{% else %}
+<div class="flex gap-2">
+  {% if msg.show_avatar %}
+  <div class="w-8 h-8 bg-g-100 rounded-full flex items-center justify-center text-g-600 font-bold text-xs flex-shrink-0 mt-4">{{ student_name[0] }}</div>
+  {% else %}
+  <div class="w-8 flex-shrink-0"></div>
+  {% endif %}
+  <div class="flex flex-col">
+    {% if msg.show_avatar %}
+    <span class="text-[11px] font-medium text-g-500 mb-1">{{ student_name }}</span>
+    {% endif %}
+    <span class="text-[10px] text-g-400 mb-1">{{ msg.time }}</span>
+    <div class="bg-white rounded-2xl rounded-tl-sm shadow-sm text-g-800 px-4 py-2.5 max-w-[260px] text-[14px]">{{ msg.content }}</div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}

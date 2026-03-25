@@ -1,0 +1,119 @@
+<!-- templates/teacher/home.html -->
+<!-- 화면: 멘토 홈 (오늘 수업) -->
+{% extends "teacher/base_teacher.html" %}
+
+{% block title %}멘토 홈 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="{ memoOpen: false, memoStudentId: '', memoDate: '', memoStudentName: '' }">
+
+  <!-- 그린 헤더 -->
+  <div class="bg-nv-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p class="text-nv-200 text-[12px]">안녕하세요</p>
+        <h2 class="text-[20px] font-bold mt-0.5">{{ user.name }} 멘토</h2>
+      </div>
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">{{ user.name[0] }}</div>
+    </div>
+
+    <!-- 오늘 수업 카드 -->
+    <div class="bg-white/15 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-nv-100 text-[12px]">오늘 수업</span>
+        <span class="text-white/70 text-[12px]">{{ today_display }}</span>
+      </div>
+      <div class="flex items-end gap-2">
+        <span class="text-[42px] font-extrabold leading-none">{{ class_count }}</span>
+        <span class="text-[14px] text-nv-100 pb-1.5">건</span>
+        <div class="flex-1"></div>
+        <a href="/teacher/schedule" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97]">스케줄</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 -mt-3 space-y-3">
+
+    <!-- 오늘 수업 목록 -->
+    <div class="fade s1">
+      <div class="flex justify-between items-center mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">오늘 수업</h3>
+        <span class="text-[12px] text-g-400">총 {{ class_count }}건</span>
+      </div>
+
+      {% if classes %}
+      {% for cls in classes %}
+      <div class="card p-4 mb-2 fade s{{ loop.index }}">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+            <span class="text-[10px] text-nv-500">{{ cls.start_time[:2] }}시</span>
+            <span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">{{ cls.start_time[3:] }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[14px] font-bold text-g-800">{{ cls.student_name }}</p>
+            <p class="text-[12px] text-g-400">{{ cls.start_time }}~{{ cls.end_time }}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            {% if cls.is_done %}
+            <span class="text-[11px] font-bold text-g-500 bg-g-100 px-3 py-1 rounded-full">완료</span>
+            {% else %}
+            <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">예정</span>
+            {% endif %}
+            <button @click="memoOpen = true; memoStudentId = '{{ cls.student_id }}'; memoDate = '{{ today[:10] }}'; memoStudentName = '{{ cls.student_name }}'"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center {{ 'bg-nv-50' if cls.has_memo else 'bg-g-100' }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" stroke="{{ '#43A047' if cls.has_memo else '#9E9E9E' }}" stroke-width="1.5" fill="none" stroke-linecap="round">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="card p-4 text-center text-g-400 text-sm py-12">
+        <div class="w-12 h-12 mx-auto mb-3 bg-g-100 rounded-full ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <p class="text-[14px]">오늘 예정된 수업이 없습니다</p>
+        <a href="/teacher/schedule" class="mt-2 inline-block text-nv-600 font-medium text-[13px]">주간 스케줄 보기 &rsaquo;</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- 메모 모달 -->
+  <div x-show="memoOpen" x-cloak
+       class="fixed inset-0 z-[100] flex items-end justify-center"
+       @keydown.escape.window="memoOpen = false">
+    <div class="absolute inset-0 bg-black/40" @click="memoOpen = false"></div>
+    <div class="relative w-full max-w-[430px] bg-white rounded-t-[24px] p-5 pb-8 z-10"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="translate-y-full"
+         x-transition:enter-end="translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="translate-y-0"
+         x-transition:leave-end="translate-y-full"
+         hx-get="" hx-trigger="none"
+         id="memo-modal-content">
+      <div class="w-10 h-1 bg-g-300 rounded-full mx-auto mb-4"></div>
+      <h3 class="text-[16px] font-bold text-g-800 mb-1">수업 메모</h3>
+      <p class="text-[12px] text-g-400 mb-4" x-text="memoStudentName + ' · ' + memoDate"></p>
+      <form hx-post="/teacher/memo" hx-swap="none"
+            @htmx:after-request="memoOpen = false">
+        <input type="hidden" name="student_id" :value="memoStudentId">
+        <input type="hidden" name="lesson_date" :value="memoDate">
+        <textarea name="content" rows="4"
+                  placeholder="수업 내용, 학생 상태, 다음 수업 준비 등을 메모하세요..."
+                  class="w-full p-4 bg-g-100 rounded-2xl text-[14px] text-g-800 placeholder-g-400 resize-none focus:bg-g-200 focus:ring-2 focus:ring-nv-200"></textarea>
+        <button type="submit"
+                class="w-full h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[15px] mt-3 active:bg-nv-700">
+          저장하기
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!-- templates/booking/payment_success.html -->
+<!-- 화면: 결제 완료 (성공 애니메이션 + 결제 상세) -->
+{% extends "base.html" %}
+
+{% block title %}결제 완료 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 border-b border-g-200 text-center">
+    <h1 class="text-[16px] font-bold text-g-800">결제 완료</h1>
+  </div>
+  <div class="h-1 bg-nv-500"></div>
+
+  <div class="px-4 pt-10 text-center">
+    <!-- 성공 아이콘 (pop 애니메이션) -->
+    <div class="w-20 h-20 bg-nv-50 rounded-full ic mx-auto mb-5 pop">
+      <svg width="36" height="36" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+
+    <h2 class="text-[20px] font-extrabold text-g-900 mb-1">결제 완료!</h2>
+    <p class="text-[14px] text-g-400">수강권이 등록되었습니다</p>
+
+    <!-- 결제 상세 -->
+    <div class="card p-5 text-left mt-6 space-y-2.5">
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">수강 과정</span>
+        <span class="font-bold">{{ package_name }}</span>
+      </div>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">결제 금액</span>
+        <span class="font-bold">{{ amount }}원</span>
+      </div>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">결제일</span>
+        <span class="font-bold">{{ date }}</span>
+      </div>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">주문번호</span>
+        <span class="font-bold text-[12px] text-g-400">{{ order_id }}</span>
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="flex gap-2 mt-6">
+      <a href="/booking/payment"
+         class="flex-1 h-12 bg-g-100 rounded-xl font-bold text-g-600 text-[13px] flex items-center justify-center active:bg-g-200">
+        결제이력
+      </a>
+      <a href="/booking/"
+         class="flex-1 h-12 bg-nv-600 text-white rounded-xl font-bold text-[13px] flex items-center justify-center active:bg-nv-700">
+        홈으로
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

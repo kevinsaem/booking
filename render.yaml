@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: kevinsaem-booking
+    runtime: docker
+    plan: free
+    envVars:
+      - key: DB_MODE
+        value: production
+      - key: DB_SERVER
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE_MINUTES
+        value: "60"
+      - key: KAKAO_REST_API_KEY
+        sync: false
+      - key: KAKAO_REDIRECT_URI
+        sync: false
+      - key: TOSS_CLIENT_KEY
+        sync: false
+      - key: TOSS_SECRET_KEY
+        sync: false

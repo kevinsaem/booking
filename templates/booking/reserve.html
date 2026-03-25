@@ -1,0 +1,93 @@
+<!-- templates/booking/reserve.html -->
+<!-- 화면: 수업 예약 (날짜 → 시간 → 멘토 선택) -->
+<!-- 프로토타입 v3 섹션 3 (p==='booking') 완전 동일 -->
+{% extends "base.html" %}
+
+{% block title %}수업 예약 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-40 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button onclick="bookingBack()" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1" id="step-title">날짜 선택</h1>
+    <span class="text-[12px] text-nv-600 font-bold" id="step-num">2/7</span>
+  </div>
+
+  <!-- 프로그레스 바 -->
+  <div class="h-1 bg-g-200">
+    <div id="progress-bar" class="h-full bg-nv-500 transition-all duration-500" style="width:28%"></div>
+  </div>
+
+  <div class="px-4 pt-4 space-y-3">
+
+    <!-- 잔여 횟수 미니 뱃지 -->
+    <div class="flex items-center gap-2 px-1">
+      <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-1 rounded-full">남은 수업 {{ remaining }}회</span>
+    </div>
+
+    <!-- 캘린더 -->
+    <div class="card overflow-hidden" id="calendar-section">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-g-100">
+        <button hx-get="/booking/partials/calendar-grid?year={{ prev_year }}&month={{ prev_month }}"
+                hx-target="#calendar-grid"
+                hx-swap="innerHTML"
+                class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="font-bold text-g-800">{{ year }}년 {{ month }}월</span>
+        <button hx-get="/booking/partials/calendar-grid?year={{ next_year }}&month={{ next_month }}"
+                hx-target="#calendar-grid"
+                hx-swap="innerHTML"
+                class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-7 text-center mb-1">
+          {% for d in ['일','월','화','수','목','금','토'] %}
+          <span class="text-[11px] font-medium py-1 {% if d == '일' %}text-red-400{% elif d == '토' %}text-blue-400{% else %}text-g-400{% endif %}">{{ d }}</span>
+          {% endfor %}
+        </div>
+        <div id="calendar-grid">
+          {% include "partials/calendar_grid.html" %}
+        </div>
+      </div>
+    </div>
+
+    <!-- 시간 슬롯 (HTMX로 로드) -->
+    <div id="time-slots-area">
+    </div>
+
+    <!-- 선택 요약 (시간 선택 후 표시) -->
+    <div id="selected-summary" style="display:none;"></div>
+
+    <!-- 멘토 목록 (HTMX로 로드) -->
+    <div id="teacher-list-area" style="display:none;">
+    </div>
+
+  </div>
+
+  <!-- 다음 단계 버튼 -->
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <form method="POST" action="/booking/repeat" id="next-form">
+      <input type="hidden" name="date" id="selected-date" value="">
+      <input type="hidden" name="time" id="selected-time" value="">
+      <input type="hidden" name="room_idx" id="selected-room-idx" value="">
+      <input type="hidden" name="teacher_id" id="selected-teacher-id" value="">
+      <button type="submit" id="next-btn" disabled
+              class="w-full h-[50px] rounded-xl font-bold text-[15px] transition active:scale-[.98] bg-g-200 text-g-400">
+        멘토를 선택하세요
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/booking.js"></script>
+{% endblock %}

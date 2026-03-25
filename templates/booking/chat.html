@@ -1,0 +1,75 @@
+<!-- templates/booking/chat.html -->
+{% extends "base.html" %}
+
+{% block tabbar %}{% endblock %}
+
+{% block content %}
+<div class="h-screen flex flex-col fade">
+
+  <!-- 채팅 헤더 (상단 고정) -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 flex-shrink-0">
+    <a href="/booking/messages" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <div class="flex-1">
+      <p class="text-[15px] font-bold text-g-800">{{ teacher_name }} 멘토</p>
+      <p class="text-[11px] text-g-400">{{ teacher_field }}</p>
+    </div>
+  </div>
+
+  <!-- 메시지 영역 (스크롤) -->
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3" id="chatArea">
+
+    {% for msg in messages %}
+    {% if msg.is_mine %}
+    <div class="flex justify-end">
+      <div class="flex flex-col items-end">
+        <span class="text-[10px] text-g-400 mb-1">{{ msg.time }}</span>
+        <div class="bg-nv-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[260px] text-[14px]">{{ msg.content }}</div>
+      </div>
+    </div>
+    {% else %}
+    <div class="flex gap-2">
+      {% if msg.show_avatar %}
+      <div class="w-8 h-8 bg-g-100 rounded-full flex items-center justify-center text-g-600 font-bold text-xs flex-shrink-0 mt-4">{{ teacher_name[0] }}</div>
+      {% else %}
+      <div class="w-8 flex-shrink-0"></div>
+      {% endif %}
+      <div class="flex flex-col">
+        {% if msg.show_avatar %}
+        <span class="text-[11px] font-medium text-g-500 mb-1">{{ teacher_name }} 멘토</span>
+        {% endif %}
+        <span class="text-[10px] text-g-400 mb-1">{{ msg.time }}</span>
+        <div class="bg-white rounded-2xl rounded-tl-sm shadow-sm text-g-800 px-4 py-2.5 max-w-[260px] text-[14px]">{{ msg.content }}</div>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- 입력 영역 (하단 고정) -->
+  <div class="bg-white border-t border-g-200 px-4 py-3 flex-shrink-0 pb-safe" x-data="{ nm: '' }">
+    <form method="POST" action="/booking/chat/{{ teacher_id }}/send"
+          class="flex items-center gap-2">
+      <input type="text" name="content" x-model="nm"
+             placeholder="메시지를 입력하세요"
+             class="flex-1 h-[42px] px-4 bg-g-100 rounded-full text-[14px] placeholder-g-400"
+             autocomplete="off">
+      <button type="submit" :disabled="!nm.trim()"
+              class="w-[42px] h-[42px] rounded-full ic transition flex-shrink-0"
+              :class="nm.trim() ? 'bg-nv-500 text-white' : 'bg-g-200 text-g-400'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+// 채팅 영역 자동 스크롤 (최신 메시지로)
+document.addEventListener('DOMContentLoaded', function() {
+    var chat = document.getElementById('chatArea');
+    if (chat) chat.scrollTop = chat.scrollHeight;
+});
+</script>
+{% endblock %}

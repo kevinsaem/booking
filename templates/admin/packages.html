@@ -1,0 +1,48 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}패키지 관리{% endblock %}
+{% block page_title %}패키지 관리{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">코드</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">이름</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">수업 횟수</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">수업 시간(분)</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">기간(개월)</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">가격</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">관리</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for p in packages %}
+        <tr class="hover:bg-slate-50">
+          <form method="post" action="/admin/packages/update/{{ p.package_code }}">
+            <td class="px-4 py-2.5 text-slate-500 font-mono text-xs">{{ p.package_code }}</td>
+            <td class="px-4 py-2.5 font-medium text-slate-800">{{ p.package_name }}</td>
+            <td class="px-4 py-2.5">
+              <input type="number" name="class_cnt" value="{{ p.class_cnt }}" min="1"
+                     class="w-20 px-2 py-1 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-green-500 outline-none">
+            </td>
+            <td class="px-4 py-2.5 text-slate-600">{{ p.lec_time }}</td>
+            <td class="px-4 py-2.5 text-slate-600">{{ p.month_cnt }}</td>
+            <td class="px-4 py-2.5">
+              <input type="number" name="price" value="{{ p.price }}" min="0" step="10000"
+                     class="w-28 px-2 py-1 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-green-500 outline-none">
+            </td>
+            <td class="px-4 py-2.5">
+              <button type="submit" class="text-xs text-green-600 hover:text-green-800 font-medium">저장</button>
+            </td>
+          </form>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">패키지가 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

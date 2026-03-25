@@ -1,0 +1,32 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}멘토 관리{% endblock %}
+{% block page_title %}멘토 관리{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">ID</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">이름</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">전화번호</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">캠퍼스</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for t in teachers %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 text-slate-600 font-mono text-xs">{{ t.mem_MbrId }}</td>
+          <td class="px-4 py-2.5 font-medium text-slate-800">{{ t.mem_MbrName }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ t.mem_TelNo3 or '-' }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ t.campus_name or '-' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">멘토가 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

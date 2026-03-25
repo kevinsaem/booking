@@ -1,0 +1,153 @@
+<!-- templates/booking/payment.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="historySlider({{ payment_history | length }})">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">결제이력</h1>
+  </div>
+
+  <div class="px-4 pt-4 space-y-4">
+
+    <!-- 현재 수강 현황 -->
+    {% if current_plan %}
+    <div class="card overflow-hidden fade">
+      <div class="bg-nv-600 text-white p-4">
+        <p class="text-[11px] text-nv-200 mb-1">현재 수강중</p>
+        <p class="text-[18px] font-bold">{{ current_plan.package_name }}</p>
+      </div>
+      <div class="p-4">
+        {% if monthly %}
+        <!-- 월수강권 -->
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-[11px] text-g-400">수강 기간</p>
+            <p class="text-[14px] font-bold text-g-800">{{ current_plan.sdate[5:] }} ~ {{ current_plan.edate[5:] }}</p>
+          </div>
+          <span class="text-[13px] font-extrabold text-nv-600 bg-nv-50 px-3 py-1.5 rounded-full">평일 무제한</span>
+        </div>
+        {% else %}
+        <!-- 횟수제 -->
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-[11px] text-g-400">남은 수업</p>
+            <p class="text-[22px] font-extrabold text-nv-600">{{ remaining }}<span class="text-[13px] text-g-400 font-medium"> / {{ total_classes }}회</span></p>
+          </div>
+          <div class="text-right">
+            <p class="text-[11px] text-g-400">수강 기간</p>
+            <p class="text-[13px] font-medium text-g-700">{{ current_plan.sdate[5:] }} ~ {{ current_plan.edate[5:] }}</p>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="h-px bg-g-100 my-3"></div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <p class="text-[11px] text-g-400">결제일</p>
+            <p class="text-[13px] font-medium text-g-700">{{ current_plan.settle_date }}</p>
+          </div>
+          <div>
+            <p class="text-[11px] text-g-400">결제금액</p>
+            <p class="text-[13px] font-medium text-g-700">{{ current_plan.amount }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="card p-6 text-center fade">
+      <div class="w-12 h-12 bg-g-100 rounded-full ic mx-auto mb-3">
+        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <p class="text-[14px] text-g-400">현재 이용중인 수강권이 없습니다</p>
+    </div>
+    {% endif %}
+
+    <!-- 결제 내역 (슬라이드) -->
+    {% if payment_history %}
+    <div class="fade s1">
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">결제 내역</h3>
+        {% set pages = (payment_history|length + 4) // 5 %}
+        {% if pages > 1 %}
+        <div class="flex items-center gap-2">
+          <button @click="prev()" :class="current === 0 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span class="text-[12px] text-g-400" x-text="(current+1)+'/'+totalPages"></span>
+          <button @click="next()" :class="current >= totalPages-1 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="overflow-hidden rounded-2xl"
+           @touchstart="touchStartX = $event.changedTouches[0].screenX"
+           @touchend="handleSwipe($event)">
+        <div class="flex transition-transform duration-300 ease-out"
+             :style="'transform: translateX(-' + (current * 100) + '%)'">
+
+          {% for page_start in range(0, payment_history|length, 5) %}
+          <div class="w-full flex-shrink-0">
+            <div class="card overflow-hidden divide-y divide-g-100 mx-0.5">
+              {% for ph in payment_history[page_start:page_start+5] %}
+              <div class="px-4 py-3 flex items-center gap-3">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="text-[13px] font-medium text-g-800">{{ ph.package_name }}</p>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ 'bg-nv-50 text-nv-600' if ph.state == '이용중' else 'bg-g-100 text-g-400' }}">{{ ph.state }}</span>
+                  </div>
+                  <p class="text-[11px] text-g-400 mt-0.5">{{ ph.date }} · {{ ph.sdate[5:] }}~{{ ph.edate[5:] }}</p>
+                </div>
+                <p class="text-[13px] font-bold text-g-700">{{ ph.amount }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+
+      {% if pages > 1 %}
+      <div class="flex justify-center gap-1.5 mt-3">
+        {% for p in range(pages) %}
+        <div class="w-2 h-2 rounded-full transition-colors cursor-pointer"
+             :class="current === {{ p }} ? 'bg-nv-500' : 'bg-g-300'"
+             @click="current = {{ p }}"></div>
+        {% endfor %}
+      </div>
+      <p class="text-center text-[11px] text-g-400 mt-1" x-show="current === 0 && totalPages > 1">← 밀어서 이전 내역 보기</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function historySlider(totalItems) {
+    var pages = Math.ceil(totalItems / 5);
+    return {
+        current: 0,
+        totalPages: pages || 1,
+        touchStartX: 0,
+        prev() { if (this.current > 0) this.current--; },
+        next() { if (this.current < this.totalPages - 1) this.current++; },
+        handleSwipe(e) {
+            var diff = this.touchStartX - e.changedTouches[0].screenX;
+            if (diff > 50) this.next();
+            else if (diff < -50) this.prev();
+        }
+    };
+}
+</script>
+{% endblock %}

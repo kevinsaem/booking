@@ -1,0 +1,118 @@
+{% extends "admin/mobile/base_mobile.html" %}
+{% set active_tab = 'home' %}
+
+{% block title %}대시보드{% endblock %}
+
+{% block content %}
+<!-- 오늘 날짜 -->
+<div class="mb-4">
+  <h2 class="text-lg font-bold text-g-900">안녕하세요 👋</h2>
+  <p class="text-sm text-g-500 mt-0.5">{{ today_display }}</p>
+</div>
+
+<!-- 통계 카드 2x2 -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+  <!-- 전체 수강생 -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+      </div>
+    </div>
+    <p class="text-[11px] text-g-500 font-medium">전체 수강생</p>
+    <p class="text-xl font-bold text-g-900 mt-0.5">{{ stats.total_students }}</p>
+  </div>
+
+  <!-- 오늘 예약 -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-8 h-8 rounded-lg bg-nv-50 flex items-center justify-center">
+        <svg class="w-4 h-4 text-nv-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      </div>
+    </div>
+    <p class="text-[11px] text-g-500 font-medium">오늘 예약</p>
+    <p class="text-xl font-bold text-g-900 mt-0.5">{{ stats.today_bookings }}</p>
+  </div>
+
+  <!-- 이번달 매출 -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+      </div>
+    </div>
+    <p class="text-[11px] text-g-500 font-medium">이번달 매출</p>
+    <p class="text-xl font-bold text-g-900 mt-0.5">{{ "{:,}".format(stats.month_revenue|int) }}<span class="text-xs font-normal text-g-400">원</span></p>
+  </div>
+
+  <!-- 활성 패키지 -->
+  <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      </div>
+    </div>
+    <p class="text-[11px] text-g-500 font-medium">활성 패키지</p>
+    <p class="text-xl font-bold text-g-900 mt-0.5">{{ stats.active_students }}</p>
+  </div>
+</div>
+
+<!-- 오늘 예약 목록 -->
+<div class="mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-[15px] font-bold text-g-900">오늘 예약</h3>
+    <a href="/admin/m/bookings" class="text-[12px] text-nv-600 font-medium">전체보기</a>
+  </div>
+
+  {% if today_bookings and today_bookings|length > 0 %}
+  <div class="space-y-2.5">
+    {% for b in today_bookings %}
+    <div class="bg-white rounded-2xl p-4 shadow-sm fade-in" x-data="{ confirmCancel: false }">
+      <div class="flex items-start justify-between">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="text-[13px] font-bold text-g-800">{{ b.mem_MbrName or b.mem_mbrid }}</span>
+            {% if b.status == 1 %}
+            <span class="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-nv-50 text-nv-700">확정</span>
+            {% elif b.status == 0 %}
+            <span class="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-g-200 text-g-600">취소</span>
+            {% endif %}
+          </div>
+          <div class="flex items-center gap-3 text-[12px] text-g-500">
+            <span>{{ b.l_s_date[11:16] if b.l_s_date and b.l_s_date|length > 16 else b.l_s_date }} ~ {{ b.l_f_date[11:16] if b.l_f_date and b.l_f_date|length > 16 else b.l_f_date }}</span>
+            {% if b.teacher_name %}
+            <span class="text-g-400">|</span>
+            <span>{{ b.teacher_name }} 멘토</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if b.status == 1 %}
+        <div class="ml-2">
+          <button @click="confirmCancel = true"
+                  x-show="!confirmCancel"
+                  class="text-[11px] text-red-400 hover:text-red-600 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-colors">
+            취소
+          </button>
+          <div x-show="confirmCancel" x-transition class="flex items-center gap-1">
+            <form action="/admin/bookings/cancel/{{ b.idx }}" method="post">
+              <button type="submit" class="text-[11px] text-white bg-red-500 hover:bg-red-600 font-medium px-2.5 py-1 rounded-lg transition-colors">확인</button>
+            </form>
+            <button @click="confirmCancel = false" class="text-[11px] text-g-500 font-medium px-2 py-1 rounded-lg hover:bg-g-100 transition-colors">아니오</button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+    <div class="w-12 h-12 rounded-full bg-g-100 flex items-center justify-center mx-auto mb-3">
+      <svg class="w-6 h-6 text-g-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+    </div>
+    <p class="text-sm text-g-500">오늘 예약이 없습니다</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

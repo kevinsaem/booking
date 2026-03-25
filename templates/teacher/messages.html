@@ -1,0 +1,46 @@
+<!-- templates/teacher/messages.html -->
+<!-- 화면: 강사 메시지 목록 (수강생별 대화 리스트) -->
+{% extends "teacher/base_teacher.html" %}
+
+{% block title %}메시지 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/teacher/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">메시지</h1>
+  </div>
+
+  <div class="px-4 pt-4 space-y-2">
+    {% for conv in conversations %}
+    <a href="/teacher/chat/{{ conv.student_id }}" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer block">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">{{ conv.student_name[0] }}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between">
+          <p class="text-[14px] font-bold text-g-800">{{ conv.student_name }}</p>
+          <span class="text-[10px] text-g-400">{{ conv.last_time }}</span>
+        </div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">{{ conv.last_message }}</p>
+      </div>
+      {% if conv.unread > 0 %}
+      <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold flex-shrink-0">{{ conv.unread }}</div>
+      {% endif %}
+    </a>
+    {% endfor %}
+
+    {% if not conversations %}
+    <div class="text-center py-16 text-g-400">
+      <div class="w-12 h-12 mx-auto mb-3 ic">
+        <svg width="28" height="28" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      </div>
+      <p class="text-[14px]">메시지가 없습니다</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+<!-- templates/teacher/partials/memo_modal.html -->
+<!-- HTMX partial: 메모 모달 내용 -->
+<div class="w-10 h-1 bg-g-300 rounded-full mx-auto mb-4"></div>
+<h3 class="text-[16px] font-bold text-g-800 mb-1">수업 메모</h3>
+<p class="text-[12px] text-g-400 mb-4">{{ student_name }} · {{ lesson_date }}</p>
+<form hx-post="/teacher/memo" hx-swap="none">
+  <input type="hidden" name="student_id" value="{{ student_id }}">
+  <input type="hidden" name="lesson_date" value="{{ lesson_date }}">
+  <textarea name="content" rows="4"
+            placeholder="수업 내용, 학생 상태, 다음 수업 준비 등을 메모하세요..."
+            class="w-full p-4 bg-g-100 rounded-2xl text-[14px] text-g-800 placeholder-g-400 resize-none">{{ memo_content }}</textarea>
+  <button type="submit"
+          class="w-full h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[15px] mt-3 active:bg-nv-700">
+    저장하기
+  </button>
+</form>

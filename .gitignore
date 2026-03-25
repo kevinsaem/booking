@@ -1,0 +1,44 @@
+# 환경변수 및 인증
+.env
+credentials.json
+token.json
+.ftp_config.json
+
+# 개발 DB
+dev.db
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# 임시 파일
+.tmp/
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 개발 참고용
+kevinsaem_v31_dev/
+kevinsaem_v31_dev.zip
+
+# 작업 기록
+2025-*.md
+2026-*.md
+
+# 프로토타입 원본
+케빈샘_*.html
+케빈샘랩_*.html
+개발시작_*.md

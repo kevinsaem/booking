@@ -1,0 +1,79 @@
+<!-- templates/booking/confirm.html -->
+<!-- 화면: 예약 확인 (최종 확정 전 내역 요약) -->
+<!-- 프로토타입 v3 섹션 5 (p==='confirm') 완전 동일 -->
+{% extends "base.html" %}
+
+{% block title %}예약 확인 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-24 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200">
+    <a href="/booking/repeat" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">예약 확인</h1>
+    <span class="text-[12px] text-nv-600 font-bold">6/7</span>
+  </div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500" style="width:85%"></div></div>
+
+  <div class="px-4 pt-4">
+    <div class="card overflow-hidden">
+      <!-- 헤더 -->
+      <div class="bg-nv-600 p-5 text-center text-white">
+        <div class="w-10 h-10 mx-auto mb-2 bg-white/20 rounded-full ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" stroke="white" stroke-width="1.5" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+        </div>
+        <h2 class="font-bold">예약 내역을 확인하세요</h2>
+      </div>
+
+      <!-- 상세 정보 -->
+      <div class="divide-y divide-g-200">
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">수강생</span>
+          <span class="text-[13px] font-bold">{{ user.name }}</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">멘토</span>
+          <span class="text-[13px] font-bold">{{ teacher_name }} 멘토</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">수업일</span>
+          <span class="text-[13px] font-bold text-right max-w-[200px]">{{ dates_label }}</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">시간</span>
+          <span class="text-[13px] font-bold">{{ time }}</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">예약 횟수</span>
+          <span class="text-[13px] font-bold">{{ booking_count }}회</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">캠퍼스</span>
+          <span class="text-[13px] font-bold">{{ user.campus_name | default('안산선부캠퍼스') }}</span>
+        </div>
+        <div class="flex justify-between px-5 py-3.5">
+          <span class="text-[13px] text-g-500">예약 후 잔여</span>
+          <span class="text-[13px] font-extrabold text-nv-600">{{ remaining_after }}회</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 확정 버튼 -->
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <form method="POST" action="/booking/complete">
+      <input type="hidden" name="room_idx" value="{{ room_idx }}">
+      <input type="hidden" name="teacher_id" value="{{ teacher_id }}">
+      <input type="hidden" name="settle_code" value="{{ settle_code }}">
+      {% for date in dates %}
+      <input type="hidden" name="dates[]" value="{{ date }}">
+      {% endfor %}
+      <button type="submit" class="w-full h-[50px] bg-red-500 text-white rounded-xl font-bold text-[15px] active:bg-red-600">예약 확정하기</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

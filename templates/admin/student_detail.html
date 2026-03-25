@@ -1,0 +1,83 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ student.mem_MbrName }} - 수강생 상세{% endblock %}
+{% block page_title %}수강생 상세{% endblock %}
+
+{% block content %}
+<a href="/admin/students" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4">
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  목록으로
+</a>
+
+<!-- 프로필 -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 mb-4">
+  <h2 class="text-lg font-bold text-slate-800 mb-3">{{ student.mem_MbrName }}</h2>
+  <div class="grid grid-cols-2 gap-3 text-sm">
+    <div><span class="text-slate-500">ID:</span> <span class="text-slate-700 font-mono">{{ student.mem_MbrId }}</span></div>
+    <div><span class="text-slate-500">닉네임:</span> <span class="text-slate-700">{{ student.mem_nickname or '-' }}</span></div>
+    <div><span class="text-slate-500">전화번호:</span> <span class="text-slate-700">{{ student.mem_TelNo3 or '-' }}</span></div>
+    <div><span class="text-slate-500">캠퍼스:</span> <span class="text-slate-700">{{ student.campus_name or '-' }}</span></div>
+  </div>
+</div>
+
+<!-- 수강권 -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 mb-4">
+  <h3 class="text-sm font-semibold text-slate-800 mb-3">수강권 정보</h3>
+  {% if settlements %}
+  {% for st in settlements %}
+  <div class="border border-slate-100 rounded-lg p-3 mb-2 last:mb-0">
+    <div class="flex justify-between items-start mb-2">
+      <span class="font-medium text-slate-700">{{ st.package_name or '패키지 #' ~ st.settle_package_code }}</span>
+      {% if st.settle_state == 1 %}
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">활성</span>
+      {% else %}
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-500">만료</span>
+      {% endif %}
+    </div>
+    <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
+      <div>결제액: {{ "{:,}".format(st.settle_amount or 0) }}원</div>
+      <div>총 횟수: {{ st.class_cnt or '-' }}회</div>
+      <div>시작: {{ st.settle_sdate or '-' }}</div>
+      <div>종료: {{ st.settle_edate or '-' }}</div>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p class="text-sm text-slate-400">수강권 정보가 없습니다</p>
+  {% endif %}
+</div>
+
+<!-- 예약 내역 -->
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="px-4 py-3 border-b border-slate-200">
+    <h3 class="text-sm font-semibold text-slate-800">예약 내역</h3>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2 text-xs font-medium text-slate-500">일시</th>
+          <th class="px-4 py-2 text-xs font-medium text-slate-500">멘토</th>
+          <th class="px-4 py-2 text-xs font-medium text-slate-500">상태</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for b in bookings %}
+        <tr>
+          <td class="px-4 py-2 text-slate-600">{{ b.l_s_date[:16] if b.l_s_date else '-' }}</td>
+          <td class="px-4 py-2 text-slate-600">{{ b.teacher_name or b.sch_teach_id or '-' }}</td>
+          <td class="px-4 py-2">
+            {% if b.status == 1 %}
+            <span class="text-xs text-green-600">확정</span>
+            {% else %}
+            <span class="text-xs text-red-500">취소</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="px-4 py-6 text-center text-slate-400">예약 내역이 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
