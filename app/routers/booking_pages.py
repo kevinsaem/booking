@@ -146,49 +146,48 @@ async def signup_send_code(
         "expires": time.time() + 300,
     }
 
-    # 알림톡 설정 조회
-    all_centers = execute_query(
-        "SELECT edc_idx, atid, atdeptcode, sch FROM ek_educenter"
-    )
-    print(f"📱 ek_educenter 전체: {all_centers}")
-    config = None
-    for c in all_centers:
-        # 대소문자 무관 키 매핑
-        c_lower = {k.lower(): v for k, v in c.items()}
-        if c_lower.get("edc_idx") == edc_idx:
-            config = c_lower
-            break
-    if not config and all_centers:
-        config = {k.lower(): v for k, v in all_centers[0].items()}
-    print(f"📱 선택된 설정: {config}")
-
-    if not config:
-        return JSONResponse({"ok": False, "error": "알림톡 설정을 찾을 수 없습니다."})
-
-    # 전화번호 형식 변환
+    # 알림톡 설정 조회 + 발송 (직접 DB 연결)
     telno = phone.replace("-", "")
     if telno.startswith("0"):
         telno = "82" + telno[1:]
-
     message = f"{name.strip()}님의 인증코드는 {code}입니다."
 
-    json_data = {
-        "usercode": config.get("atid", ""),
-        "deptcode": config.get("atdeptcode", ""),
-        "yellowid_key": config.get("sch", ""),
-        "messages": [{
-            "type": "at",
-            "message_id": f"auth_{telno}_{code}",
-            "to": telno,
-            "template_code": "visit_001",
-            "text": message,
-        }]
-    }
-
-    print(f"📱 슈어엠 API 호출: to={telno}, usercode={json_data['usercode']}")
-
     try:
+        from app.database import _get_mssql_conn, _get_sqlite_conn, DB_MODE
         import httpx
+
+        if DB_MODE == "development":
+            # 개발모드: API 호출 생략, 로그만
+            print(f"📱 [개발모드] 인증코드: {code} → {phone}")
+            return JSONResponse({"ok": True})
+
+        conn = _get_mssql_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
+        cols = [d[0] for d in cursor.description]
+        row = cursor.fetchone()
+        conn.close()
+
+        if not row:
+            print(f"📱 ek_educenter에서 edc_idx={edc_idx} 못 찾음")
+            return JSONResponse({"ok": False, "error": "캠퍼스 정보를 찾을 수 없습니다."})
+
+        config = dict(zip(cols, row))
+        print(f"📱 알림톡 설정: {config}")
+
+        json_data = {
+            "usercode": config["atid"],
+            "deptcode": config["atdeptcode"],
+            "yellowid_key": config["sch"],
+            "messages": [{
+                "type": "at",
+                "message_id": f"auth_{telno}_{code}",
+                "to": telno,
+                "template_code": "visit_001",
+                "text": message,
+            }]
+        }
+
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.post(
                 "https://api.surem.com/alimtalk/v1/json",
@@ -197,6 +196,7 @@ async def signup_send_code(
             )
             result = resp.json()
             print(f"📱 슈어엠 응답: {result}")
+
     except Exception as e:
         print(f"📱 발송 에러: {e}")
         return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {str(e)}"})
