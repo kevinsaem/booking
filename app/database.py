@@ -117,15 +117,15 @@ def execute_query(sql: str, params=None, fetch: str = "all"):
             elif fetch == "one":
                 if DB_MODE == "development":
                     row = cursor.fetchone()
-                return dict(row) if row else None
-            if cursor.description:
-                cols = [d[0] for d in cursor.description]
-                row = cursor.fetchone()
-                return dict(zip(cols, row)) if row else None
-            return None
-        else:
-            conn.commit()
-            return cursor.rowcount
+                    return dict(row) if row else None
+                if cursor.description:
+                    cols = [d[0] for d in cursor.description]
+                    row = cursor.fetchone()
+                    return dict(zip(cols, row)) if row else None
+                return None
+            else:
+                conn.commit()
+                return cursor.rowcount
     except Exception as e:
         print(f"⚠️ DB 쿼리 실패: {e}")
         print(f"  → SQL: {translated[:200]}")
