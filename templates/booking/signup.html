@@ -38,6 +38,7 @@
       form.append('email', this.email);
       form.append('nickname', this.nickname);
       form.append('phone', this.phone);
+      form.append('edc_idx', '{{ edc_idx }}');
       const res = await fetch('/booking/signup/send-code', { method: 'POST', body: form });
       const data = await res.json();
       this.sending = false;
@@ -61,7 +62,8 @@
     <!-- STEP 1: 정보 입력 -->
     <div class="card p-5 fade" x-show="step === 1">
       <h2 class="text-[18px] font-bold text-g-800 mb-1">케빈샘랩 회원가입</h2>
-      <p class="text-[13px] text-g-400 mb-5">정보 입력 후 연락처로 인증코드를 보내드립니다.</p>
+      <p class="text-[13px] text-g-400 mb-1">정보 입력 후 연락처로 인증코드를 보내드립니다.</p>
+      <p class="text-[13px] text-nv-600 font-medium mb-5">📍 {{ campus_name }}</p>
 
       <div class="space-y-4">
         <div>

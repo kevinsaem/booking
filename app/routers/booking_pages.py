@@ -100,9 +100,13 @@ _signup_codes: dict = {}
 
 
 @router.get("/signup", response_class=HTMLResponse)
-async def signup_page(request: Request):
+async def signup_page(request: Request, edc_idx: int = 0):
     """회원가입 페이지"""
-    return templates.TemplateResponse(request, "booking/signup.html")
+    campus_names = {0: "선부캠퍼스", 1: "초지캠퍼스"}
+    return templates.TemplateResponse(request, "booking/signup.html", {
+        "edc_idx": edc_idx,
+        "campus_name": campus_names.get(edc_idx, "선부캠퍼스"),
+    })
 
 
 @router.post("/signup/send-code")
@@ -111,6 +115,7 @@ async def signup_send_code(
     email: str = Form(),
     nickname: str = Form(""),
     phone: str = Form(),
+    edc_idx: int = Form(0),
 ):
     """회원가입 인증코드 발송"""
     from fastapi.responses import JSONResponse
@@ -137,11 +142,12 @@ async def signup_send_code(
         "name": name.strip(),
         "nickname": nickname.strip() or name.strip(),
         "phone": phone,
+        "edc_idx": edc_idx,
         "expires": time.time() + 300,
     }
 
     # 알림톡 발송
-    result = await send_auth_code(phone, name.strip(), code)
+    result = await send_auth_code(phone, name.strip(), code, edc_idx)
 
     return JSONResponse({"ok": True})
 
@@ -171,8 +177,8 @@ async def signup_verify(
         "INSERT INTO ek_Member "
         "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
         " mem_pwd, mem_MbrType, mem_edate, edc_idx) "
-        "VALUES (?, ?, ?, ?, ?, ?, '4', GETDATE(), 0)",
-        (email, pending["name"], pending["nickname"], pending["phone"], pending["phone"], code),
+        "VALUES (?, ?, ?, ?, ?, ?, '4', GETDATE(), ?)",
+        (email, pending["name"], pending["nickname"], pending["phone"], pending["phone"], code, pending.get("edc_idx", 0)),
         fetch="none"
     )
 
