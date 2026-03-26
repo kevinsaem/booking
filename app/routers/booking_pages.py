@@ -128,13 +128,8 @@ async def do_login(request: Request, name: str = Form(), code: str = Form()):
 
     mem_id = row["mem_MbrId"]
 
-    # kakao_members에서 역할 확인 (없으면 student)
-    kakao_row = execute_query(
-        "SELECT role FROM kakao_members WHERE mem_id = ?",
-        (mem_id,),
-        fetch="one"
-    )
-    role = kakao_row["role"] if kakao_row else "student"
+    # 역할은 기본 student
+    role = "student"
 
     # 수강권 확인
     settle = execute_query(

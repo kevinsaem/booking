@@ -130,7 +130,7 @@ async def admin_users(request: Request):
         return redirect
 
     users = execute_query(
-        "SELECT kakao_id, mem_id, nickname, email, role, created_at FROM kakao_members ORDER BY created_at DESC"
+        "SELECT mem_MbrId as mem_id, mem_MbrName as nickname, mem_MbrType, mem_edate as created_at FROM ek_Member ORDER BY mem_edate DESC"
     )
 
     ctx = {
@@ -157,7 +157,7 @@ async def admin_change_role(request: Request, mem_id: str, role: str = Form(...)
         return _flash_redirect("/admin/users", "자신의 역할은 변경할 수 없습니다", "error")
 
     execute_query(
-        "UPDATE kakao_members SET role = ? WHERE mem_id = ?",
+        "UPDATE ek_Member SET mem_MbrType = ? WHERE mem_MbrId = ?",
         (role, mem_id),
         fetch="none"
     )
