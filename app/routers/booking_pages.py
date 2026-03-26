@@ -151,6 +151,8 @@ async def signup_send_code(
     try:
         result = await send_auth_code(phone, name.strip(), code, edc_idx)
         print(f"📱 발송 결과: {result}")
+        if not result.get("success"):
+            return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {result.get('error', '알 수 없는 오류')}"})
     except Exception as e:
         print(f"📱 발송 에러: {e}")
         return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {str(e)}"})
