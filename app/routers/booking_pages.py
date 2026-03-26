@@ -147,10 +147,13 @@ async def signup_send_code(
     }
 
     # 알림톡 설정 조회 + 발송 (직접 DB 연결)
-    telno = phone.replace("-", "")
+    import re as re2
+    telno = re2.sub(r"[^0-9]", "", phone)  # 숫자만 추출
     if telno.startswith("0"):
         telno = "82" + telno[1:]
     message = f"{name.strip()}님의 인증코드는 {code}입니다."
+    print(f"📱 전화번호 변환: {phone} → {telno}")
+    print(f"📱 메시지: {message}")
 
     try:
         import httpx
