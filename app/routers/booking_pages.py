@@ -253,9 +253,9 @@ async def signup_verify(
         conn.close()
         return JSONResponse({"ok": False, "error": "인증코드가 일치하지 않습니다."})
 
-    # 인증 성공 → mem_MbrType을 4(수강생)로 변경
+    # 인증 성공 → mem_MbrType을 2(수강생)로 변경
     cursor.execute(
-        "UPDATE ek_Member SET mem_MbrType = 4 WHERE mem_MbrId = ? AND mem_MbrType = 0",
+        "UPDATE ek_Member SET mem_MbrType = 2 WHERE mem_MbrId = ? AND mem_MbrType = 0",
         (email,)
     )
     conn.commit()
@@ -658,6 +658,9 @@ async def dashboard_page(request: Request, user=Depends(get_current_user), sc: i
 
         # 해당 수강권 기간 내 수업 기록
         lessons_raw = []
+        total_assigned = 0
+        booked_upcoming = 0
+        completed_count = 0
         if current_settle:
             cursor.execute(
                 "SELECT TOP 30 R.idx, R.sch_room_idx, R.l_s_date, R.l_f_date, "
@@ -673,6 +676,38 @@ async def dashboard_page(request: Request, user=Depends(get_current_user), sc: i
             )
             cols2 = [d[0] for d in cursor.description]
             lessons_raw = [dict(zip(cols2, r)) for r in cursor.fetchall()]
+
+            # 총 배정 횟수 (week_tcnt)
+            cursor.execute(
+                "SELECT P.week_tcnt FROM ek_Settlement S "
+                "JOIN ek_Package P ON S.settle_package_code = P.package_code "
+                "WHERE S.settle_code = ?",
+                (sc,)
+            )
+            tcnt_row = cursor.fetchone()
+            total_assigned = int(tcnt_row[0] or 0) if tcnt_row else 0
+
+            # 월수강권이면 총 배정을 0으로 (무제한)
+            pkg_name_check = current_settle.get("package_name") or ""
+            is_monthly_pkg = "월수강권" in pkg_name_check
+
+            # 예약 중인 수업 (status=1, l_s_date가 현재 시간 이후)
+            cursor.execute(
+                "SELECT COUNT(*) FROM ek_Sch_Detail_Room_mem "
+                "WHERE mem_mbrid = ? AND status = 1 AND settle_code = ? "
+                "AND l_s_date > GETDATE()",
+                (mem_id, sc)
+            )
+            booked_upcoming = cursor.fetchone()[0]
+
+            # 완료된 수업 (status=1, l_s_date가 현재 시간 이전)
+            cursor.execute(
+                "SELECT COUNT(*) FROM ek_Sch_Detail_Room_mem "
+                "WHERE mem_mbrid = ? AND status = 1 AND settle_code = ? "
+                "AND l_s_date <= GETDATE()",
+                (mem_id, sc)
+            )
+            completed_count = cursor.fetchone()[0]
 
         conn.close()
     except Exception as e:
@@ -713,16 +748,21 @@ async def dashboard_page(request: Request, user=Depends(get_current_user), sc: i
             "teacher_id": l["teacher_id"],
         })
 
-    completed = len(lesson_list)
     pkg_name = current_settle.get("package_name", "") if current_settle else ""
+    is_monthly_pkg = "월수강권" in pkg_name
+    remaining_count = max(total_assigned - booked_upcoming - completed_count, 0) if not is_monthly_pkg else 0
 
     return templates.TemplateResponse(request, "booking/dashboard.html", {
         "user": user,
-        "completed": completed,
+        "completed": completed_count,
         "package_name": pkg_name,
         "lessons": lesson_list,
         "settles": settle_list,
         "selected_sc": sc,
+        "total_assigned": total_assigned,
+        "booked_upcoming": booked_upcoming,
+        "remaining_count": remaining_count,
+        "is_monthly": is_monthly_pkg,
     })
 
 
@@ -1014,14 +1054,14 @@ async def payment_page(request: Request, user=Depends(get_current_user)):
             "package_name": settle["package_name"],
             "lec_time": settle.get("lec_time", 50),
             "settle_date": settle_date,
-            "amount": f"{settle.get('settle_amount', 0):,}원",
+            "amount": f"{int(settle.get('settle_amount', 0) or 0):,}원",
             "sdate": sdate,
             "edate": edate,
         }
 
-    # 결제 이력 (최근 10건, 슬라이드용)
+    # 결제 이력 (최근 20건, 슬라이드용)
     history = execute_query(
-        "SELECT S.settle_date, S.settle_amount, S.settle_sdate, S.settle_edate, "
+        "SELECT S.settle_code, S.settle_date, S.settle_amount, S.settle_sdate, S.settle_edate, "
         "P.package_name, S.settle_state "
         "FROM ek_Settlement S "
         "JOIN ek_Package P ON S.settle_package_code = P.package_code "
@@ -1042,9 +1082,10 @@ async def payment_page(request: Request, user=Depends(get_current_user)):
         else:
             state = "이용중"
         payment_history.append({
+            "settle_code": h["settle_code"],
             "package_name": h["package_name"],
             "date": sd,
-            "amount": f"{h['settle_amount']:,}원",
+            "amount": f"{int(h['settle_amount'] or 0):,}원",
             "sdate": (h.get("settle_sdate") or "")[:10],
             "edate": (h.get("settle_edate") or "")[:10],
             "state": state,

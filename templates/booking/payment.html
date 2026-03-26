@@ -97,7 +97,7 @@
           <div class="w-full flex-shrink-0">
             <div class="card overflow-hidden divide-y divide-g-100 mx-0.5">
               {% for ph in payment_history[page_start:page_start+5] %}
-              <div class="px-4 py-3 flex items-center gap-3">
+              <a href="/booking/dashboard?sc={{ ph.settle_code }}" class="px-4 py-3 flex items-center gap-3 hover:bg-g-50 active:bg-g-100 transition-colors">
                 <div class="flex-1">
                   <div class="flex items-center gap-2">
                     <p class="text-[13px] font-medium text-g-800">{{ ph.package_name }}</p>
@@ -105,8 +105,11 @@
                   </div>
                   <p class="text-[11px] text-g-400 mt-0.5">{{ ph.date }} · {{ ph.sdate[5:] }}~{{ ph.edate[5:] }}</p>
                 </div>
-                <p class="text-[13px] font-bold text-g-700">{{ ph.amount }}</p>
-              </div>
+                <div class="flex items-center gap-2">
+                  <p class="text-[13px] font-bold text-g-700">{{ ph.amount }}</p>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+              </a>
               {% endfor %}
             </div>
           </div>

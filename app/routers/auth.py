@@ -78,7 +78,7 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
         # 기존 회원
         role = "student"
     else:
-        # 신규 가입 → ek_Member에 등록 (mem_MbrType=4: 수강생)
+        # 신규 가입 → ek_Member에 등록 (mem_MbrType=2: 수강생)
         phone_raw = kakao_account.get("phone_number", "")
         phone = ""
         if phone_raw:
@@ -92,7 +92,7 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
             "INSERT INTO ek_Member "
             "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
             " mem_MbrType, mem_edate) "
-            "VALUES (?, ?, ?, ?, ?, '4', GETDATE())",
+            "VALUES (?, ?, ?, ?, ?, '2', GETDATE())",
             (mem_id, real_name, nickname, phone, phone),
             fetch="none"
         )

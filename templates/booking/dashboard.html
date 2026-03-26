@@ -35,9 +35,23 @@
     <!-- 수강 현황 요약 -->
     <div class="card p-5 fade">
       <p class="text-[12px] text-g-400 mb-3">{{ package_name }}</p>
-      <div class="text-center">
-        <p class="text-[32px] font-extrabold text-g-900">{{ completed }}</p>
-        <p class="text-[11px] text-g-400 mt-1">완료 수업</p>
+      <div class="grid grid-cols-4 gap-3 text-center">
+        <div>
+          <p class="text-[22px] font-extrabold text-g-900">{{ '∞' if is_monthly else total_assigned }}</p>
+          <p class="text-[11px] text-g-400 mt-1">총 배정</p>
+        </div>
+        <div>
+          <p class="text-[22px] font-extrabold text-nv-600">{{ booked_upcoming }}</p>
+          <p class="text-[11px] text-g-400 mt-1">예약중</p>
+        </div>
+        <div>
+          <p class="text-[22px] font-extrabold text-g-600">{{ completed }}</p>
+          <p class="text-[11px] text-g-400 mt-1">완료</p>
+        </div>
+        <div>
+          <p class="text-[22px] font-extrabold {{ 'text-red-500' if not is_monthly and remaining_count <= 2 else 'text-g-900' }}">{{ '∞' if is_monthly else remaining_count }}</p>
+          <p class="text-[11px] text-g-400 mt-1">잔여</p>
+        </div>
       </div>
     </div>
 
