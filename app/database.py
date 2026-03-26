@@ -10,7 +10,8 @@ import re
 from contextlib import contextmanager
 from app.config import settings
 
-DB_MODE = os.getenv("DB_MODE", "development")
+DB_MODE = settings.DB_MODE
+print(f"🔧 DB_MODE = {DB_MODE} (from settings)")
 
 SQLITE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dev.db")
 
