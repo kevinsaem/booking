@@ -104,6 +104,17 @@ def _translate_sql(sql: str) -> str:
     return sql
 
 
+def _convert_row(d: dict) -> dict:
+    """MS-SQL datetime 객체를 문자열로 자동 변환"""
+    from datetime import datetime as dt, date as d_date
+    for k, v in d.items():
+        if isinstance(v, dt):
+            d[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+        elif isinstance(v, d_date):
+            d[k] = v.strftime("%Y-%m-%d")
+    return d
+
+
 def execute_query(sql: str, params=None, fetch: str = "all"):
     translated = _translate_sql(sql)
     try:
@@ -117,7 +128,7 @@ def execute_query(sql: str, params=None, fetch: str = "all"):
                 if DB_MODE == "development":
                     return [dict(r) for r in cursor.fetchall()]
                 cols = [d[0] for d in cursor.description] if cursor.description else []
-                return [dict(zip(cols, r)) for r in cursor.fetchall()]
+                return [_convert_row(dict(zip(cols, r))) for r in cursor.fetchall()]
             elif fetch == "one":
                 if DB_MODE == "development":
                     row = cursor.fetchone()
@@ -125,7 +136,7 @@ def execute_query(sql: str, params=None, fetch: str = "all"):
                 if cursor.description:
                     cols = [d[0] for d in cursor.description]
                     row = cursor.fetchone()
-                    return dict(zip(cols, row)) if row else None
+                    return _convert_row(dict(zip(cols, row))) if row else None
                 return None
             else:
                 conn.commit()
