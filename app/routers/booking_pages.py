@@ -899,10 +899,19 @@ async def mypage(request: Request, user=Depends(get_current_user)):
     )
     completed = completed_row["cnt"] if completed_row else 0
 
+    # 개인정보 조회
+    member_info = execute_query(
+        "SELECT mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
+        "mem_MbrType, mem_edate FROM ek_Member WHERE mem_MbrId = ?",
+        (user["mem_MbrId"],),
+        fetch="one"
+    )
+
     return templates.TemplateResponse(request, "booking/mypage.html", {
         "user": user,
         "remaining": remaining,
         "monthly": monthly,
         "total_classes": total_classes,
         "stats": {"completed": completed},
+        "member": member_info,
     })

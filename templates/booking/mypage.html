@@ -41,6 +41,37 @@
       </div>
     </div>
 
+    <!-- 개인정보 -->
+    {% if member %}
+    <div class="card overflow-hidden fade s0">
+      <div class="px-5 py-3 bg-g-50 border-b border-g-100">
+        <span class="text-[13px] font-bold text-g-600">개인정보</span>
+      </div>
+      <div class="divide-y divide-g-100">
+        <div class="flex items-center px-5 py-3.5">
+          <span class="text-[13px] text-g-400 w-20 flex-shrink-0">이름</span>
+          <span class="text-[14px] text-g-800 font-medium">{{ member.mem_MbrName or '-' }}</span>
+        </div>
+        <div class="flex items-center px-5 py-3.5">
+          <span class="text-[13px] text-g-400 w-20 flex-shrink-0">아이디</span>
+          <span class="text-[14px] text-g-800 font-medium">{{ member.mem_MbrId or '-' }}</span>
+        </div>
+        <div class="flex items-center px-5 py-3.5">
+          <span class="text-[13px] text-g-400 w-20 flex-shrink-0">닉네임</span>
+          <span class="text-[14px] text-g-800 font-medium">{{ member.mem_nickname or '-' }}</span>
+        </div>
+        <div class="flex items-center px-5 py-3.5">
+          <span class="text-[13px] text-g-400 w-20 flex-shrink-0">연락처</span>
+          <span class="text-[14px] text-g-800 font-medium">{{ member.mem_TelNo2 or member.mem_TelNo3 or '-' }}</span>
+        </div>
+        <div class="flex items-center px-5 py-3.5">
+          <span class="text-[13px] text-g-400 w-20 flex-shrink-0">가입일</span>
+          <span class="text-[14px] text-g-800 font-medium">{{ member.mem_edate[:10] if member.mem_edate else '-' }}</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- 메뉴 리스트 1 -->
     <div class="card overflow-hidden fade s1">
       <a href="/booking/my-bookings" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50">
