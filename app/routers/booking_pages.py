@@ -146,13 +146,54 @@ async def signup_send_code(
         "expires": time.time() + 300,
     }
 
-    # 알림톡 발송
-    print(f"📱 인증코드 발송 시도: {name} / {phone} / 코드:{code} / 캠퍼스:{edc_idx}")
+    # 알림톡 설정 조회
+    config = execute_query(
+        "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?",
+        (edc_idx,),
+        fetch="one"
+    )
+    if not config:
+        config = execute_query(
+            "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_state = 1",
+            fetch="one"
+        )
+    print(f"📱 알림톡 설정 조회 결과: {config}")
+
+    if not config:
+        return JSONResponse({"ok": False, "error": "알림톡 설정을 찾을 수 없습니다."})
+
+    # 전화번호 형식 변환
+    telno = phone.replace("-", "")
+    if telno.startswith("0"):
+        telno = "82" + telno[1:]
+
+    message = f"{name.strip()}님의 인증코드는 {code}입니다."
+
+    json_data = {
+        "usercode": config.get("atid") or config.get("ATID"),
+        "deptcode": config.get("atdeptcode") or config.get("ATDEPTCODE"),
+        "yellowid_key": config.get("sch") or config.get("SCH"),
+        "messages": [{
+            "type": "at",
+            "message_id": f"auth_{telno}_{code}",
+            "to": telno,
+            "template_code": "visit_001",
+            "text": message,
+        }]
+    }
+
+    print(f"📱 슈어엠 API 호출: to={telno}, usercode={json_data['usercode']}")
+
     try:
-        result = await send_auth_code(phone, name.strip(), code, edc_idx)
-        print(f"📱 발송 결과: {result}")
-        if not result.get("success"):
-            return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {result.get('error', '알 수 없는 오류')}"})
+        import httpx
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(
+                "https://api.surem.com/alimtalk/v1/json",
+                json=json_data,
+                headers={"Content-Type": "application/json"},
+            )
+            result = resp.json()
+            print(f"📱 슈어엠 응답: {result}")
     except Exception as e:
         print(f"📱 발송 에러: {e}")
         return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {str(e)}"})
