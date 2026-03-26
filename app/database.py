@@ -73,16 +73,24 @@ def get_db():
 
 
 def _translate_sql(sql: str) -> str:
-    """MS-SQL 문법 → SQLite 호환 자동 변환"""
-    if DB_MODE != "development":
-        return sql
-    sql = sql.replace("GETDATE()", "datetime('now','localtime')")
-    sql = sql.replace("ISNULL(", "COALESCE(")
-    sql = re.sub(r"CONVERT\s*\(\s*varchar\s*\(\s*10\s*\)\s*,\s*([^,]+?)\s*,\s*2[31]\s*\)", r"strftime('%Y-%m-%d',\1)", sql)
-    sql = re.sub(r"CONVERT\s*\(\s*varchar\s*\(\s*5\s*\)\s*,\s*([^,]+?)\s*,\s*108\s*\)", r"strftime('%H:%M',\1)", sql)
-    sql = re.sub(r"YEAR\(([^)]+)\)", r"cast(strftime('%Y',\1) as integer)", sql)
-    sql = re.sub(r"MONTH\(([^)]+)\)", r"cast(strftime('%m',\1) as integer)", sql)
-    sql = re.sub(r"DATEADD\s*\(\s*hour\s*,\s*9\s*,\s*([^)]+)\)", r"\1", sql)
+    """양방향 SQL 변환: development=SQLite, production=MS-SQL"""
+    if DB_MODE == "development":
+        # MS-SQL → SQLite
+        sql = sql.replace("GETDATE()", "datetime('now','localtime')")
+        sql = sql.replace("ISNULL(", "COALESCE(")
+        sql = re.sub(r"CONVERT\s*\(\s*varchar\s*\(\s*10\s*\)\s*,\s*([^,]+?)\s*,\s*2[31]\s*\)", r"strftime('%Y-%m-%d',\1)", sql)
+        sql = re.sub(r"CONVERT\s*\(\s*varchar\s*\(\s*5\s*\)\s*,\s*([^,]+?)\s*,\s*108\s*\)", r"strftime('%H:%M',\1)", sql)
+        sql = re.sub(r"YEAR\(([^)]+)\)", r"cast(strftime('%Y',\1) as integer)", sql)
+        sql = re.sub(r"MONTH\(([^)]+)\)", r"cast(strftime('%m',\1) as integer)", sql)
+        sql = re.sub(r"DATEADD\s*\(\s*hour\s*,\s*9\s*,\s*([^)]+)\)", r"\1", sql)
+    else:
+        # SQLite → MS-SQL
+        sql = re.sub(r"datetime\s*\(\s*'now'\s*,\s*'\+9 hours'\s*\)", "DATEADD(hour, 9, GETDATE())", sql)
+        sql = re.sub(r"datetime\s*\(\s*'now'\s*,\s*'localtime'\s*\)", "GETDATE()", sql)
+        sql = re.sub(r"datetime\s*\(\s*'now'\s*\)", "GETDATE()", sql)
+        sql = re.sub(r"datetime\s*\(\s*([^,)]+?)\s*,\s*'\+9 hours'\s*\)", r"DATEADD(hour, 9, \1)", sql)
+        sql = sql.replace("INSERT OR IGNORE", "INSERT")
+        sql = sql.replace("INSERT OR REPLACE", "UPDATE")
     return sql
 
 
