@@ -91,6 +91,12 @@ def _translate_sql(sql: str) -> str:
         sql = re.sub(r"datetime\s*\(\s*([^,)]+?)\s*,\s*'\+9 hours'\s*\)", r"DATEADD(hour, 9, \1)", sql)
         sql = sql.replace("INSERT OR IGNORE", "INSERT")
         sql = sql.replace("INSERT OR REPLACE", "UPDATE")
+        # LIMIT N → TOP N 변환
+        limit_match = re.search(r"\bLIMIT\s+(\d+)\s*$", sql, re.IGNORECASE)
+        if limit_match:
+            n = limit_match.group(1)
+            sql = re.sub(r"\bLIMIT\s+\d+\s*$", "", sql, flags=re.IGNORECASE)
+            sql = re.sub(r"^(\s*SELECT\s)", rf"\1TOP {n} ", sql, count=1, flags=re.IGNORECASE)
     return sql
 
 
