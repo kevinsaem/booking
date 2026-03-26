@@ -102,20 +102,21 @@ def _translate_sql(sql: str) -> str:
 
 def execute_query(sql: str, params=None, fetch: str = "all"):
     translated = _translate_sql(sql)
-    with get_db() as conn:
-        cursor = conn.cursor()
-        if params:
-            cursor.execute(translated, params)
-        else:
-            cursor.execute(translated)
-        if fetch == "all":
-            if DB_MODE == "development":
-                return [dict(r) for r in cursor.fetchall()]
-            cols = [d[0] for d in cursor.description] if cursor.description else []
-            return [dict(zip(cols, r)) for r in cursor.fetchall()]
-        elif fetch == "one":
-            if DB_MODE == "development":
-                row = cursor.fetchone()
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+            if params:
+                cursor.execute(translated, params)
+            else:
+                cursor.execute(translated)
+            if fetch == "all":
+                if DB_MODE == "development":
+                    return [dict(r) for r in cursor.fetchall()]
+                cols = [d[0] for d in cursor.description] if cursor.description else []
+                return [dict(zip(cols, r)) for r in cursor.fetchall()]
+            elif fetch == "one":
+                if DB_MODE == "development":
+                    row = cursor.fetchone()
                 return dict(row) if row else None
             if cursor.description:
                 cols = [d[0] for d in cursor.description]
@@ -125,3 +126,12 @@ def execute_query(sql: str, params=None, fetch: str = "all"):
         else:
             conn.commit()
             return cursor.rowcount
+    except Exception as e:
+        print(f"⚠️ DB 쿼리 실패: {e}")
+        print(f"  → SQL: {translated[:200]}")
+        if fetch == "all":
+            return []
+        elif fetch == "one":
+            return None
+        else:
+            return 0
