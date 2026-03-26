@@ -18,53 +18,38 @@
       <p class="text-[13px] text-g-500 mt-1">성인 1:1 AI활용 과정</p>
     </div>
 
-    <!-- 안내 문구 -->
-    <p class="text-center text-[14px] text-g-600 mb-6">카카오 계정으로 간편하게 시작하세요</p>
-
     {% if error %}
     <p class="text-xs text-red-500 text-center mb-4">{{ error }}</p>
     {% endif %}
-
-    <!-- 카카오 로그인 버튼 -->
-    <a href="/auth/kakao/login"
-       class="w-full h-[50px] rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 active:scale-[.98] transition-all"
-       style="background-color: #FEE500; color: #191919;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919">
-        <path d="M12 3C6.48 3 2 6.36 2 10.44c0 2.63 1.74 4.94 4.36 6.26l-1.1 4.08c-.1.36.32.65.64.44l4.84-3.2c.42.04.84.06 1.26.06 5.52 0 10-3.36 10-7.64C22 6.36 17.52 3 12 3z"/>
-      </svg>
-      카카오로 시작하기
-    </a>
-
-    <!-- 구분선 -->
-    <div class="flex items-center gap-3 my-6">
-      <div class="flex-1 h-px bg-g-200"></div>
-      <span class="text-[12px] text-g-400">또는</span>
-      <div class="flex-1 h-px bg-g-200"></div>
-    </div>
 
     <!-- 이름 + 인증번호 로그인 -->
     <form method="POST" action="/booking/login"
           x-data="{ name: '', code: '', clientErr: '' }"
           @submit="
             if (!name.trim()) { clientErr = '이름을 입력하세요'; $event.preventDefault(); return; }
-            if (code.length !== 4) { clientErr = '인증번호 4자리를 입력하세요'; $event.preventDefault(); return; }
+            if (code.length < 4) { clientErr = '비밀번호를 입력하세요'; $event.preventDefault(); return; }
             clientErr = '';
           "
           class="space-y-3">
       <input type="text" name="name" x-model="name"
              placeholder="이름"
              class="w-full h-[44px] px-4 bg-g-100 rounded-xl text-[14px] placeholder-g-400">
-      <input type="text" name="code" x-model="code"
-             placeholder="인증번호 4자리"
-             maxlength="4" inputmode="numeric"
+      <input type="password" name="code" x-model="code"
+             placeholder="비밀번호"
              class="w-full h-[44px] px-4 bg-g-100 rounded-xl text-[14px] placeholder-g-400">
       <p x-show="clientErr" x-text="clientErr" class="text-xs text-red-500 text-center"></p>
       <button type="submit" class="w-full h-[44px] bg-g-800 text-white rounded-xl font-bold text-[14px] active:bg-g-900">로그인</button>
     </form>
 
+    <!-- 회원가입 -->
+    <a href="/booking/signup"
+       class="w-full h-[44px] mt-3 border border-g-300 text-g-700 rounded-xl font-bold text-[14px] flex items-center justify-center active:bg-g-50 transition-all">
+      회원가입
+    </a>
+
     <!-- 수강 문의 -->
     <div class="flex items-center justify-center gap-4 mt-6 text-[13px] text-g-400">
-      <span class="cursor-pointer" onclick="showToast('카카오톡 상담으로 연결됩니다')">수강 문의</span>
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" class="cursor-pointer hover:text-g-600">수강 문의</a>
     </div>
   </div>
 

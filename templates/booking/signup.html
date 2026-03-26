@@ -1,0 +1,114 @@
+<!-- templates/booking/signup.html -->
+{% extends "base.html" %}
+
+{% block title %}회원가입 - 케빈샘랩{% endblock %}
+
+{% block tabbar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-10 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">회원가입</h1>
+  </div>
+
+  <div class="px-4 pt-5">
+    <div class="card p-5 fade">
+      <h2 class="text-[18px] font-bold text-g-800 mb-1">케빈샘랩 회원가입</h2>
+      <p class="text-[13px] text-g-400 mb-5">수강에 필요한 기본 정보를 입력해주세요.</p>
+
+      {% if error %}
+      <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4">
+        <p class="text-[13px] text-red-600">{{ error }}</p>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/booking/signup"
+            x-data="{
+              name: '', email: '', nickname: '', phone: '', pwd: '', pwd2: '',
+              clientErr: '',
+              formatPhone() {
+                let n = this.phone.replace(/[^0-9]/g, '');
+                if (n.length < 4) { this.phone = n; }
+                else if (n.length < 8) { this.phone = n.substr(0,3) + '-' + n.substr(3); }
+                else { this.phone = n.substr(0,3) + '-' + n.substr(3,4) + '-' + n.substr(7,4); }
+              }
+            }"
+            @submit="
+              if (!name.trim()) { clientErr = '이름을 입력하세요'; $event.preventDefault(); return; }
+              if (!email.trim()) { clientErr = '이메일(아이디)을 입력하세요'; $event.preventDefault(); return; }
+              if (!phone.trim()) { clientErr = '연락처를 입력하세요'; $event.preventDefault(); return; }
+              if (pwd.length < 4) { clientErr = '비밀번호 4자리 이상 입력하세요'; $event.preventDefault(); return; }
+              if (pwd !== pwd2) { clientErr = '비밀번호가 일치하지 않습니다'; $event.preventDefault(); return; }
+              clientErr = '';
+            "
+            class="space-y-4">
+
+        <!-- 이름 -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">이름 <span class="text-red-500">*</span></label>
+          <input type="text" name="name" x-model="name" required
+                 placeholder="홍길동"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <!-- 이메일 (아이디) -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">이메일 (아이디) <span class="text-red-500">*</span></label>
+          <input type="email" name="email" x-model="email" required
+                 placeholder="example@email.com"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <!-- 닉네임 -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">닉네임</label>
+          <input type="text" name="nickname" x-model="nickname"
+                 placeholder="표시될 이름 (선택)"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <!-- 연락처 -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">연락처 <span class="text-red-500">*</span></label>
+          <input type="tel" name="phone" x-model="phone" @input="formatPhone()" maxlength="13" required
+                 placeholder="010-0000-0000"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <!-- 비밀번호 -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">비밀번호 <span class="text-red-500">*</span></label>
+          <input type="password" name="pwd" x-model="pwd" required
+                 placeholder="4자리 이상"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div>
+          <label class="block text-[13px] font-medium text-g-600 mb-1">비밀번호 확인 <span class="text-red-500">*</span></label>
+          <input type="password" name="pwd2" x-model="pwd2" required
+                 placeholder="비밀번호 재입력"
+                 class="w-full h-[44px] px-4 bg-g-50 border border-g-200 rounded-xl text-[14px] placeholder-g-400 focus:border-nv-500 focus:outline-none">
+        </div>
+
+        <p x-show="clientErr" x-text="clientErr" class="text-xs text-red-500 text-center"></p>
+
+        <!-- 개인정보 동의 -->
+        <label class="flex items-start gap-2 pt-2">
+          <input type="checkbox" name="agree" required class="mt-1 accent-nv-600">
+          <span class="text-[12px] text-g-500">개인정보 수집 및 이용에 동의합니다.</span>
+        </label>
+
+        <button type="submit" class="w-full h-[48px] bg-nv-600 text-white rounded-xl font-bold text-[15px] active:bg-nv-700 transition-all mt-2">가입하기</button>
+      </form>
+
+      <a href="/booking/" class="block text-center text-[13px] text-g-400 mt-4 hover:text-g-600">이미 회원이신가요? 로그인</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

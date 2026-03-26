@@ -94,6 +94,71 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     })
 
 
+@router.get("/signup", response_class=HTMLResponse)
+async def signup_page(request: Request):
+    """회원가입 페이지"""
+    return templates.TemplateResponse(request, "booking/signup.html")
+
+
+@router.post("/signup", response_class=HTMLResponse)
+async def do_signup(
+    request: Request,
+    name: str = Form(),
+    email: str = Form(),
+    nickname: str = Form(""),
+    phone: str = Form(),
+    pwd: str = Form(),
+    pwd2: str = Form(),
+):
+    """회원가입 처리"""
+    # 유효성 검사
+    if not name.strip() or not email.strip() or not phone.strip():
+        return templates.TemplateResponse(request, "booking/signup.html", {"error": "필수 항목을 모두 입력해주세요."})
+    if len(pwd) < 4:
+        return templates.TemplateResponse(request, "booking/signup.html", {"error": "비밀번호는 4자리 이상이어야 합니다."})
+    if pwd != pwd2:
+        return templates.TemplateResponse(request, "booking/signup.html", {"error": "비밀번호가 일치하지 않습니다."})
+
+    # 아이디 중복 확인
+    existing = execute_query(
+        "SELECT mem_MbrId FROM ek_Member WHERE mem_MbrId = ?",
+        (email,),
+        fetch="one"
+    )
+    if existing:
+        return templates.TemplateResponse(request, "booking/signup.html", {"error": "이미 사용 중인 이메일(아이디)입니다."})
+
+    # ek_Member에 등록 (mem_MbrType=4: 수강생)
+    execute_query(
+        "INSERT INTO ek_Member "
+        "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
+        " mem_pwd, mem_MbrType, mem_edate, edc_idx) "
+        "VALUES (?, ?, ?, ?, ?, ?, '4', GETDATE(), 0)",
+        (email, name.strip(), nickname.strip() or name.strip(), phone, phone, pwd),
+        fetch="none"
+    )
+
+    # 가입 후 자동 로그인
+    user = {
+        "mem_MbrId": email,
+        "name": nickname.strip() or name.strip(),
+        "role": "student",
+        "settle_code": 0,
+    }
+    token = create_jwt(user)
+
+    response = RedirectResponse("/booking/", status_code=303)
+    is_prod = settings.DB_MODE == "production"
+    response.set_cookie(
+        "token", token,
+        httponly=True,
+        secure=is_prod,
+        samesite="lax",
+        max_age=settings.JWT_EXPIRE_MINUTES * 60,
+    )
+    return response
+
+
 @router.post("/login", response_class=HTMLResponse)
 async def do_login(request: Request, name: str = Form(), code: str = Form()):
     """이름+인증번호 로그인 (역할 기반 분기)"""
