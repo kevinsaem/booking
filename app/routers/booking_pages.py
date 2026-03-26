@@ -94,30 +94,30 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     })
 
 
+# 회원가입 임시 인증코드 저장 {email: {code, name, nickname, phone, expires}}
+import random
+_signup_codes: dict = {}
+
+
 @router.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
     """회원가입 페이지"""
     return templates.TemplateResponse(request, "booking/signup.html")
 
 
-@router.post("/signup", response_class=HTMLResponse)
-async def do_signup(
-    request: Request,
+@router.post("/signup/send-code")
+async def signup_send_code(
     name: str = Form(),
     email: str = Form(),
     nickname: str = Form(""),
     phone: str = Form(),
-    pwd: str = Form(),
-    pwd2: str = Form(),
 ):
-    """회원가입 처리"""
-    # 유효성 검사
+    """회원가입 인증코드 발송"""
+    from fastapi.responses import JSONResponse
+    from app.services.kakao_service import send_auth_code
+
     if not name.strip() or not email.strip() or not phone.strip():
-        return templates.TemplateResponse(request, "booking/signup.html", {"error": "필수 항목을 모두 입력해주세요."})
-    if len(pwd) < 4:
-        return templates.TemplateResponse(request, "booking/signup.html", {"error": "비밀번호는 4자리 이상이어야 합니다."})
-    if pwd != pwd2:
-        return templates.TemplateResponse(request, "booking/signup.html", {"error": "비밀번호가 일치하지 않습니다."})
+        return JSONResponse({"ok": False, "error": "필수 항목을 모두 입력해주세요."})
 
     # 아이디 중복 확인
     existing = execute_query(
@@ -126,22 +126,63 @@ async def do_signup(
         fetch="one"
     )
     if existing:
-        return templates.TemplateResponse(request, "booking/signup.html", {"error": "이미 사용 중인 이메일(아이디)입니다."})
+        return JSONResponse({"ok": False, "error": "이미 사용 중인 이메일(아이디)입니다."})
 
-    # ek_Member에 등록 (mem_MbrType=4: 수강생)
+    # 4자리 인증코드 생성
+    code = str(random.randint(1000, 9999))
+
+    # 임시 저장 (5분 유효)
+    _signup_codes[email] = {
+        "code": code,
+        "name": name.strip(),
+        "nickname": nickname.strip() or name.strip(),
+        "phone": phone,
+        "expires": time.time() + 300,
+    }
+
+    # 알림톡 발송
+    result = await send_auth_code(phone, name.strip(), code)
+
+    return JSONResponse({"ok": True})
+
+
+@router.post("/signup/verify")
+async def signup_verify(
+    request: Request,
+    email: str = Form(),
+    code: str = Form(),
+):
+    """인증코드 확인 및 가입 완료"""
+    from fastapi.responses import JSONResponse
+
+    pending = _signup_codes.get(email)
+    if not pending:
+        return JSONResponse({"ok": False, "error": "인증코드가 만료되었습니다. 다시 발송해주세요."})
+
+    if time.time() > pending["expires"]:
+        del _signup_codes[email]
+        return JSONResponse({"ok": False, "error": "인증코드가 만료되었습니다. 다시 발송해주세요."})
+
+    if pending["code"] != code:
+        return JSONResponse({"ok": False, "error": "인증코드가 일치하지 않습니다."})
+
+    # ek_Member에 등록 (mem_MbrType=4, mem_pwd=인증코드)
     execute_query(
         "INSERT INTO ek_Member "
         "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
         " mem_pwd, mem_MbrType, mem_edate, edc_idx) "
         "VALUES (?, ?, ?, ?, ?, ?, '4', GETDATE(), 0)",
-        (email, name.strip(), nickname.strip() or name.strip(), phone, phone, pwd),
+        (email, pending["name"], pending["nickname"], pending["phone"], pending["phone"], code),
         fetch="none"
     )
 
-    # 가입 후 자동 로그인
+    # 임시 데이터 삭제
+    del _signup_codes[email]
+
+    # 자동 로그인
     user = {
         "mem_MbrId": email,
-        "name": nickname.strip() or name.strip(),
+        "name": pending["nickname"],
         "role": "student",
         "settle_code": 0,
     }

@@ -1,65 +1,65 @@
 # app/services/kakao_service.py
-# 카카오 알림톡 발송 서비스 (httpx 비동기)
+# 슈어엠(surem.com) 카카오 알림톡 발송 서비스
 
 import httpx
-from app.config import settings
+from app.database import execute_query
+
+SUREM_API_URL = "https://api.surem.com/alimtalk/v1/json"
 
 
-class KakaoService:
-    """카카오 알림톡 발송 서비스
-
-    FastAPI BackgroundTasks에서 호출:
-        bg.add_task(kakao_service.send_booking_confirm, phone, ...)
-    """
-
-    async def send_auth_code(self, phone: str, code: str):
-        """인증번호 발송"""
-        return await self._send(phone, "AUTH_CODE", {"인증번호": code})
-
-    async def send_booking_confirm(
-        self, phone: str, name: str, teacher: str,
-        date: str, time: str, campus: str, remaining: int
-    ):
-        """예약 확인 알림"""
-        return await self._send(phone, "BOOKING_CONFIRM", {
-            "수강생명": name, "강사명": teacher,
-            "날짜": date, "시간": time,
-            "캠퍼스명": campus, "잔여횟수": str(remaining),
-        })
-
-    async def send_booking_cancel(
-        self, phone: str, name: str, teacher: str,
-        date: str, time: str, remaining: int
-    ):
-        """예약 취소 알림"""
-        return await self._send(phone, "BOOKING_CANCEL", {
-            "수강생명": name, "강사명": teacher,
-            "날짜": date, "시간": time,
-            "잔여횟수": str(remaining),
-        })
-
-    async def _send(self, phone: str, template_code: str, variables: dict):
-        """알림톡 API 호출"""
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            try:
-                resp = await client.post(
-                    "https://kakao-alimtalk-api-url/send",  # 실제 URL로 교체
-                    json={
-                        "senderKey": settings.KAKAO_SENDER_KEY,
-                        "templateCode": template_code,
-                        "recipientList": [{
-                            "recipientNo": phone,
-                            "templateParameter": variables,
-                        }],
-                    },
-                    headers={
-                        "Authorization": f"Bearer {settings.KAKAO_API_KEY}",
-                    },
-                )
-                return resp.json()
-            except Exception as e:
-                print(f"[알림톡 실패] {template_code}: {e}")
-                return {"success": False, "error": str(e)}
+async def get_alimtalk_config(edc_idx=0):
+    """ek_educenter에서 알림톡 API 인증정보 조회"""
+    row = execute_query(
+        "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?",
+        (edc_idx,),
+        fetch="one"
+    )
+    if not row:
+        # edc_idx=0이면 첫 번째 활성 센터 사용
+        row = execute_query(
+            "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_state = 1",
+            fetch="one"
+        )
+    return row
 
 
-kakao_service = KakaoService()
+async def send_auth_code(phone: str, name: str, code: str, edc_idx=0):
+    """인증코드 알림톡 발송"""
+    config = await get_alimtalk_config(edc_idx)
+    if not config:
+        print("⚠️ 알림톡 설정 없음: ek_educenter 데이터 확인 필요")
+        return {"success": False, "error": "알림톡 설정 없음"}
+
+    # 전화번호 형식 변환: 010-1234-5678 → 821012345678
+    telno = phone.replace("-", "")
+    if telno.startswith("0"):
+        telno = "82" + telno[1:]
+
+    message = f"{name}님의 인증코드는 {code}입니다."
+
+    json_data = {
+        "usercode": config["atid"],
+        "deptcode": config["atdeptcode"],
+        "yellowid_key": config["sch"],
+        "messages": [{
+            "type": "at",
+            "message_id": f"auth_{phone}_{code}",
+            "to": telno,
+            "template_code": "visit_001",
+            "text": message,
+        }]
+    }
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            resp = await client.post(
+                SUREM_API_URL,
+                json=json_data,
+                headers={"Content-Type": "application/json"},
+            )
+            result = resp.json()
+            print(f"✅ 알림톡 발송: {name} ({phone}) → 코드: {code}")
+            return {"success": True, "result": result}
+        except Exception as e:
+            print(f"❌ 알림톡 실패: {e}")
+            return {"success": False, "error": str(e)}
