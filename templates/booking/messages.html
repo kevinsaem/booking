@@ -18,7 +18,7 @@
 
   <div class="px-4 pt-4 space-y-2">
     {% for conv in conversations %}
-    <a href="/booking/chat/{{ conv.teacher_id }}" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer block">
+    <a href="/message/chat/{{ conv.teacher_id }}" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer block">
       <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">{{ conv.teacher_name[0] }}</div>
       <div class="flex-1 min-w-0">
         <div class="flex justify-between">

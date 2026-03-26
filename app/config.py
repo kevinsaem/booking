@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     TOSS_CLIENT_KEY: str = ""
     TOSS_SECRET_KEY: str = ""
 
+    # 이메일 (Gmail SMTP)
+    SMTP_EMAIL: str = ""
+    SMTP_PASSWORD: str = ""
+
     # 관리자
     ADMIN_PASSWORD: str = "admin1234"
     ADMIN_JWT_EXPIRE_MINUTES: int = 480  # 8시간

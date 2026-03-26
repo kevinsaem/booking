@@ -8,7 +8,7 @@
 
   <!-- 채팅 헤더 (상단 고정) -->
   <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 flex-shrink-0">
-    <a href="/booking/messages" class="back-btn">
+    <a href="/message/" class="back-btn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
     </a>
     <div class="flex-1">
@@ -49,8 +49,9 @@
 
   <!-- 입력 영역 (하단 고정) -->
   <div class="bg-white border-t border-g-200 px-4 py-3 flex-shrink-0 pb-safe" x-data="{ nm: '' }">
-    <form method="POST" action="/booking/chat/{{ teacher_id }}/send"
+    <form method="POST" action="/message/send"
           class="flex items-center gap-2">
+      <input type="hidden" name="mentor_id" value="{{ teacher_id }}">
       <input type="text" name="content" x-model="nm"
              placeholder="메시지를 입력하세요"
              class="flex-1 h-[42px] px-4 bg-g-100 rounded-full text-[14px] placeholder-g-400"

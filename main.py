@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZIPMiddleware
 from app.config import settings
 from app.database import init_db, close_db
-from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages
+from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message
 
 # 프로덕션 JWT 시크릿 키 검증
 if settings.DB_MODE == "production" and "not-for-production" in settings.JWT_SECRET:
@@ -64,6 +64,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # 라우터 등록
 app.include_router(auth.router)              # 카카오 로그인: /auth/*
 app.include_router(payment.router)         # 결제 (토스): /booking/payment/*
+app.include_router(message.router)        # 메시지: /message/*
 app.include_router(booking_pages.router)   # 수강생 웹: /booking/*
 app.include_router(teacher_pages.router)  # 강사 포털: /teacher/*
 app.include_router(admin_pages.router)     # 관리자 웹: /admin/*
