@@ -156,26 +156,18 @@ async def signup_send_code(
     print(f"📱 메시지: {message}")
 
     import httpx
-    import pyodbc
+    from app.database import get_db, DB_MODE
 
-    # 1. DB 직접 연결해서 알림톡 설정 조회
+    # 1. DB에서 알림톡 설정 조회
     try:
-        conn = pyodbc.connect(
-            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-            f"SERVER={settings.DB_SERVER};"
-            f"DATABASE={settings.DB_NAME};"
-            f"UID={settings.DB_USER};"
-            f"PWD={settings.DB_PASSWORD};"
-            f"TrustServerCertificate=yes;"
-        )
-        cursor = conn.cursor()
-        cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
-        cols = [d[0] for d in cursor.description]
-        row = cursor.fetchone()
-        conn.close()
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
+            cols = [d[0] for d in cursor.description]
+            row = cursor.fetchone()
     except Exception as e:
-        print(f"📱 DB연결 실패: {e}")
-        return JSONResponse({"ok": False, "error": f"DB 연결 실패: {str(e)}"})
+        print(f"📱 DB조회 실패: {e}")
+        return JSONResponse({"ok": False, "error": f"DB 조회 실패: {str(e)}"})
 
     if not row:
         return JSONResponse({"ok": False, "error": "캠퍼스 정보를 찾을 수 없습니다."})
