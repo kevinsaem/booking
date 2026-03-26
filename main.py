@@ -5,7 +5,9 @@
 import sys
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZIPMiddleware
 from app.config import settings
 from app.database import init_db, close_db
 from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages
@@ -27,6 +29,9 @@ app = FastAPI(
     redoc_url=None,
 )
 
+# GZip 압축 (HTML/CSS/JS 전송 크기 70% 감소)
+app.add_middleware(GZIPMiddleware, minimum_size=500)
+
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +52,9 @@ async def security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     if is_prod:
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    # 정적 파일 캐싱
+    if "/static/" in str(request.url):
+        response.headers["Cache-Control"] = "public, max-age=604800"
     return response
 
 
@@ -73,12 +81,14 @@ async def shutdown():
     await close_db()
 
 
+# 템플릿 (1회 초기화)
+_templates = Jinja2Templates(directory="templates")
+
+
 # 루트 → 랜딩 페이지
 @app.get("/")
 async def root(request: Request):
-    from fastapi.templating import Jinja2Templates
-    templates = Jinja2Templates(directory="templates")
-    return templates.TemplateResponse(request, "index.html")
+    return _templates.TemplateResponse(request, "index.html")
 
 
 # 설문 페이지
