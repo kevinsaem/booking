@@ -306,30 +306,43 @@ async def do_login(request: Request, name: str = Form(), code: str = Form()):
 
     # ek_Member에서 인증 (입력값을 MD5 해시로 변환해서 비교)
     md5_code = hashlib.md5(code.encode()).hexdigest()
-    row = execute_query(
-        "SELECT mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
-        "WHERE mem_MbrName = ? AND mem_pwd = ?",
-        (name, md5_code),
-        fetch="one"
-    )
-    if not row:
+    try:
+        from app.database import _get_mssql_conn
+        conn = _get_mssql_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT TOP 1 mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
+            "WHERE mem_MbrName = ? AND mem_pwd = ?",
+            (name, md5_code)
+        )
+        cols = [d[0] for d in cursor.description]
+        r = cursor.fetchone()
+        row = dict(zip(cols, r)) if r else None
+
+        if not row:
+            conn.close()
+            return templates.TemplateResponse(request, "booking/login.html", {
+                "error": "이름 또는 인증번호가 일치하지 않습니다."
+            })
+
+        mem_id = row["mem_MbrId"]
+
+        # 수강권 확인
+        cursor.execute(
+            "SELECT TOP 1 settle_code FROM ek_Settlement "
+            "WHERE settle_mbr_id = ? AND settle_state = 1 ORDER BY settle_date DESC",
+            (mem_id,)
+        )
+        s_row = cursor.fetchone()
+        settle_code = s_row[0] if s_row else 0
+        conn.close()
+    except Exception as e:
+        print(f"❌ 로그인 DB 에러: {e}")
         return templates.TemplateResponse(request, "booking/login.html", {
-            "error": "이름 또는 인증번호가 일치하지 않습니다."
+            "error": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
         })
 
-    mem_id = row["mem_MbrId"]
-
-    # 역할은 기본 student
     role = "student"
-
-    # 수강권 확인
-    settle = execute_query(
-        "SELECT settle_code FROM ek_Settlement "
-        "WHERE settle_mbr_id = ? AND settle_state = 1 ORDER BY settle_date DESC",
-        (mem_id,),
-        fetch="one"
-    )
-    settle_code = settle["settle_code"] if settle else 0
 
     # JWT 발급
     user = {
