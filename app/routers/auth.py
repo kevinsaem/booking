@@ -1,5 +1,5 @@
 # app/routers/auth.py
-# 카카오 로그인 OAuth 라우터 (역할 기반 라우팅)
+# 카카오 로그인 OAuth 라우터
 
 import httpx
 from fastapi import APIRouter, Request
@@ -29,7 +29,7 @@ async def kakao_login():
 
 @router.get("/kakao/callback")
 async def kakao_callback(request: Request, code: str = None, error: str = None):
-    """카카오 로그인 콜백 처리 - 역할 기반 라우팅"""
+    """카카오 로그인 콜백 처리"""
     if error or not code:
         return RedirectResponse("/booking/?error=카카오 로그인이 취소되었습니다")
 
@@ -45,7 +45,7 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
 
     if token_res.status_code != 200:
         import urllib.parse
-        detail = urllib.parse.quote(f"status:{token_res.status_code} body:{token_res.text} uri:{settings.KAKAO_REDIRECT_URI}")
+        detail = urllib.parse.quote(f"status:{token_res.status_code} body:{token_res.text}")
         return RedirectResponse(f"/booking/?error={detail}")
 
     access_token = token_res.json().get("access_token")
@@ -64,44 +64,22 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
     kakao_account = kakao_data.get("kakao_account", {})
     profile = kakao_account.get("profile", {})
     nickname = profile.get("nickname", "")
-    profile_img = profile.get("profile_image_url", "")
-    email = kakao_account.get("email", "")
-    real_name = kakao_account.get("name", "") or nickname  # 실명 (없으면 닉네임)
+    real_name = kakao_account.get("name", "") or nickname
 
-    # 3. DB에서 기존 회원 확인 또는 신규 가입
+    # 3. ek_Member에서 기존 회원 확인
+    mem_id = f"KKO{kakao_id[-8:]}"
     existing = execute_query(
-        "SELECT * FROM kakao_members WHERE kakao_id = ?",
-        (kakao_id,),
+        "SELECT mem_MbrId, mem_MbrName, mem_nickname, mem_MbrType FROM ek_Member WHERE mem_MbrId = ?",
+        (mem_id,),
         fetch="one"
     )
 
     if existing:
-        # 기존 회원 -> 프로필 업데이트
-        execute_query(
-            "UPDATE kakao_members SET nickname = ?, profile_img = ?, email = ? WHERE kakao_id = ?",
-            (nickname, profile_img, email, kakao_id),
-            fetch="none"
-        )
-        mem_id = existing["mem_id"]
-        role = existing.get("role", "student") or "student"
-    else:
-        # 신규 가입 (기본 역할: student)
-        mem_id = f"KKO{kakao_id[-8:]}"
+        # 기존 회원
         role = "student"
-
-        # kakao_members 등록
-        execute_query(
-            "INSERT INTO kakao_members (kakao_id, mem_id, nickname, profile_img, email, role) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (kakao_id, mem_id, nickname, profile_img, email, role),
-            fetch="none"
-        )
-
-        # ek_Member에도 등록 (기존 시스템 호환)
-        import hashlib
-
+    else:
+        # 신규 가입 → ek_Member에 등록 (mem_MbrType=4: 수강생)
         phone_raw = kakao_account.get("phone_number", "")
-        # 카카오 전화번호 형식: +82 10-1234-5678 → 010-1234-5678
         phone = ""
         if phone_raw:
             digits = phone_raw.replace("+82 ", "0").replace("-", "").replace(" ", "")
@@ -110,18 +88,15 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
             else:
                 phone = digits
 
-        # 비밀번호: kakao_id + 전화번호 뒤 4자리를 MD5 해시 (예측 방지)
-        phone_last4 = phone.replace("-", "")[-4:] if phone else "0000"
-        md5_pwd = hashlib.md5(f"{kakao_id}{phone_last4}".encode()).hexdigest()
-
         execute_query(
-            "INSERT OR IGNORE INTO ek_Member "
-            "(mem_MbrId, mem_MbrName, mem_nickname, mem_MbrImg, mem_TelNo2, mem_TelNo3, "
-            " mem_Pwd, mem_MbrType, mem_edate, injeung_code, edc_idx) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, '2', datetime('now'), NULL, 0)",
-            (mem_id, real_name, nickname, profile_img, phone, phone, md5_pwd),
+            "INSERT INTO ek_Member "
+            "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
+            " mem_MbrType, mem_edate) "
+            "VALUES (?, ?, ?, ?, ?, '4', GETDATE())",
+            (mem_id, real_name, nickname, phone, phone),
             fetch="none"
         )
+        role = "student"
 
     # 4. 수강권 확인 (없으면 settle_code=0)
     settle = execute_query(
@@ -131,24 +106,18 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
     )
     settle_code = settle["settle_code"] if settle else 0
 
-    # 5. JWT 발급 (역할 포함) + 쿠키 설정
+    # 5. JWT 발급 + 쿠키 설정
+    display_name = nickname or real_name
     user = {
         "mem_MbrId": mem_id,
-        "name": nickname,
+        "name": display_name,
         "role": role,
         "settle_code": settle_code,
     }
     token = create_jwt(user)
 
-    # 6. 역할 기반 리다이렉트
-    redirect_map = {
-        "admin": "/admin/",
-        "teacher": "/teacher/",
-        "student": "/booking/",
-    }
-    redirect_url = redirect_map.get(role, "/booking/")
-
-    response = RedirectResponse(redirect_url, status_code=302)
+    # 6. 리다이렉트
+    response = RedirectResponse("/booking/", status_code=302)
     is_prod = settings.DB_MODE == "production"
     response.set_cookie(
         "token", token,
