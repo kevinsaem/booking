@@ -620,84 +620,109 @@ async def my_bookings_summary_partial(request: Request, user=Depends(get_current
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
-async def dashboard_page(request: Request, user=Depends(get_current_user)):
-    """학습 현황 페이지 — 수업 기록 + 멘토 피드백 + 별점"""
+async def dashboard_page(request: Request, user=Depends(get_current_user), sc: int = None):
+    """학습 현황 페이지 — 수강권별 수업 기록"""
     if not user:
         return RedirectResponse("/booking/")
 
     mem_id = user["mem_MbrId"]
-    remaining = get_remaining(user["settle_code"])
-    monthly = is_monthly_plan(user["settle_code"])
-    total_classes = get_total_classes(user["settle_code"])
+    from app.database import _get_mssql_conn
 
-    # 패키지명
-    pkg = execute_query(
-        "SELECT P.package_name FROM ek_Settlement S "
-        "JOIN ek_Package P ON S.settle_package_code = P.package_code "
-        "WHERE S.settle_code = ? AND S.settle_state = 1",
-        (user["settle_code"],),
-        fetch="one"
-    )
-    pkg_name = pkg["package_name"] if pkg else ""
+    try:
+        conn = _get_mssql_conn()
+        cursor = conn.cursor()
 
-    # 완료 수업 수 (과거 날짜, status=1)
-    completed_row = execute_query(
-        "SELECT COUNT(*) AS cnt FROM ek_Sch_Detail_Room_mem "
-        "WHERE mem_mbrid = ? AND status = 1 "
-        "AND datetime(l_s_date, '+9 hours') < datetime('now', '+9 hours')",
-        (mem_id,),
-        fetch="one"
-    )
-    completed = completed_row["cnt"] if completed_row else 0
+        # 전체 수강권 목록 (최신순)
+        cursor.execute(
+            "SELECT S.settle_code, S.settle_date, S.settle_Sdate, S.settle_Edate, "
+            "S.settle_amount, S.settle_state, P.package_name "
+            "FROM ek_Settlement S "
+            "LEFT JOIN ek_Package P ON S.settle_package_code = P.package_code "
+            "WHERE S.settle_mbr_id = ? "
+            "ORDER BY S.settle_date DESC",
+            (mem_id,)
+        )
+        cols = [d[0] for d in cursor.description]
+        all_settles = [dict(zip(cols, r)) for r in cursor.fetchall()]
 
-    # 수업 기록 (과거 수업, 최신순, 멘토 피드백 + 수강생 연구노트 + 별점)
-    lessons = execute_query(
-        "SELECT R.idx, R.sch_room_idx, "
-        "datetime(R.l_s_date, '+9 hours') AS kst_start, "
-        "datetime(R.l_f_date, '+9 hours') AS kst_end, "
-        "COALESCE(M.mem_nickname, M.mem_MbrName) AS teacher_name, "
-        "M.mem_MbrId AS teacher_id, "
-        "C.advice AS feedback, "
-        "C.report AS student_report, "
-        "RT.rating "
-        "FROM ek_Sch_Detail_Room_mem R "
-        "JOIN ek_Sch_Detail_Room A ON R.sch_room_idx = A.sch_room_idx "
-        "JOIN ek_Member M ON A.sch_teach_id = M.mem_MbrId "
-        "LEFT JOIN ek_Lecture L ON L.sch_room_idx = R.sch_room_idx AND L.mbr_id = R.mem_mbrid AND date(L.lec_date) = date(R.l_s_date) "
-        "LEFT JOIN ek_LectureDe C ON C.lec_idx = L.lec_idx AND C.student_id = R.mem_mbrid "
-        "LEFT JOIN dev_mentor_rating RT ON RT.booking_idx = R.idx "
-        "WHERE R.mem_mbrid = ? AND R.status = 1 "
-        "AND datetime(R.l_s_date, '+9 hours') < datetime('now', '+9 hours') "
-        "ORDER BY R.l_s_date DESC LIMIT 20",
-        (mem_id,),
-        fetch="all"
-    )
+        # 선택된 수강권 (기본: 최신)
+        if sc is None and all_settles:
+            sc = all_settles[0]["settle_code"]
 
+        # 선택된 수강권 정보
+        current_settle = None
+        for s in all_settles:
+            if s["settle_code"] == sc:
+                current_settle = s
+                break
+
+        # 해당 수강권 기간 내 수업 기록
+        lessons_raw = []
+        if current_settle:
+            cursor.execute(
+                "SELECT TOP 30 R.idx, R.sch_room_idx, R.l_s_date, R.l_f_date, "
+                "COALESCE(M.mem_nickname, M.mem_MbrName) AS teacher_name, "
+                "M.mem_MbrId AS teacher_id "
+                "FROM ek_Sch_Detail_Room_mem R "
+                "JOIN ek_Sch_Detail_Room A ON R.sch_room_idx = A.sch_room_idx "
+                "JOIN ek_Member M ON A.sch_teach_id = M.mem_MbrId "
+                "WHERE R.mem_mbrid = ? AND R.status = 1 "
+                "AND R.l_s_date >= ? AND R.l_s_date <= ? "
+                "ORDER BY R.l_s_date DESC",
+                (mem_id, current_settle["settle_Sdate"], current_settle["settle_Edate"])
+            )
+            cols2 = [d[0] for d in cursor.description]
+            lessons_raw = [dict(zip(cols2, r)) for r in cursor.fetchall()]
+
+        conn.close()
+    except Exception as e:
+        print(f"❌ 학습현황 DB 에러: {e}")
+        all_settles = []
+        lessons_raw = []
+        current_settle = None
+
+    # 수강권 목록 가공
+    settle_list = []
+    for s in all_settles:
+        sdate = s["settle_Sdate"].strftime("%Y-%m-%d") if hasattr(s.get("settle_Sdate"), "strftime") else str(s.get("settle_Sdate") or "")[:10]
+        edate = s["settle_Edate"].strftime("%Y-%m-%d") if hasattr(s.get("settle_Edate"), "strftime") else str(s.get("settle_Edate") or "")[:10]
+        settle_list.append({
+            "settle_code": s["settle_code"],
+            "package_name": s.get("package_name") or "수강권",
+            "period": f"{sdate} ~ {edate}",
+            "is_current": s["settle_code"] == sc,
+        })
+
+    # 수업 기록 가공
     DAYS_KO = ["월", "화", "수", "목", "금", "토", "일"]
     lesson_list = []
-    for l in lessons:
-        dt = datetime.strptime(l["kst_start"], "%Y-%m-%d %H:%M:%S")
-        edt = datetime.strptime(l["kst_end"], "%Y-%m-%d %H:%M:%S")
-
+    for l in lessons_raw:
+        ls = l["l_s_date"]
+        le = l["l_f_date"]
+        if hasattr(ls, "strftime"):
+            dt = ls
+            edt = le
+        else:
+            dt = datetime.strptime(str(ls)[:19], "%Y-%m-%d %H:%M:%S")
+            edt = datetime.strptime(str(le)[:19], "%Y-%m-%d %H:%M:%S")
         lesson_list.append({
             "idx": l["idx"],
             "date_label": f"{dt.month}/{dt.day} ({DAYS_KO[dt.weekday()]})",
             "time": f"{dt.strftime('%H:%M')}~{edt.strftime('%H:%M')}",
             "teacher_name": l["teacher_name"],
             "teacher_id": l["teacher_id"],
-            "feedback": l.get("feedback") or "",
-            "student_report": l.get("student_report") or "",
-            "rating": l.get("rating") or 0,
         })
+
+    completed = len(lesson_list)
+    pkg_name = current_settle.get("package_name", "") if current_settle else ""
 
     return templates.TemplateResponse(request, "booking/dashboard.html", {
         "user": user,
         "completed": completed,
-        "remaining": remaining,
-        "monthly": monthly,
-        "total_classes": total_classes,
         "package_name": pkg_name,
         "lessons": lesson_list,
+        "settles": settle_list,
+        "selected_sc": sc,
     })
 
 
