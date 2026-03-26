@@ -94,9 +94,7 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     })
 
 
-# 회원가입 임시 인증코드 저장 {email: {code, name, nickname, phone, expires}}
 import random
-_signup_codes: dict = {}
 
 
 @router.get("/signup", response_class=HTMLResponse)
@@ -136,17 +134,29 @@ async def signup_send_code(
     # 4자리 인증코드 생성
     code = str(random.randint(1000, 9999))
 
-    # 임시 저장 (5분 유효)
-    _signup_codes[email] = {
-        "code": code,
-        "name": name.strip(),
-        "nickname": nickname.strip() or name.strip(),
-        "phone": phone,
-        "edc_idx": edc_idx,
-        "expires": time.time() + 300,
-    }
+    # DB에 회원 미리 등록 (mem_MbrType=0: 인증 대기)
+    # 이미 인증 대기 중이면 업데이트
+    from app.database import _get_mssql_conn
+    try:
+        conn = _get_mssql_conn()
+        cursor = conn.cursor()
+        # 기존 인증 대기 데이터 있으면 삭제
+        cursor.execute("DELETE FROM ek_Member WHERE mem_MbrId = ? AND mem_MbrType = 0", (email,))
+        conn.commit()
+        # 새로 등록 (mem_MbrType=0: 인증 대기, mem_pwd=인증코드)
+        cursor.execute(
+            "INSERT INTO ek_Member (mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, mem_pwd, mem_MbrType, mem_edate, edc_idx) "
+            "VALUES (?, ?, ?, ?, ?, ?, 0, GETDATE(), ?)",
+            (email, name.strip(), nickname.strip() or name.strip(), phone, phone, code, edc_idx)
+        )
+        conn.commit()
+        conn.close()
+        print(f"📱 인증 대기 회원 등록: {email}, 코드: {code}")
+    except Exception as e:
+        print(f"📱 회원 등록 실패: {e}")
+        return JSONResponse({"ok": False, "error": f"회원 등록 실패: {str(e)}"})
 
-    # 알림톡 설정 조회 + 발송 (직접 DB 연결)
+    # 알림톡 설정 조회 + 발송
     import re as re2
     telno = re2.sub(r"[^0-9]", "", phone)  # 숫자만 추출
     if telno.startswith("0"):
@@ -215,35 +225,45 @@ async def signup_verify(
 ):
     """인증코드 확인 및 가입 완료"""
     from fastapi.responses import JSONResponse
+    from app.database import _get_mssql_conn
 
-    pending = _signup_codes.get(email)
-    if not pending:
+    # DB에서 인증 대기 회원 확인 (mem_MbrType=0)
+    try:
+        conn = _get_mssql_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT mem_MbrName, mem_nickname, mem_pwd FROM ek_Member WHERE mem_MbrId = ? AND mem_MbrType = 0",
+            (email,)
+        )
+        cols = [d[0] for d in cursor.description]
+        row = cursor.fetchone()
+    except Exception as e:
+        print(f"📱 verify DB 조회 실패: {e}")
+        return JSONResponse({"ok": False, "error": "서버 오류가 발생했습니다."})
+
+    if not row:
         return JSONResponse({"ok": False, "error": "인증코드가 만료되었습니다. 다시 발송해주세요."})
 
-    if time.time() > pending["expires"]:
-        del _signup_codes[email]
-        return JSONResponse({"ok": False, "error": "인증코드가 만료되었습니다. 다시 발송해주세요."})
+    pending = dict(zip(cols, row))
 
-    if pending["code"] != code:
+    if pending["mem_pwd"] != code:
+        conn.close()
         return JSONResponse({"ok": False, "error": "인증코드가 일치하지 않습니다."})
 
-    # ek_Member에 등록 (mem_MbrType=4, mem_pwd=인증코드)
-    execute_query(
-        "INSERT INTO ek_Member "
-        "(mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, "
-        " mem_pwd, mem_MbrType, mem_edate, edc_idx) "
-        "VALUES (?, ?, ?, ?, ?, ?, '4', GETDATE(), ?)",
-        (email, pending["name"], pending["nickname"], pending["phone"], pending["phone"], code, pending.get("edc_idx", 0)),
-        fetch="none"
+    # 인증 성공 → mem_MbrType을 4(수강생)로 변경
+    cursor.execute(
+        "UPDATE ek_Member SET mem_MbrType = 4 WHERE mem_MbrId = ? AND mem_MbrType = 0",
+        (email,)
     )
-
-    # 임시 데이터 삭제
-    del _signup_codes[email]
+    conn.commit()
+    conn.close()
+    print(f"📱 회원가입 완료: {email}")
 
     # 자동 로그인
+    display_name = pending.get("mem_nickname") or pending.get("mem_MbrName") or ""
     user = {
         "mem_MbrId": email,
-        "name": pending["nickname"],
+        "name": display_name,
         "role": "student",
         "settle_code": 0,
     }
