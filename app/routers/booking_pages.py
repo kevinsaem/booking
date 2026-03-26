@@ -95,6 +95,7 @@ async def home_page(request: Request, user=Depends(get_current_user)):
 
 
 import random
+import hashlib
 
 
 @router.get("/signup", response_class=HTMLResponse)
@@ -143,11 +144,12 @@ async def signup_send_code(
         # 기존 인증 대기 데이터 있으면 삭제
         cursor.execute("DELETE FROM ek_Member WHERE mem_MbrId = ? AND mem_MbrType = 0", (email,))
         conn.commit()
-        # 새로 등록 (mem_MbrType=0: 인증 대기, mem_pwd=인증코드)
+        # 새로 등록 (mem_MbrType=0: 인증 대기, mem_pwd=MD5 인증코드)
+        md5_code = hashlib.md5(code.encode()).hexdigest()
         cursor.execute(
-            "INSERT INTO ek_Member (mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, mem_pwd, mem_MbrType, mem_edate, edc_idx) "
-            "VALUES (?, ?, ?, ?, ?, ?, 0, GETDATE(), ?)",
-            (email, name.strip(), nickname.strip() or name.strip(), phone, phone, code, edc_idx)
+            "INSERT INTO ek_Member (mem_MbrId, mem_MbrName, mem_nickname, mem_TelNo2, mem_TelNo3, mem_pwd, mem_MbrType, mem_edate, edc_idx, corp_idx) "
+            "VALUES (?, ?, ?, ?, ?, ?, 0, GETDATE(), ?, 4)",
+            (email, name.strip(), nickname.strip() or name.strip(), phone, phone, md5_code, edc_idx)
         )
         conn.commit()
         conn.close()
@@ -246,7 +248,8 @@ async def signup_verify(
 
     pending = dict(zip(cols, row))
 
-    if pending["mem_pwd"] != code:
+    md5_code = hashlib.md5(code.encode()).hexdigest()
+    if pending["mem_pwd"] != md5_code:
         conn.close()
         return JSONResponse({"ok": False, "error": "인증코드가 일치하지 않습니다."})
 
@@ -301,11 +304,12 @@ async def do_login(request: Request, name: str = Form(), code: str = Form()):
     attempts.append(now_ts)
     _login_attempts[client_ip] = attempts
 
-    # ek_Member에서 인증
+    # ek_Member에서 인증 (입력값을 MD5 해시로 변환해서 비교)
+    md5_code = hashlib.md5(code.encode()).hexdigest()
     row = execute_query(
         "SELECT mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
         "WHERE mem_MbrName = ? AND mem_pwd = ?",
-        (name, code),
+        (name, md5_code),
         fetch="one"
     )
     if not row:
