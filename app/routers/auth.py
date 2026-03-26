@@ -43,6 +43,9 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
         })
 
     if token_res.status_code != 200:
+        print(f"❌ 카카오 토큰 에러: {token_res.status_code} / {token_res.text}")
+        print(f"  → redirect_uri: {settings.KAKAO_REDIRECT_URI}")
+        print(f"  → client_id: {settings.KAKAO_REST_API_KEY[:8]}...")
         return RedirectResponse("/booking/?error=카카오 인증에 실패했습니다")
 
     access_token = token_res.json().get("access_token")
