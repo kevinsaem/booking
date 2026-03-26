@@ -117,7 +117,7 @@ async def do_login(request: Request, name: str = Form(), code: str = Form()):
     # ek_Member에서 인증
     row = execute_query(
         "SELECT mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
-        "WHERE mem_MbrName = ? AND injeung_code = ?",
+        "WHERE mem_MbrName = ? AND mem_pwd = ?",
         (name, code),
         fetch="one"
     )
