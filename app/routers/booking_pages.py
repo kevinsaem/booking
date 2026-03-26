@@ -147,17 +147,20 @@ async def signup_send_code(
     }
 
     # 알림톡 설정 조회
-    config = execute_query(
-        "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?",
-        (edc_idx,),
-        fetch="one"
+    all_centers = execute_query(
+        "SELECT edc_idx, atid, atdeptcode, sch FROM ek_educenter"
     )
-    if not config:
-        config = execute_query(
-            "SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_state = 1",
-            fetch="one"
-        )
-    print(f"📱 알림톡 설정 조회 결과: {config}")
+    print(f"📱 ek_educenter 전체: {all_centers}")
+    config = None
+    for c in all_centers:
+        # 대소문자 무관 키 매핑
+        c_lower = {k.lower(): v for k, v in c.items()}
+        if c_lower.get("edc_idx") == edc_idx:
+            config = c_lower
+            break
+    if not config and all_centers:
+        config = {k.lower(): v for k, v in all_centers[0].items()}
+    print(f"📱 선택된 설정: {config}")
 
     if not config:
         return JSONResponse({"ok": False, "error": "알림톡 설정을 찾을 수 없습니다."})
@@ -170,9 +173,9 @@ async def signup_send_code(
     message = f"{name.strip()}님의 인증코드는 {code}입니다."
 
     json_data = {
-        "usercode": config.get("atid") or config.get("ATID"),
-        "deptcode": config.get("atdeptcode") or config.get("ATDEPTCODE"),
-        "yellowid_key": config.get("sch") or config.get("SCH"),
+        "usercode": config.get("atid", ""),
+        "deptcode": config.get("atdeptcode", ""),
+        "yellowid_key": config.get("sch", ""),
         "messages": [{
             "type": "at",
             "message_id": f"auth_{telno}_{code}",
