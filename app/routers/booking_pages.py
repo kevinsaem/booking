@@ -153,14 +153,16 @@ async def signup_send_code(
     message = f"{name.strip()}님의 인증코드는 {code}입니다."
 
     try:
-        from app.database import _get_mssql_conn, _get_sqlite_conn, DB_MODE
         import httpx
 
-        if DB_MODE == "development":
-            # 개발모드: API 호출 생략, 로그만
+        db_mode = settings.DB_MODE
+        print(f"📱 DB_MODE={db_mode}, edc_idx={edc_idx}, phone={phone}, code={code}")
+
+        if db_mode == "development":
             print(f"📱 [개발모드] 인증코드: {code} → {phone}")
             return JSONResponse({"ok": True})
 
+        from app.database import _get_mssql_conn
         conn = _get_mssql_conn()
         cursor = conn.cursor()
         cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
