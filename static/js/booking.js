@@ -8,7 +8,8 @@ var bookingState = {
     time: null,
     roomIdx: null,
     teacherId: null,
-    teacherName: null
+    teacherName: null,
+    settleCode: (typeof currentSettleCode !== 'undefined') ? currentSettleCode : 0
 };
 
 // ===== 날짜 선택 =====
@@ -35,8 +36,8 @@ function selectDate(date, element) {
     document.getElementById('teacher-list-area').innerHTML = '';
     hideSelectedSummary();
 
-    // 시간 슬롯 로드 (HTMX)
-    htmx.ajax('GET', '/booking/partials/time-slots?date=' + date, {
+    // 시간 슬롯 로드 (HTMX) - settle_code 포함
+    htmx.ajax('GET', '/booking/partials/time-slots?date=' + date + '&settle_code=' + bookingState.settleCode, {
         target: '#time-slots-area',
         swap: 'innerHTML'
     });
@@ -57,8 +58,8 @@ function selectTime(time, roomIdx, element) {
     showSection('teacher-list-area', true);
     showSelectedSummary(bookingState.date, time);
 
-    // 멘토 목록 로드 (HTMX)
-    htmx.ajax('GET', '/booking/partials/teacher-list?date=' + bookingState.date + '&time=' + encodeURIComponent(time) + '&room_idx=' + roomIdx, {
+    // 멘토 목록 로드 (HTMX) - settle_code 포함
+    htmx.ajax('GET', '/booking/partials/teacher-list?date=' + bookingState.date + '&time=' + encodeURIComponent(time) + '&room_idx=' + roomIdx + '&settle_code=' + bookingState.settleCode, {
         target: '#teacher-list-area',
         swap: 'innerHTML'
     });

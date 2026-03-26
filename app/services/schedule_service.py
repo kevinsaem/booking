@@ -1,7 +1,8 @@
 # app/services/schedule_service.py
 # 스케줄 서비스: 가용 날짜/시간/강사 조회, 캘린더 셀, 반복 주차
 # 주의: DB에 UTC로 저장됨 → 조회 시 +9시간 (한국 시간) 적용
-# wb_idx=357 (성인1:1) → 멘토(mem_MbrType='4')만 필터
+# class_cnt == 1 (1:1 수업) → 멘토(mem_MbrType='4')만 필터 + 정원 1명 마감
+# class_cnt != 1 (그룹 수업) → 일반강사(mem_MbrType='5') + 정원 제한 없음
 
 from datetime import datetime, timedelta
 from app.database import execute_query
@@ -12,38 +13,61 @@ KST_STIME = "datetime(A.sch_detail_Stime, '+9 hours')"
 KST_ETIME = "datetime(A.sch_detail_Etime, '+9 hours')"
 KST_NOW = "datetime('now', '+9 hours')"
 
-# 성인 1:1 과정 wb_idx
-ADULT_1ON1_WB_IDX = 357
-MENTOR_1ON1_TYPE = '4'   # 성인 1:1 멘토
-MENTOR_VIRTUAL_TYPE = '5'  # 가상교사
+# 멘토 타입 상수
+MENTOR_1ON1_TYPE = '4'    # 1:1 멘토
+MENTOR_GROUP_TYPE = '5'   # 일반(그룹) 강사
 
 
-def _get_wb_idx(settle_code: int) -> int:
-    """수강생의 wb_idx 조회"""
+def _get_class_cnt(settle_code: int) -> int:
+    """수강권의 class_cnt(수업 인원수) 조회
+    ek_Settlement → ek_Package.class_cnt
+    class_cnt == 1 이면 1:1 수업, 그 외는 그룹 수업
+    """
     if not settle_code:
         return 0
     row = execute_query(
-        "SELECT wb_idx FROM ek_Settlement WHERE settle_code = ? AND settle_state = 1",
+        "SELECT P.class_cnt "
+        "FROM ek_Settlement S "
+        "JOIN ek_Package P ON S.settle_package_code = P.package_code "
+        "WHERE S.settle_code = ? AND S.settle_state = 1",
         (settle_code,),
         fetch="one"
     )
-    return row["wb_idx"] if row else 0
+    return int(row["class_cnt"]) if row and row.get("class_cnt") else 0
 
 
-def _teacher_filter(wb_idx: int) -> str:
-    """wb_idx에 따른 멘토 타입 필터 SQL"""
-    if wb_idx == ADULT_1ON1_WB_IDX:
-        # 성인 1:1 → 타입4만
+def _teacher_filter(class_cnt: int) -> str:
+    """class_cnt에 따른 멘토 타입 필터 SQL"""
+    if class_cnt == 1:
+        # 1:1 수업 → 타입4 (1:1 멘토)만
         return f"AND A.sch_teach_id IN (SELECT mem_MbrId FROM ek_Member WHERE mem_MbrType = '{MENTOR_1ON1_TYPE}') "
     else:
-        # 일반 과정 → 타입5(가상교사)만
-        return f"AND A.sch_teach_id IN (SELECT mem_MbrId FROM ek_Member WHERE mem_MbrType = '{MENTOR_VIRTUAL_TYPE}') "
+        # 그룹 수업 → 타입5 (일반 강사)만
+        return f"AND A.sch_teach_id IN (SELECT mem_MbrId FROM ek_Member WHERE mem_MbrType = '{MENTOR_GROUP_TYPE}') "
+
+
+def _capacity_filter(class_cnt: int) -> str:
+    """class_cnt에 따른 정원 필터 SQL
+    class_cnt == 1 → 예약 1건이면 마감 (기존 로직과 동일)
+    class_cnt != 1 → 정원 제한 없음 (필터 없음)
+    """
+    if class_cnt == 1:
+        # 1:1 수업: 이미 예약이 있는 슬롯은 제외
+        return (
+            "AND A.sch_room_idx NOT IN ("
+            "  SELECT sch_room_idx FROM ek_Sch_Detail_Room_mem WHERE status = 1"
+            ") "
+        )
+    else:
+        # 그룹 수업: 정원 제한 없음
+        return ""
 
 
 def get_available_dates(year: int, month: int, settle_code: int = 0) -> list:
     """해당 월의 예약 가능 날짜 목록 (한국 시간 기준)"""
-    wb_idx = _get_wb_idx(settle_code)
-    mentor_sql = _teacher_filter(wb_idx)
+    class_cnt = _get_class_cnt(settle_code)
+    mentor_sql = _teacher_filter(class_cnt)
+    capacity_sql = _capacity_filter(class_cnt)
 
     rows = execute_query(
         f"SELECT DISTINCT strftime('%Y-%m-%d', {KST_STIME}) AS avail_date "
@@ -52,9 +76,7 @@ def get_available_dates(year: int, month: int, settle_code: int = 0) -> list:
         f"AND {KST_STIME} >= {KST_NOW} "
         f"AND cast(strftime('%Y', {KST_STIME}) as integer) = ? "
         f"AND cast(strftime('%m', {KST_STIME}) as integer) = ? "
-        "AND A.sch_room_idx NOT IN ("
-        "  SELECT sch_room_idx FROM ek_Sch_Detail_Room_mem WHERE status = 1"
-        ") "
+        + capacity_sql
         + mentor_sql,
         (year, month),
         fetch="all"
@@ -86,8 +108,9 @@ def get_calendar_cells(year: int, month: int, available_dates: list) -> list:
 
 def get_time_slots(date: str, settle_code: int = 0) -> list:
     """특정 날짜의 시간 슬롯 목록 (한국 시간 기준)"""
-    wb_idx = _get_wb_idx(settle_code)
-    mentor_sql = _teacher_filter(wb_idx)
+    class_cnt = _get_class_cnt(settle_code)
+    mentor_sql = _teacher_filter(class_cnt)
+    capacity_sql = _capacity_filter(class_cnt)
 
     rows = execute_query(
         "SELECT A.sch_room_idx, "
@@ -97,9 +120,7 @@ def get_time_slots(date: str, settle_code: int = 0) -> list:
         "FROM ek_Sch_Detail_Room A "
         "WHERE A.sch_room_status = 1 "
         f"AND strftime('%Y-%m-%d', {KST_STIME}) = ? "
-        "AND A.sch_room_idx NOT IN ("
-        "  SELECT sch_room_idx FROM ek_Sch_Detail_Room_mem WHERE status = 1"
-        ") "
+        + capacity_sql
         + mentor_sql
         + f"ORDER BY {KST_STIME}",
         (date,),
@@ -124,8 +145,9 @@ def get_time_slots(date: str, settle_code: int = 0) -> list:
 def get_available_teachers(date: str, time: str, room_idx: int, settle_code: int = 0) -> list:
     """특정 날짜+시간의 가용 멘토 목록 (한국 시간 기준)"""
     s_time = time.split("~")[0]
-    wb_idx = _get_wb_idx(settle_code)
-    mentor_sql = _teacher_filter(wb_idx)
+    class_cnt = _get_class_cnt(settle_code)
+    mentor_sql = _teacher_filter(class_cnt)
+    capacity_sql = _capacity_filter(class_cnt)
 
     rows = execute_query(
         "SELECT B.mem_MbrId, B.mem_MbrName, B.mem_nickname, B.mem_MbrImg "
@@ -134,9 +156,7 @@ def get_available_teachers(date: str, time: str, room_idx: int, settle_code: int
         "WHERE A.sch_room_status = 1 "
         f"AND strftime('%Y-%m-%d', {KST_STIME}) = ? "
         f"AND strftime('%H:%M', {KST_STIME}) = ? "
-        "AND A.sch_room_idx NOT IN ("
-        "  SELECT sch_room_idx FROM ek_Sch_Detail_Room_mem WHERE status = 1"
-        ") "
+        + capacity_sql
         + mentor_sql,
         (date, s_time),
         fetch="all"

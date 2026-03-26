@@ -32,14 +32,14 @@
     <!-- 캘린더 -->
     <div class="card overflow-hidden" id="calendar-section">
       <div class="flex items-center justify-between px-4 py-3 border-b border-g-100">
-        <button hx-get="/booking/partials/calendar-grid?year={{ prev_year }}&month={{ prev_month }}"
+        <button hx-get="/booking/partials/calendar-grid?year={{ prev_year }}&month={{ prev_month }}&settle_code={{ settle_code }}"
                 hx-target="#calendar-grid"
                 hx-swap="innerHTML"
                 class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <span class="font-bold text-g-800">{{ year }}년 {{ month }}월</span>
-        <button hx-get="/booking/partials/calendar-grid?year={{ next_year }}&month={{ next_month }}"
+        <button hx-get="/booking/partials/calendar-grid?year={{ next_year }}&month={{ next_month }}&settle_code={{ settle_code }}"
                 hx-target="#calendar-grid"
                 hx-swap="innerHTML"
                 class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200">
@@ -78,6 +78,7 @@
       <input type="hidden" name="time" id="selected-time" value="">
       <input type="hidden" name="room_idx" id="selected-room-idx" value="">
       <input type="hidden" name="teacher_id" id="selected-teacher-id" value="">
+      <input type="hidden" name="settle_code" id="selected-settle-code" value="{{ settle_code }}">
       <button type="submit" id="next-btn" disabled
               class="w-full h-[50px] rounded-xl font-bold text-[15px] transition active:scale-[.98] bg-g-200 text-g-400">
         멘토를 선택하세요
@@ -89,5 +90,9 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  // 서버에서 전달된 settle_code를 JS 전역으로
+  var currentSettleCode = {{ settle_code }};
+</script>
 <script src="/static/js/booking.js"></script>
 {% endblock %}

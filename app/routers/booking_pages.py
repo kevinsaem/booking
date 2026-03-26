@@ -15,7 +15,7 @@ from app.services.schedule_service import (
 )
 from app.services.booking_service import (
     get_remaining, get_total_classes, get_settle_period, is_monthly_plan,
-    create_booking, get_my_bookings, cancel_booking
+    create_booking, get_my_bookings, cancel_booking, get_active_settlements
 )
 from app.database import execute_query
 from app.config import settings
@@ -379,10 +379,33 @@ async def do_logout():
 
 @router.get("/calendar", response_class=HTMLResponse)
 async def booking_page(request: Request, user=Depends(get_current_user),
-                       year: int = None, month: int = None):
-    """수업 예약 페이지 (캘린더)"""
+                       year: int = None, month: int = None,
+                       settle_code: int = None):
+    """수업 예약 페이지 (수강권 선택 → 캘린더)
+
+    settle_code 없으면 → 수강권 선택 화면 (1개면 자동 통과)
+    settle_code 있으면 → 캘린더 표시
+    """
     if not user:
         return RedirectResponse("/booking/")
+
+    # settle_code 없으면 수강권 선택 단계
+    if settle_code is None:
+        settlements = get_active_settlements(user["mem_MbrId"])
+        if not settlements:
+            # 활성 수강권 없음 → 예약 불가
+            return templates.TemplateResponse(request, "booking/reserve_blocked.html", {
+                "user": user,
+            })
+        if len(settlements) == 1:
+            # 수강권 1개뿐이면 바로 통과
+            settle_code = settlements[0]["settle_code"]
+        else:
+            # 수강권 여러 개 → 선택 화면
+            return templates.TemplateResponse(request, "booking/select_settlement.html", {
+                "user": user,
+                "settlements": settlements,
+            })
 
     now = datetime.now()
     if year is None:
@@ -390,8 +413,8 @@ async def booking_page(request: Request, user=Depends(get_current_user),
     if month is None:
         month = now.month
 
-    remaining = get_remaining(user["settle_code"])
-    monthly = is_monthly_plan(user["settle_code"])
+    remaining = get_remaining(settle_code)
+    monthly = is_monthly_plan(settle_code)
 
     # 횟수제이고 남은 수업 0이면 예약 불가
     if not monthly and remaining <= 0:
@@ -399,12 +422,13 @@ async def booking_page(request: Request, user=Depends(get_current_user),
             "user": user,
         })
 
-    available_dates = get_available_dates(year, month, user["settle_code"])
+    available_dates = get_available_dates(year, month, settle_code)
     calendar_cells = get_calendar_cells(year, month, available_dates)
 
     return templates.TemplateResponse(request, "booking/reserve.html", {
         "user": user,
         "remaining": remaining,
+        "settle_code": settle_code,
         "year": year,
         "month": month,
         "prev_year": year if month > 1 else year - 1,
@@ -418,12 +442,14 @@ async def booking_page(request: Request, user=Depends(get_current_user),
 @router.post("/repeat", response_class=HTMLResponse)
 async def repeat_page(request: Request, user=Depends(get_current_user),
                       date: str = Form(), time: str = Form(),
-                      room_idx: int = Form(), teacher_id: str = Form()):
+                      room_idx: int = Form(), teacher_id: str = Form(),
+                      settle_code: int = Form(0)):
     """반복 예약 페이지"""
     if not user:
         return RedirectResponse("/booking/")
 
-    remaining = get_remaining(user["settle_code"])
+    sc = settle_code if settle_code else user.get("settle_code", 0)
+    remaining = get_remaining(sc)
     repeat_weeks = get_repeat_weeks(date, time, room_idx, teacher_id, remaining)
 
     # 강사 이름 조회
@@ -436,6 +462,7 @@ async def repeat_page(request: Request, user=Depends(get_current_user),
 
     return templates.TemplateResponse(request, "booking/repeat.html", {
         "remaining": remaining,
+        "settle_code": sc,
         "repeat_weeks": repeat_weeks,
         "base_date": date,
         "time": time,
@@ -453,14 +480,15 @@ async def confirm_page(request: Request, user=Depends(get_current_user)):
 
     form = await request.form()
     dates = form.getlist("dates[]")
-    remaining = get_remaining(user["settle_code"])
+    sc = int(form.get("settle_code") or 0) or user.get("settle_code", 0)
+    remaining = get_remaining(sc)
 
     return templates.TemplateResponse(request, "booking/confirm.html", {
         "user": user,
         "teacher_name": form.get("teacher_name", ""),
         "teacher_id": form.get("teacher_id"),
         "room_idx": form.get("room_idx"),
-        "settle_code": user["settle_code"],
+        "settle_code": sc,
         "dates": dates,
         "dates_label": ", ".join(dates),
         "time": form.get("time"),
@@ -479,8 +507,14 @@ async def complete_page(request: Request, user=Depends(get_current_user)):
     dates = form.getlist("dates[]")
     room_idx = int(form.get("room_idx"))
     teacher_id = form.get("teacher_id")
-    # 보안: form 대신 JWT 유저의 settle_code 사용 (타인 수강권 도용 방지)
-    settle_code = user["settle_code"]
+    # form의 settle_code 사용 (수강권 선택 흐름에서 전달됨)
+    settle_code = int(form.get("settle_code") or 0) or user.get("settle_code", 0)
+
+    # 보안: 해당 settle_code가 실제 이 유저의 것인지 검증
+    from app.services.booking_service import get_active_settlements
+    valid_codes = [s["settle_code"] for s in get_active_settlements(user["mem_MbrId"])]
+    if settle_code not in valid_codes:
+        settle_code = user.get("settle_code", 0)
 
     # 예약 INSERT (서비스 레이어에서 트랜잭션 처리)
     result = create_booking(
@@ -570,11 +604,13 @@ async def cancel_booking_action(idx: int, request: Request, user=Depends(get_cur
 
 @router.get("/partials/calendar-grid", response_class=HTMLResponse)
 async def calendar_grid_partial(request: Request, year: int, month: int,
+                                settle_code: int = 0,
                                 user=Depends(get_current_user)):
     """캘린더 그리드 부분 렌더링"""
     if not user:
         return HTMLResponse("", status_code=401)
-    available_dates = get_available_dates(year, month, user["settle_code"])
+    sc = settle_code if settle_code else user.get("settle_code", 0)
+    available_dates = get_available_dates(year, month, sc)
     calendar_cells = get_calendar_cells(year, month, available_dates)
     return partials.TemplateResponse(request, "partials/calendar_grid.html", {
         "calendar_cells": calendar_cells,
@@ -582,11 +618,14 @@ async def calendar_grid_partial(request: Request, year: int, month: int,
 
 
 @router.get("/partials/time-slots", response_class=HTMLResponse)
-async def time_slots_partial(request: Request, date: str, user=Depends(get_current_user)):
+async def time_slots_partial(request: Request, date: str,
+                             settle_code: int = 0,
+                             user=Depends(get_current_user)):
     """시간 슬롯 부분 렌더링"""
     if not user:
         return HTMLResponse("", status_code=401)
-    slots = get_time_slots(date, user["settle_code"])
+    sc = settle_code if settle_code else user.get("settle_code", 0)
+    slots = get_time_slots(date, sc)
     return partials.TemplateResponse(request, "partials/time_slots.html", {
         "time_slots": slots,
         "selected_date_label": date,
@@ -595,11 +634,13 @@ async def time_slots_partial(request: Request, date: str, user=Depends(get_curre
 
 @router.get("/partials/teacher-list", response_class=HTMLResponse)
 async def teacher_list_partial(request: Request, date: str, time: str,
-                               room_idx: int, user=Depends(get_current_user)):
+                               room_idx: int, settle_code: int = 0,
+                               user=Depends(get_current_user)):
     """강사 목록 부분 렌더링"""
     if not user:
         return HTMLResponse("", status_code=401)
-    teachers = get_available_teachers(date, time, room_idx, user["settle_code"])
+    sc = settle_code if settle_code else user.get("settle_code", 0)
+    teachers = get_available_teachers(date, time, room_idx, sc)
     return partials.TemplateResponse(request, "partials/teacher_list.html", {
         "teachers": teachers,
     })

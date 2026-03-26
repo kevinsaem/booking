@@ -1,0 +1,74 @@
+<!-- templates/booking/select_settlement.html -->
+<!-- 화면: 수강권 선택 (예약 전 단계) -->
+<!-- 활성 수강권이 여러 개일 때 어떤 수강권으로 예약할지 선택 -->
+{% extends "base.html" %}
+
+{% block title %}수강권 선택 - 케빈샘랩{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-40 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">수강권 선택</h1>
+    <span class="text-[12px] text-nv-600 font-bold">1/7</span>
+  </div>
+
+  <!-- 프로그레스 바 -->
+  <div class="h-1 bg-g-200">
+    <div class="h-full bg-nv-500 transition-all duration-500" style="width:14%"></div>
+  </div>
+
+  <div class="px-4 pt-4 space-y-3">
+    <p class="text-[13px] text-g-500 px-1">예약에 사용할 수강권을 선택해주세요.</p>
+
+    {% for s in settlements %}
+    <a href="/booking/calendar?settle_code={{ s.settle_code }}"
+       class="block card p-4 active:bg-g-50 transition hover:shadow-md">
+      <div class="flex items-center gap-3">
+        <!-- 아이콘 -->
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center
+          {% if s.class_cnt == 1 %}bg-nv-50{% else %}bg-blue-50{% endif %}">
+          {% if s.class_cnt == 1 %}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#43A047" stroke-width="1.5">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          {% else %}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          {% endif %}
+        </div>
+
+        <!-- 수강권 정보 -->
+        <div class="flex-1">
+          <p class="text-[14px] font-bold text-g-800">{{ s.package_name }}</p>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full
+              {% if s.class_cnt == 1 %}bg-nv-50 text-nv-600{% else %}bg-blue-50 text-blue-600{% endif %}">
+              {{ s.class_type }}
+            </span>
+            {% if s.is_monthly %}
+            <span class="text-[11px] text-g-400">{{ s.sdate }} ~ {{ s.edate }}</span>
+            {% else %}
+            <span class="text-[11px] text-g-400">잔여 {{ s.remaining }}회 / {{ s.total }}회</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- 화살표 -->
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#BDBDBD" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

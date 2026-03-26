@@ -100,11 +100,75 @@ def get_settle_period(settle_code: int) -> dict | None:
     }
 
 
+def get_active_settlements(mem_id: str) -> list:
+    """활성 수강권 목록 조회 (잔여 횟수 > 0인 것만)
+
+    ek_Settlement JOIN ek_Package로 수강권 정보 조회
+    각 수강권별 잔여 횟수 계산 후 잔여 > 0인 것만 반환
+    """
+    rows = execute_query(
+        "SELECT S.settle_code, S.settle_sdate, S.settle_edate, "
+        "P.package_code, P.package_name, P.week_tcnt, P.class_cnt "
+        "FROM ek_Settlement S "
+        "JOIN ek_Package P ON S.settle_package_code = P.package_code "
+        "WHERE S.settle_mbr_id = ? AND S.settle_state = 1 "
+        "ORDER BY S.settle_date DESC",
+        (mem_id,),
+        fetch="all"
+    )
+
+    result = []
+    for r in rows:
+        sc = r["settle_code"]
+        remaining = get_remaining(sc)
+        if remaining <= 0:
+            continue
+
+        # 수강 기간 포맷
+        sdate = (r.get("settle_sdate") or "")[:10]
+        edate = (r.get("settle_edate") or "")[:10]
+        is_monthly = "월수강권" in (r.get("package_name") or "")
+        class_cnt = int(r.get("class_cnt") or 0)
+
+        result.append({
+            "settle_code": sc,
+            "package_name": r.get("package_name", ""),
+            "remaining": remaining,
+            "total": r.get("week_tcnt") or 0,
+            "sdate": sdate,
+            "edate": edate,
+            "is_monthly": is_monthly,
+            "class_cnt": class_cnt,
+            "class_type": "1:1 수업" if class_cnt == 1 else "그룹 수업",
+        })
+
+    return result
+
+
+def _get_class_cnt(settle_code: int) -> int:
+    """수강권의 class_cnt 조회 (정원 체크용)"""
+    info = execute_query(
+        "SELECT P.class_cnt "
+        "FROM ek_Settlement S "
+        "JOIN ek_Package P ON S.settle_package_code = P.package_code "
+        "WHERE S.settle_code = ? AND S.settle_state = 1",
+        (settle_code,),
+        fetch="one"
+    )
+    return int(info["class_cnt"]) if info and info.get("class_cnt") else 0
+
+
 def create_booking(room_idx: int, mem_id: str, settle_code: int, dates: list) -> dict:
-    """예약 생성 (1회 또는 반복)"""
+    """예약 생성 (1회 또는 반복)
+    class_cnt에 따른 정원 체크 분기:
+    - class_cnt == 1: 이미 예약이 있으면 마감
+    - class_cnt != 1: 정원 제한 없음 (중복 예약만 방지)
+    """
     remaining = get_remaining(settle_code)
     if remaining < len(dates):
         return {"success": False, "message": "잔여 수업 횟수가 부족합니다."}
+
+    class_cnt = _get_class_cnt(settle_code)
 
     with get_db() as conn:
         cursor = conn.cursor()
@@ -140,7 +204,7 @@ def create_booking(room_idx: int, mem_id: str, settle_code: int, dates: list) ->
                 l_s = utc_start.strftime("%Y-%m-%d %H:%M:%S")
                 l_f = utc_end.strftime("%Y-%m-%d %H:%M:%S")
 
-                # 중복 예약 체크
+                # 정원 체크: class_cnt에 따른 분기
                 cursor.execute(
                     "SELECT COUNT(*) FROM ek_Sch_Detail_Room_mem "
                     "WHERE sch_room_idx = ? AND l_s_date = ? AND status = 1",
@@ -148,8 +212,22 @@ def create_booking(room_idx: int, mem_id: str, settle_code: int, dates: list) ->
                 )
                 count_row = cursor.fetchone()
                 count_val = count_row[0] if isinstance(count_row, (tuple, list)) else list(count_row)[0]
-                if count_val > 0:
-                    raise ValueError(f"이미 예약된 시간입니다: {date_str}")
+
+                if class_cnt == 1:
+                    # 1:1 수업: 예약 1건이면 마감
+                    if count_val > 0:
+                        raise ValueError(f"이미 예약된 시간입니다: {date_str}")
+                else:
+                    # 그룹 수업: 같은 사람 중복 예약만 방지
+                    cursor.execute(
+                        "SELECT COUNT(*) FROM ek_Sch_Detail_Room_mem "
+                        "WHERE sch_room_idx = ? AND l_s_date = ? AND mem_mbrid = ? AND status = 1",
+                        (room_idx, l_s, mem_id)
+                    )
+                    dup_row = cursor.fetchone()
+                    dup_val = dup_row[0] if isinstance(dup_row, (tuple, list)) else list(dup_row)[0]
+                    if dup_val > 0:
+                        raise ValueError(f"이미 예약된 시간입니다: {date_str}")
 
                 cursor.execute(
                     "INSERT INTO ek_Sch_Detail_Room_mem "
