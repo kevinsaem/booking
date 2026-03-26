@@ -38,6 +38,7 @@ async def kakao_callback(request: Request, code: str = None, error: str = None):
         token_res = await client.post(KAKAO_TOKEN_URL, data={
             "grant_type": "authorization_code",
             "client_id": settings.KAKAO_REST_API_KEY,
+            "client_secret": settings.KAKAO_CLIENT_SECRET,
             "redirect_uri": settings.KAKAO_REDIRECT_URI,
             "code": code,
         })

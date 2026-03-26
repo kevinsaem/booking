@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     # 카카오 로그인
     KAKAO_REST_API_KEY: str = ""
+    KAKAO_CLIENT_SECRET: str = ""
     KAKAO_REDIRECT_URI: str = "http://localhost:8500/auth/kakao/callback"
 
     # 토스 페이먼츠
