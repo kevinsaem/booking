@@ -156,29 +156,17 @@ async def signup_send_code(
     print(f"📱 메시지: {message}")
 
     import httpx
-    import pyodbc
+    from app.database import _get_mssql_conn
 
-    # 1. MS-SQL 직접 연결해서 알림톡 설정 조회
-    print(f"📱 DB설정: SERVER={settings.DB_SERVER}, DB={settings.DB_NAME}, MODE={settings.DB_MODE}")
+    # 1. MS-SQL에서 알림톡 설정 조회 (_get_mssql_conn은 다른 페이지에서 검증됨)
     try:
-        # 사용 가능한 ODBC 드라이버 찾기
-        drivers = [d for d in pyodbc.drivers() if 'SQL Server' in d]
-        driver = drivers[0] if drivers else 'ODBC Driver 17 for SQL Server'
-        print(f"📱 ODBC 드라이버: {driver}")
-
-        conn = pyodbc.connect(
-            f"DRIVER={{{driver}}};"
-            f"SERVER={settings.DB_SERVER};"
-            f"DATABASE={settings.DB_NAME};"
-            f"UID={settings.DB_USER};"
-            f"PWD={settings.DB_PASSWORD};"
-            f"TrustServerCertificate=yes;"
-        )
+        conn = _get_mssql_conn()
         cursor = conn.cursor()
         cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
         cols = [d[0] for d in cursor.description]
         row = cursor.fetchone()
         conn.close()
+        print(f"📱 DB조회 성공: {dict(zip(cols, row)) if row else 'None'}")
     except Exception as e:
         print(f"📱 DB조회 실패: {e}")
         return JSONResponse({"ok": False, "error": f"DB 조회 실패: {str(e)}"})
