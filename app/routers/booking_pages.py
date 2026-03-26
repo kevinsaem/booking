@@ -155,55 +155,59 @@ async def signup_send_code(
     print(f"📱 전화번호 변환: {phone} → {telno}")
     print(f"📱 메시지: {message}")
 
+    import httpx
+    import pyodbc
+
+    # 1. DB 직접 연결해서 알림톡 설정 조회
     try:
-        import httpx
-
-        db_mode = settings.DB_MODE
-        print(f"📱 DB_MODE={db_mode}, edc_idx={edc_idx}, phone={phone}, code={code}")
-
-        if db_mode == "development":
-            print(f"📱 [개발모드] 인증코드: {code} → {phone}")
-            return JSONResponse({"ok": True})
-
-        from app.database import _get_mssql_conn
-        conn = _get_mssql_conn()
+        conn = pyodbc.connect(
+            f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+            f"SERVER={settings.DB_SERVER};"
+            f"DATABASE={settings.DB_NAME};"
+            f"UID={settings.DB_USER};"
+            f"PWD={settings.DB_PASSWORD};"
+            f"TrustServerCertificate=yes;"
+        )
         cursor = conn.cursor()
         cursor.execute("SELECT atid, atdeptcode, sch FROM ek_educenter WHERE edc_idx = ?", (edc_idx,))
         cols = [d[0] for d in cursor.description]
         row = cursor.fetchone()
         conn.close()
+    except Exception as e:
+        print(f"📱 DB연결 실패: {e}")
+        return JSONResponse({"ok": False, "error": f"DB 연결 실패: {str(e)}"})
 
-        if not row:
-            print(f"📱 ek_educenter에서 edc_idx={edc_idx} 못 찾음")
-            return JSONResponse({"ok": False, "error": "캠퍼스 정보를 찾을 수 없습니다."})
+    if not row:
+        return JSONResponse({"ok": False, "error": "캠퍼스 정보를 찾을 수 없습니다."})
 
-        config = dict(zip(cols, row))
-        print(f"📱 알림톡 설정: {config}")
+    config = dict(zip(cols, row))
 
-        json_data = {
-            "usercode": config["atid"],
-            "deptcode": config["atdeptcode"],
-            "yellowid_key": config["sch"],
-            "messages": [{
-                "type": "at",
-                "message_id": f"auth_{telno}_{code}",
-                "to": telno,
-                "template_code": "visit_001",
-                "text": message,
-            }]
-        }
+    # 2. 슈어엠 API 호출
+    json_data = {
+        "usercode": config["atid"],
+        "deptcode": config["atdeptcode"],
+        "yellowid_key": config["sch"],
+        "messages": [{
+            "type": "at",
+            "message_id": f"auth_{telno}_{code}",
+            "to": telno,
+            "template_code": "visit_001",
+            "text": message,
+        }]
+    }
+    print(f"📱 발송: to={telno}, msg={message}, usercode={config['atid']}")
 
+    try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.post(
                 "https://api.surem.com/alimtalk/v1/json",
                 json=json_data,
                 headers={"Content-Type": "application/json"},
             )
-            result = resp.json()
+            result = resp.text
             print(f"📱 슈어엠 응답: {result}")
-
     except Exception as e:
-        print(f"📱 발송 에러: {e}")
+        print(f"📱 API 호출 실패: {e}")
         return JSONResponse({"ok": False, "error": f"알림톡 발송 실패: {str(e)}"})
 
     return JSONResponse({"ok": True})
