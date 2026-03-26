@@ -25,8 +25,11 @@ def _get_sqlite_conn():
 
 def _get_mssql_conn():
     import pyodbc
+    # 사용 가능한 SQL Server 드라이버 자동 탐지
+    drivers = [d for d in pyodbc.drivers() if 'SQL Server' in d]
+    driver = drivers[0] if drivers else 'ODBC Driver 18 for SQL Server'
     conn_str = (
-        f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+        f"DRIVER={{{driver}}};"
         f"SERVER={settings.DB_SERVER};"
         f"DATABASE={settings.DB_NAME};"
         f"UID={settings.DB_USER};"
