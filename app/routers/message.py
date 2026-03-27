@@ -114,6 +114,25 @@ async def message_list(request: Request, user=Depends(get_current_user)):
 
     conversations = list(conversations_map.values())
 
+    # 이 수강생의 담당 멘토 목록 (수업 이력 기반)
+    all_mentors = execute_query(
+        "SELECT DISTINCT M.mem_MbrId AS teacher_id, "
+        "COALESCE(M.mem_nickname, M.mem_MbrName) AS teacher_name "
+        "FROM ek_Sch_Detail_Room_mem R "
+        "JOIN ek_Sch_Detail_Room A ON R.sch_room_idx = A.sch_room_idx "
+        "JOIN ek_Member M ON A.sch_teach_id = M.mem_MbrId "
+        "WHERE R.mem_mbrid = ? AND R.status = 1",
+        (my_id,),
+        fetch="all"
+    )
+
+    # 이미 대화 중인 멘토 제외한 새 대화 가능 멘토
+    existing_ids = set(conversations_map.keys())
+    new_mentors = [
+        m for m in all_mentors
+        if m["teacher_id"] not in existing_ids
+    ]
+
     # 최신 공지
     latest = execute_query(
         "SELECT board_title AS title, board_Wdate AS created_at "
@@ -125,6 +144,8 @@ async def message_list(request: Request, user=Depends(get_current_user)):
 
     return templates.TemplateResponse(request, "booking/messages.html", {
         "conversations": conversations,
+        "mentors": all_mentors,
+        "new_mentors": new_mentors,
         "latest_notice_date": latest["created_at"][:5].replace("-", "/") if latest else "",
         "latest_notice_title": latest["title"] if latest else "",
         "unread_count": total_unread,
@@ -365,12 +386,14 @@ async def reply_page(request: Request, token: str = ""):
 
     # 수강생 학습 이력 (최근 수업 예약)
     learning_history = execute_query(
-        "SELECT B.book_date, B.book_start_time, B.book_end_time, "
-        "M.mem_MbrName AS teacher_name "
-        "FROM ek_Booking B "
-        "LEFT JOIN ek_Member M ON B.book_teacher_id = M.mem_MbrId "
-        "WHERE B.book_member_id = ? AND B.book_state = 1 "
-        "ORDER BY B.book_date DESC LIMIT 5",
+        "SELECT datetime(R.l_s_date, '+9 hours') AS lesson_date, "
+        "datetime(R.l_f_date, '+9 hours') AS lesson_end, "
+        "COALESCE(M.mem_nickname, M.mem_MbrName) AS teacher_name "
+        "FROM ek_Sch_Detail_Room_mem R "
+        "JOIN ek_Sch_Detail_Room A ON R.sch_room_idx = A.sch_room_idx "
+        "JOIN ek_Member M ON A.sch_teach_id = M.mem_MbrId "
+        "WHERE R.mem_mbrid = ? AND R.status = 1 "
+        "ORDER BY R.l_s_date DESC LIMIT 5",
         (student_id,),
         fetch="all"
     )

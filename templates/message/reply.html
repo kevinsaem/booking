@@ -66,8 +66,8 @@ g:{50:'#FAFAFA',100:'#F5F5F5',200:'#EEEEEE',300:'#E0E0E0',400:'#BDBDBD',500:'#9E
     <div class="space-y-2">
       {% for h in learning_history %}
       <div class="flex items-center gap-3 text-[13px]">
-        <span class="text-g-500 w-[80px]">{{ h.book_date }}</span>
-        <span class="text-g-700">{{ h.book_start_time }}~{{ h.book_end_time }}</span>
+        <span class="text-g-500 w-[80px]">{{ (h.lesson_date or '')[:10] }}</span>
+        <span class="text-g-700">{{ (h.lesson_date or '')[11:16] }}~{{ (h.lesson_end or '')[11:16] }}</span>
         {% if h.teacher_name %}
         <span class="text-g-400">{{ h.teacher_name }}</span>
         {% endif %}

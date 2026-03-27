@@ -44,6 +44,19 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     monthly = is_monthly_plan(user["settle_code"])
     upcoming_bookings = get_my_bookings(user["mem_MbrId"], limit=3, upcoming=True)
 
+    # 예약 중인 수업 수 (현재 시간 이후, status=1)
+    booked_upcoming = 0
+    if user["settle_code"]:
+        booked_row = execute_query(
+            "SELECT COUNT(*) AS cnt FROM ek_Sch_Detail_Room_mem "
+            "WHERE mem_mbrid = ? AND status = 1 AND settle_code = ? "
+            "AND datetime(l_s_date, '+9 hours') > datetime('now', '+9 hours')",
+            (user["mem_MbrId"], user["settle_code"]),
+            fetch="one"
+        )
+        if booked_row:
+            booked_upcoming = booked_row["cnt"]
+
     # 최신 공지 조회
     latest_notice = execute_query(
         "SELECT board_title AS title, board_content AS summary FROM ek_Board WHERE board_code = '1' ORDER BY board_Wdate DESC LIMIT 1",
@@ -53,7 +66,7 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     # 안읽은 메시지 수 조회
     unread_count = 0
     unread_row = execute_query(
-        "SELECT COUNT(*) AS cnt FROM dev_messages "
+        "SELECT COUNT(*) AS cnt FROM ek_message "
         "WHERE receiver_id = ? AND is_read = 0",
         (user["mem_MbrId"],),
         fetch="one"
@@ -85,6 +98,7 @@ async def home_page(request: Request, user=Depends(get_current_user)):
         "user": user,
         "remaining": remaining,
         "total_classes": total_classes,
+        "booked_upcoming": booked_upcoming,
         "monthly": monthly,
         "settle_period": settle_period,
         "upcoming_bookings": upcoming_bookings,

@@ -94,7 +94,7 @@ def init_sqlite_tables(conn):
         )
     """)
 
-    # === dev_messages: 메시지 ===
+    # === dev_messages: 메시지 (레거시, 호환용) ===
     c.execute("""
         CREATE TABLE IF NOT EXISTS dev_messages (
             msg_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -103,6 +103,33 @@ def init_sqlite_tables(conn):
             content TEXT NOT NULL,
             sent_at TEXT NOT NULL,
             is_read INTEGER DEFAULT 0
+        )
+    """)
+
+    # === ek_message: 1:1 메시지 시스템 ===
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS ek_message (
+            msg_idx INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_id TEXT NOT NULL,
+            receiver_id TEXT NOT NULL,
+            content TEXT NOT NULL,
+            parent_msg_idx INTEGER,
+            is_read INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT
+        )
+    """)
+
+    # === ek_message_token: 멘토 답변 토큰 ===
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS ek_message_token (
+            token_idx INTEGER PRIMARY KEY AUTOINCREMENT,
+            token TEXT NOT NULL UNIQUE,
+            msg_idx INTEGER NOT NULL,
+            mentor_id TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            is_used INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL
         )
     """)
 
