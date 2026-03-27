@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZIPMiddleware
+from starlette.middleware.gzip import GZIPMiddleware
 from app.config import settings
 from app.database import init_db, close_db
 from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message
