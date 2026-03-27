@@ -7,7 +7,10 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.gzip import GZIPMiddleware
+try:
+    from starlette.middleware.gzip import GZIPMiddleware
+except ImportError:
+    GZIPMiddleware = None
 from app.config import settings
 from app.database import init_db, close_db
 from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message
@@ -30,7 +33,8 @@ app = FastAPI(
 )
 
 # GZip 압축 (HTML/CSS/JS 전송 크기 70% 감소)
-app.add_middleware(GZIPMiddleware, minimum_size=500)
+if GZIPMiddleware:
+    app.add_middleware(GZIPMiddleware, minimum_size=500)
 
 # CORS 설정
 app.add_middleware(
