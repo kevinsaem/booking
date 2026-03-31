@@ -57,10 +57,12 @@ async def teacher_home(request: Request):
         e_dt = datetime.strptime(c["l_f_date"], "%Y-%m-%d %H:%M:%S")
         is_done = now > e_dt
 
-        # 메모 존재 여부 확인
+        # 메모 존재 여부 확인 (ek_lectureDe)
         memo = execute_query(
-            "SELECT memo_id FROM dev_class_memos "
-            "WHERE teacher_id = ? AND student_id = ? AND lesson_date = ?",
+            "SELECT lecturede_idx FROM ek_lectureDe C "
+            "JOIN ek_lecture B ON C.lec_idx = B.lec_idx "
+            "JOIN ek_Sch_Detail_Room A ON B.sch_room_idx = A.sch_room_idx "
+            "WHERE A.sch_teach_id = ? AND C.student_id = ? AND CONVERT(varchar(10), C.w_date, 121) = ?",
             (teacher_id, c["mem_mbrid"], today),
             fetch="one"
         )
@@ -552,27 +554,39 @@ async def save_memo(
 
     teacher_id = user["mem_MbrId"]
 
-    # 기존 메모 확인 (같은 날 같은 학생)
+    # 기존 메모 확인 (ek_lectureDe - 같은 날 같은 학생)
     existing = execute_query(
-        "SELECT memo_id FROM dev_class_memos "
-        "WHERE teacher_id = ? AND student_id = ? AND lesson_date = ?",
+        "SELECT C.lecturede_idx FROM ek_lectureDe C "
+        "JOIN ek_lecture B ON C.lec_idx = B.lec_idx "
+        "JOIN ek_Sch_Detail_Room A ON B.sch_room_idx = A.sch_room_idx "
+        "WHERE A.sch_teach_id = ? AND C.student_id = ? AND CONVERT(varchar(10), C.w_date, 121) = ?",
         (teacher_id, student_id, lesson_date),
         fetch="one"
     )
 
     if existing:
         execute_query(
-            "UPDATE dev_class_memos SET content = ? WHERE memo_id = ?",
-            (content, existing["memo_id"]),
+            "UPDATE ek_lectureDe SET advice = ? WHERE lecturede_idx = ?",
+            (content, existing["lecturede_idx"]),
             fetch="none"
         )
     else:
-        execute_query(
-            "INSERT INTO dev_class_memos (teacher_id, student_id, lesson_date, content) "
-            "VALUES (?, ?, ?, ?)",
-            (teacher_id, student_id, lesson_date, content),
-            fetch="none"
+        # lec_idx를 찾아서 INSERT
+        lec = execute_query(
+            "SELECT B.lec_idx FROM ek_lecture B "
+            "JOIN ek_Sch_Detail_Room A ON B.sch_room_idx = A.sch_room_idx "
+            "JOIN ek_Sch_Detail_Room_mem D ON A.sch_room_idx = D.sch_room_idx AND D.mem_mbrid = ? "
+            "WHERE A.sch_teach_id = ? AND CONVERT(varchar(10), D.l_s_date, 121) = ?",
+            (student_id, teacher_id, lesson_date),
+            fetch="one"
         )
+        if lec:
+            execute_query(
+                "INSERT INTO ek_lectureDe (lec_idx, student_id, advice, w_date) "
+                "VALUES (?, ?, ?, ?)",
+                (lec["lec_idx"], student_id, content, lesson_date),
+                fetch="none"
+            )
 
     # 토스트 응답 (HTMX)
     return HTMLResponse(
@@ -593,8 +607,10 @@ async def get_memo(student_id: str, lesson_date: str, request: Request):
     teacher_id = user["mem_MbrId"]
 
     memo = execute_query(
-        "SELECT content FROM dev_class_memos "
-        "WHERE teacher_id = ? AND student_id = ? AND lesson_date = ?",
+        "SELECT C.advice AS content FROM ek_lectureDe C "
+        "JOIN ek_lecture B ON C.lec_idx = B.lec_idx "
+        "JOIN ek_Sch_Detail_Room A ON B.sch_room_idx = A.sch_room_idx "
+        "WHERE A.sch_teach_id = ? AND C.student_id = ? AND CONVERT(varchar(10), C.w_date, 121) = ?",
         (teacher_id, student_id, lesson_date),
         fetch="one"
     )

@@ -16,9 +16,7 @@
         <tr class="bg-slate-50 text-left">
           <th class="px-4 py-2.5 text-xs font-medium text-slate-500">ID</th>
           <th class="px-4 py-2.5 text-xs font-medium text-slate-500">제목</th>
-          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">유형</th>
           <th class="px-4 py-2.5 text-xs font-medium text-slate-500">작성일</th>
-          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">NEW</th>
           <th class="px-4 py-2.5 text-xs font-medium text-slate-500">관리</th>
         </tr>
       </thead>
@@ -27,19 +25,7 @@
         <tr class="hover:bg-slate-50">
           <td class="px-4 py-2.5 text-slate-500 text-xs">{{ n.notice_id }}</td>
           <td class="px-4 py-2.5 font-medium text-slate-800">{{ n.title }}</td>
-          <td class="px-4 py-2.5">
-            {% if n.type == 'event' %}
-            <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-700">이벤트</span>
-            {% else %}
-            <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">공지</span>
-            {% endif %}
-          </td>
           <td class="px-4 py-2.5 text-slate-600">{{ n.created_at }}</td>
-          <td class="px-4 py-2.5">
-            {% if n.is_new %}
-            <span class="inline-flex px-1.5 py-0.5 text-[10px] rounded bg-red-500 text-white font-bold">NEW</span>
-            {% endif %}
-          </td>
           <td class="px-4 py-2.5">
             <div class="flex gap-2">
               <a href="/admin/notices/edit/{{ n.notice_id }}" class="text-xs text-blue-500 hover:text-blue-700">수정</a>
@@ -50,7 +36,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">공지사항이 없습니다</td></tr>
+        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">공지사항이 없습니다</td></tr>
         {% endfor %}
       </tbody>
     </table>

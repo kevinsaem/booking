@@ -186,6 +186,38 @@ def init_sqlite_tables(conn):
         )
     """)
 
+    # === agreement_templates: 계약서 템플릿 ===
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS agreement_templates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            version TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            course_type TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now','localtime')),
+            updated_at TEXT DEFAULT (datetime('now','localtime'))
+        )
+    """)
+
+    # === agreement_signatures: 전자서명 기록 ===
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS agreement_signatures (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mem_MbrId TEXT NOT NULL,
+            template_id INTEGER NOT NULL,
+            signature_image TEXT NOT NULL,
+            agreed_at TEXT NOT NULL,
+            ip_address TEXT,
+            user_agent TEXT,
+            device_info TEXT,
+            document_hash TEXT,
+            is_valid INTEGER DEFAULT 1,
+            FOREIGN KEY (mem_MbrId) REFERENCES ek_Member(mem_MbrId),
+            FOREIGN KEY (template_id) REFERENCES agreement_templates(id)
+        )
+    """)
+
     conn.commit()
 
 
@@ -364,6 +396,18 @@ def seed_if_empty(conn):
         "INSERT OR IGNORE INTO kakao_members (kakao_id, mem_id, nickname, role) VALUES (?, ?, ?, ?)",
         ("teacher_test_3", "TEA003", "이웹개발", "teacher")
     )
+
+    # ===== 계약서 템플릿 시딩 =====
+    import os
+    agreement_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "자료실", "agreement_content.md")
+    if os.path.exists(agreement_path):
+        with open(agreement_path, "r", encoding="utf-8") as f:
+            agreement_content = f.read()
+        c.execute(
+            "INSERT INTO agreement_templates (version, title, content, course_type, is_active) "
+            "VALUES (?, ?, ?, ?, 1)",
+            ("v1.0", "교육 서비스 이용 계약서", agreement_content, "1:1 성인 AI 활용 과정")
+        )
 
     conn.commit()
     print(f"  → 수강생 {len(students)}명, 강사 {len(teachers)}명, 패키지 3개, 슬롯 약 {slot_idx - 1000}개 생성")

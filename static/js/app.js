@@ -1,5 +1,5 @@
 /* static/js/app.js */
-/* 케빈샘랩 - 공통 JavaScript */
+/* 케빈샘AI코딩 - 공통 JavaScript */
 /* 토스트 메시지, HTMX 이벤트, 날짜 유틸리티 */
 
 // ===== 토스트 메시지 =====

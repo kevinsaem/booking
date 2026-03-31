@@ -2,7 +2,7 @@
 <!-- 화면: 메시지 목록 (멘토별 대화 리스트) + 새 메시지 시작 -->
 {% extends "base.html" %}
 
-{% block title %}메시지 - 케빈샘랩{% endblock %}
+{% block title %}메시지 - 케빈샘AI코딩학원{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-g-100 pb-20 fade">
@@ -73,7 +73,7 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex justify-between">
-            <p class="text-[14px] font-bold text-g-800">케빈샘랩 공지</p>
+            <p class="text-[14px] font-bold text-g-800">케빈샘AI코딩학원 공지</p>
             <span class="text-[10px] text-g-400">{{ latest_notice_date | default('') }}</span>
           </div>
           <p class="text-[12px] text-g-400 truncate mt-0.5">{{ latest_notice_title | default('공지사항을 확인하세요') }}</p>

@@ -16,6 +16,7 @@ from app.services.email_service import (
 )
 from app.database import execute_query
 from app.config import settings
+from app.services.agreement_service import needs_agreement
 
 router = APIRouter(prefix="/message", tags=["메시지"])
 templates = Jinja2Templates(directory="templates")
@@ -63,6 +64,8 @@ async def message_list(request: Request, user=Depends(get_current_user)):
     """메시지함: 대화 목록"""
     if not user:
         return RedirectResponse("/booking/")
+    if needs_agreement(user["mem_MbrId"]):
+        return RedirectResponse("/booking/agreement/guide", status_code=303)
 
     my_id = user["mem_MbrId"]
 
@@ -157,6 +160,8 @@ async def chat_page(mentor_id: str, request: Request, user=Depends(get_current_u
     """특정 멘토와의 대화 화면"""
     if not user:
         return RedirectResponse("/booking/")
+    if needs_agreement(user["mem_MbrId"]):
+        return RedirectResponse("/booking/agreement/guide", status_code=303)
 
     my_id = user["mem_MbrId"]
 

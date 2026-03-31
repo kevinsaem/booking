@@ -19,10 +19,18 @@ from app.services.booking_service import (
 )
 from app.database import execute_query
 from app.config import settings
+from app.services.agreement_service import needs_agreement
 
 router = APIRouter(prefix="/booking", tags=["수강생 웹"])
 templates = Jinja2Templates(directory="templates")
 partials = Jinja2Templates(directory="templates")
+
+
+def _check_agreement(user: dict | None) -> RedirectResponse | None:
+    """서명 필요 시 안내 페이지로 리다이렉트 (None이면 통과)"""
+    if user and needs_agreement(user["mem_MbrId"]):
+        return RedirectResponse("/booking/agreement/guide", status_code=303)
+    return None
 
 # 로그인 brute-force 방지: IP별 시도 기록 {ip: [(timestamp, ...), ...]}
 _login_attempts: dict[str, list[float]] = {}
@@ -37,6 +45,11 @@ async def home_page(request: Request, user=Depends(get_current_user)):
     """홈 페이지"""
     if not user:
         return templates.TemplateResponse(request, "booking/login.html")
+
+    # 전자서명 체크 (2026-03-15 이후 가입 + 수강권 보유 + 미서명)
+    agreement_redirect = _check_agreement(user)
+    if agreement_redirect:
+        return agreement_redirect
 
     remaining = get_remaining(user["settle_code"])
     total_classes = get_total_classes(user["settle_code"])
@@ -318,38 +331,60 @@ async def do_login(request: Request, name: str = Form(), code: str = Form()):
     attempts.append(now_ts)
     _login_attempts[client_ip] = attempts
 
-    # ek_Member에서 인증 (입력값을 MD5 해시로 변환해서 비교)
+    # ek_Member에서 인증
     md5_code = hashlib.md5(code.encode()).hexdigest()
     try:
-        from app.database import _get_mssql_conn
-        conn = _get_mssql_conn()
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT TOP 1 mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
-            "WHERE mem_MbrName = ? AND mem_pwd = ?",
-            (name, md5_code)
-        )
-        cols = [d[0] for d in cursor.description]
-        r = cursor.fetchone()
-        row = dict(zip(cols, r)) if r else None
+        from app.database import DB_MODE
+        if DB_MODE == "development":
+            # 개발 모드: SQLite (이름 + 인증코드로 인증)
+            row = execute_query(
+                "SELECT mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
+                "WHERE mem_MbrName = ? AND injeung_code = ? LIMIT 1",
+                (name, code),
+                fetch="one"
+            )
+            if not row:
+                return templates.TemplateResponse(request, "booking/login.html", {
+                    "error": "이름 또는 인증번호가 일치하지 않습니다."
+                })
+            mem_id = row["mem_MbrId"]
+            settle_row = execute_query(
+                "SELECT settle_code FROM ek_Settlement "
+                "WHERE settle_mbr_id = ? AND settle_state = 1 "
+                "ORDER BY settle_date DESC LIMIT 1",
+                (mem_id,),
+                fetch="one"
+            )
+            settle_code = settle_row["settle_code"] if settle_row else 0
+        else:
+            # 프로덕션: MS-SQL (이름 + MD5 비밀번호로 인증)
+            from app.database import _get_mssql_conn
+            conn = _get_mssql_conn()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT TOP 1 mem_MbrId, mem_MbrName, mem_nickname FROM ek_Member "
+                "WHERE mem_MbrName = ? AND mem_pwd = ?",
+                (name, md5_code)
+            )
+            cols = [d[0] for d in cursor.description]
+            r = cursor.fetchone()
+            row = dict(zip(cols, r)) if r else None
 
-        if not row:
+            if not row:
+                conn.close()
+                return templates.TemplateResponse(request, "booking/login.html", {
+                    "error": "이름 또는 인증번호가 일치하지 않습니다."
+                })
+
+            mem_id = row["mem_MbrId"]
+            cursor.execute(
+                "SELECT TOP 1 settle_code FROM ek_Settlement "
+                "WHERE settle_mbr_id = ? AND settle_state = 1 ORDER BY settle_date DESC",
+                (mem_id,)
+            )
+            s_row = cursor.fetchone()
+            settle_code = s_row[0] if s_row else 0
             conn.close()
-            return templates.TemplateResponse(request, "booking/login.html", {
-                "error": "이름 또는 인증번호가 일치하지 않습니다."
-            })
-
-        mem_id = row["mem_MbrId"]
-
-        # 수강권 확인
-        cursor.execute(
-            "SELECT TOP 1 settle_code FROM ek_Settlement "
-            "WHERE settle_mbr_id = ? AND settle_state = 1 ORDER BY settle_date DESC",
-            (mem_id,)
-        )
-        s_row = cursor.fetchone()
-        settle_code = s_row[0] if s_row else 0
-        conn.close()
     except Exception as e:
         print(f"❌ 로그인 DB 에러: {e}")
         return templates.TemplateResponse(request, "booking/login.html", {
@@ -402,6 +437,9 @@ async def booking_page(request: Request, user=Depends(get_current_user),
     """
     if not user:
         return RedirectResponse("/booking/")
+    agreement_redirect = _check_agreement(user)
+    if agreement_redirect:
+        return agreement_redirect
 
     # settle_code 없으면 수강권 선택 단계
     if settle_code is None:
@@ -555,6 +593,9 @@ async def my_bookings_page(request: Request, user=Depends(get_current_user)):
     """내 예약 페이지"""
     if not user:
         return RedirectResponse("/booking/")
+    agreement_redirect = _check_agreement(user)
+    if agreement_redirect:
+        return agreement_redirect
 
     remaining = get_remaining(user["settle_code"])
     monthly = is_monthly_plan(user["settle_code"])
@@ -679,6 +720,9 @@ async def dashboard_page(request: Request, user=Depends(get_current_user), sc: i
     """학습 현황 페이지 — 수강권별 수업 기록"""
     if not user:
         return RedirectResponse("/booking/")
+    agreement_redirect = _check_agreement(user)
+    if agreement_redirect:
+        return agreement_redirect
 
     mem_id = user["mem_MbrId"]
     from app.database import _get_mssql_conn
@@ -1058,6 +1102,9 @@ async def mypage(request: Request, user=Depends(get_current_user)):
     """MY 페이지"""
     if not user:
         return RedirectResponse("/booking/")
+    agreement_redirect = _check_agreement(user)
+    if agreement_redirect:
+        return agreement_redirect
 
     remaining = get_remaining(user["settle_code"])
     monthly = is_monthly_plan(user["settle_code"])

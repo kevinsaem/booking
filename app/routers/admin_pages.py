@@ -410,7 +410,8 @@ async def admin_notices(request: Request):
         return redirect
 
     notices = execute_query(
-        "SELECT * FROM dev_notices ORDER BY created_at DESC"
+        "SELECT board_idx AS notice_id, board_title AS title, board_content AS content, "
+        "board_Wdate AS created_at FROM ek_Board WHERE board_code = '1' ORDER BY board_Wdate DESC"
     )
 
     ctx = {"active_menu": "notices", "notices": notices}
@@ -432,22 +433,19 @@ async def admin_notice_new(request: Request):
 async def admin_notice_create(
     request: Request,
     title: str = Form(...),
-    summary: str = Form(default=""),
     content: str = Form(default=""),
-    type: str = Form(default="notice"),
-    is_new: str = Form(default=None),
 ):
     redirect, user = await _require_admin(request)
     if redirect:
         return redirect
 
     now = datetime.now().strftime("%Y-%m-%d")
-    is_new_val = 1 if is_new else 0
+    mem_id = user.get("mem_MbrId", "admin")
 
     execute_query("""
-        INSERT INTO dev_notices (title, summary, content, type, created_at, is_new)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (title, summary, content, type, now, is_new_val), fetch="none")
+        INSERT INTO ek_Board (board_code, board_title, board_content, board_mem_id, board_Wdate)
+        VALUES ('1', ?, ?, ?, ?)
+    """, (title, content, mem_id, now), fetch="none")
 
     return _flash_redirect("/admin/notices", "공지가 작성되었습니다")
 
@@ -459,7 +457,8 @@ async def admin_notice_edit(request: Request, notice_id: int):
         return redirect
 
     notice = execute_query(
-        "SELECT * FROM dev_notices WHERE notice_id = ?",
+        "SELECT board_idx AS notice_id, board_title AS title, board_content AS content, "
+        "board_Wdate AS created_at FROM ek_Board WHERE board_idx = ? AND board_code = '1'",
         (notice_id,), fetch="one"
     )
     if not notice:
@@ -474,21 +473,16 @@ async def admin_notice_update(
     request: Request,
     notice_id: int,
     title: str = Form(...),
-    summary: str = Form(default=""),
     content: str = Form(default=""),
-    type: str = Form(default="notice"),
-    is_new: str = Form(default=None),
 ):
     redirect, user = await _require_admin(request)
     if redirect:
         return redirect
 
-    is_new_val = 1 if is_new else 0
-
     execute_query("""
-        UPDATE dev_notices SET title = ?, summary = ?, content = ?, type = ?, is_new = ?
-        WHERE notice_id = ?
-    """, (title, summary, content, type, is_new_val, notice_id), fetch="none")
+        UPDATE ek_Board SET board_title = ?, board_content = ?
+        WHERE board_idx = ? AND board_code = '1'
+    """, (title, content, notice_id), fetch="none")
 
     return _flash_redirect("/admin/notices", "공지가 수정되었습니다")
 
@@ -499,7 +493,7 @@ async def admin_notice_delete(request: Request, notice_id: int):
     if redirect:
         return redirect
 
-    execute_query("DELETE FROM dev_notices WHERE notice_id = ?", (notice_id,), fetch="none")
+    execute_query("DELETE FROM ek_Board WHERE board_idx = ? AND board_code = '1'", (notice_id,), fetch="none")
     return _flash_redirect("/admin/notices", "공지가 삭제되었습니다")
 
 

@@ -12,6 +12,7 @@ from app.services.payment_service import (
     generate_order_id, get_package, confirm_payment, create_settlement
 )
 from app.config import settings
+from app.services.agreement_service import needs_agreement
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ async def checkout_page(request: Request, package_code: int,
     """결제 체크아웃 페이지 (토스 위젯 포함)"""
     if not user:
         return RedirectResponse("/booking/")
+    if needs_agreement(user["mem_MbrId"]):
+        return RedirectResponse("/booking/agreement/guide", status_code=303)
 
     pkg = get_package(package_code)
     if not pkg:

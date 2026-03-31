@@ -26,7 +26,7 @@ def send_email(to: str, subject: str, body: str, html: bool = True) -> bool:
 
     try:
         msg = MIMEMultipart("alternative")
-        msg["From"] = f"케빈샘랩 <{settings.SMTP_EMAIL}>"
+        msg["From"] = f"케빈샘AI코딩학원 <{settings.SMTP_EMAIL}>"
         msg["To"] = to
         msg["Subject"] = subject
 
@@ -55,11 +55,11 @@ def build_mentor_notification_email(
     Returns:
         (subject, html_body)
     """
-    subject = f"[케빈샘랩] {student_name}님이 메시지를 보냈습니다"
+    subject = f"[케빈샘AI코딩학원] {student_name}님이 메시지를 보냈습니다"
     html_body = f"""
     <div style="max-width:480px;margin:0 auto;font-family:'Noto Sans KR',sans-serif;padding:20px;">
         <div style="background:#43A047;color:white;padding:16px 20px;border-radius:12px 12px 0 0;">
-            <h2 style="margin:0;font-size:16px;">케빈샘랩 메시지 알림</h2>
+            <h2 style="margin:0;font-size:16px;">케빈샘AI코딩학원 메시지 알림</h2>
         </div>
         <div style="border:1px solid #E0E0E0;border-top:none;padding:20px;border-radius:0 0 12px 12px;">
             <p style="color:#424242;font-size:14px;margin:0 0 12px;">
@@ -92,11 +92,11 @@ def build_student_notification_email(
     Returns:
         (subject, html_body)
     """
-    subject = f"[케빈샘랩] {mentor_name} 멘토가 답변을 보냈습니다"
+    subject = f"[케빈샘AI코딩학원] {mentor_name} 멘토가 답변을 보냈습니다"
     html_body = f"""
     <div style="max-width:480px;margin:0 auto;font-family:'Noto Sans KR',sans-serif;padding:20px;">
         <div style="background:#43A047;color:white;padding:16px 20px;border-radius:12px 12px 0 0;">
-            <h2 style="margin:0;font-size:16px;">케빈샘랩 메시지 알림</h2>
+            <h2 style="margin:0;font-size:16px;">케빈샘AI코딩학원 메시지 알림</h2>
         </div>
         <div style="border:1px solid #E0E0E0;border-top:none;padding:20px;border-radius:0 0 12px 12px;">
             <p style="color:#424242;font-size:14px;margin:0 0 12px;">

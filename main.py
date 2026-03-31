@@ -13,7 +13,7 @@ except ImportError:
     GZIPMiddleware = None
 from app.config import settings
 from app.database import init_db, close_db
-from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message
+from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message, agreement
 
 # 프로덕션 JWT 시크릿 키 검증
 if settings.DB_MODE == "production" and "not-for-production" in settings.JWT_SECRET:
@@ -26,7 +26,7 @@ if settings.DB_MODE == "production" and "not-for-production" in settings.JWT_SEC
 is_prod = settings.DB_MODE == "production"
 
 app = FastAPI(
-    title="케빈샘랩",
+    title="케빈샘AI코딩학원",
     version="3.1",
     docs_url=None if is_prod else "/api/docs",
     redoc_url=None,
@@ -69,6 +69,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(auth.router)              # 카카오 로그인: /auth/*
 app.include_router(payment.router)         # 결제 (토스): /booking/payment/*
 app.include_router(message.router)        # 메시지: /message/*
+app.include_router(agreement.router)      # 전자서명: /booking/agreement/*
 app.include_router(booking_pages.router)   # 수강생 웹: /booking/*
 app.include_router(teacher_pages.router)  # 강사 포털: /teacher/*
 app.include_router(admin_pages.router)     # 관리자 웹: /admin/*

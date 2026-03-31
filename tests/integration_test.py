@@ -115,7 +115,7 @@ def get_available_slot(date_str):
 
 def test_landing_page():
     test("1.LANDING", "GET / returns 200", lambda: assert_status(client.get("/"), 200))
-    test("1.LANDING", "Contains '케빈샘랩'", lambda: assert_contains(client.get("/"), "케빈샘랩"))
+    test("1.LANDING", "Contains '케빈샘AI코딩학원'", lambda: assert_contains(client.get("/"), "케빈샘AI코딩학원"))
     test("1.LANDING", "Contains '수강료'", lambda: assert_contains(client.get("/"), "수강료"))
     test("1.LANDING", "Contains 카카오 or login link", lambda: assert_contains(client.get("/"), "카카오"))
 
