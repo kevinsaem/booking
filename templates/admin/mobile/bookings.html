@@ -1,0 +1,83 @@
+{% extends "admin/mobile/base_mobile.html" %}
+{% set active_tab = 'bookings' %}
+
+{% block title %}예약 관리{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h2 class="text-lg font-bold text-g-900">예약 관리</h2>
+</div>
+
+<!-- 날짜 선택 -->
+<div class="flex gap-2 mb-4">
+  <a href="/admin/m/bookings?date={{ today }}"
+     class="flex-1 text-center py-2.5 rounded-xl text-[13px] font-semibold transition-colors
+            {% if selected_date == today or not selected_date %}bg-nv-600 text-white shadow-sm{% else %}bg-white text-g-600 shadow-sm{% endif %}">
+    오늘
+  </a>
+  <a href="/admin/m/bookings?date={{ tomorrow }}"
+     class="flex-1 text-center py-2.5 rounded-xl text-[13px] font-semibold transition-colors
+            {% if selected_date == tomorrow %}bg-nv-600 text-white shadow-sm{% else %}bg-white text-g-600 shadow-sm{% endif %}">
+    내일
+  </a>
+</div>
+
+<!-- 예약 카드 목록 -->
+{% if bookings and bookings|length > 0 %}
+<div class="space-y-2.5">
+  {% for b in bookings %}
+  <div class="bg-white rounded-2xl p-4 shadow-sm fade-in" x-data="{ confirmCancel: false }">
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="text-[13px] font-bold text-g-800">{{ b.mem_MbrName or b.mem_mbrid }}</span>
+          {% if b.status == 1 %}
+          <span class="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-nv-50 text-nv-700">확정</span>
+          {% elif b.status == 0 %}
+          <span class="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-g-200 text-g-600">취소</span>
+          {% endif %}
+        </div>
+        <div class="flex items-center gap-3 text-[12px] text-g-500">
+          <span>{{ b.l_s_date[11:16] if b.l_s_date and b.l_s_date|length > 16 else b.l_s_date }} ~ {{ b.l_f_date[11:16] if b.l_f_date and b.l_f_date|length > 16 else b.l_f_date }}</span>
+          {% if b.teacher_name %}
+          <span class="text-g-400">|</span>
+          <span>{{ b.teacher_name }} 멘토</span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if b.status == 1 %}
+      <div class="ml-2">
+        <button @click="confirmCancel = true"
+                x-show="!confirmCancel"
+                class="text-[11px] text-red-400 hover:text-red-600 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-colors">
+          취소
+        </button>
+        <div x-show="confirmCancel" x-transition class="flex items-center gap-1">
+          <form action="/admin/bookings/cancel/{{ b.idx }}" method="post">
+            <button type="submit" class="text-[11px] text-white bg-red-500 hover:bg-red-600 font-medium px-2.5 py-1 rounded-lg transition-colors">확인</button>
+          </form>
+          <button @click="confirmCancel = false" class="text-[11px] text-g-500 font-medium px-2 py-1 rounded-lg hover:bg-g-100 transition-colors">아니오</button>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- 예약 수 표시 -->
+<div class="mt-4 text-center">
+  <span class="text-[12px] text-g-400">총 {{ bookings|length }}건</span>
+</div>
+
+{% else %}
+<div class="bg-white rounded-2xl p-10 shadow-sm text-center">
+  <div class="w-14 h-14 rounded-full bg-g-100 flex items-center justify-center mx-auto mb-3">
+    <svg class="w-7 h-7 text-g-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+  </div>
+  <p class="text-sm text-g-500 font-medium">예약이 없습니다</p>
+  <p class="text-[12px] text-g-400 mt-1">{{ selected_date or today }} 예약 내역이 없습니다</p>
+</div>
+{% endif %}
+{% endblock %}

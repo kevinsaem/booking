@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#43A047">
+<title>케빈샘 AI코딩 - 전체 화면 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Noto Sans KR','sans-serif']},colors:{
+nv:{50:'#E8F5E9',100:'#C8E6C9',200:'#A5D6A7',300:'#81C784',400:'#66BB6A',500:'#4CAF50',600:'#43A047',700:'#388E3C',800:'#2E7D32'},
+g:{50:'#FAFAFA',100:'#F5F5F5',200:'#EEEEEE',300:'#E0E0E0',400:'#BDBDBD',500:'#9E9E9E',600:'#757575',700:'#616161',800:'#424242',900:'#212121'}
+}}}}
+</script>
+<style>
+[x-cloak]{display:none!important}*{-webkit-tap-highlight-color:transparent;box-sizing:border-box}html{overscroll-behavior:contain}input:focus,textarea:focus{outline:none}::-webkit-scrollbar{display:none}
+.fade{animation:fadeUp .3s ease both}@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}.pop{animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
+.s1{animation-delay:.05s}.s2{animation-delay:.1s}.s3{animation-delay:.15s}.s4{animation-delay:.2s}
+.card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.03)}
+.tab{color:#BDBDBD}.tab.on{color:#43A047;font-weight:700}
+.ic{display:inline-flex;align-items:center;justify-content:center}
+.ic svg{stroke-linecap:round;stroke-linejoin:round;fill:none}
+.back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#9E9E9E}
+</style>
+</head>
+<body class="font-sans bg-gray-100">
+<div class="max-w-[430px] mx-auto min-h-screen bg-gray-100 relative" x-data="app()" x-cloak>
+
+<!-- ===== 1. 로그인 ===== -->
+<template x-if="p==='login'">
+<div class="min-h-screen bg-white flex flex-col px-6 fade">
+  <div class="flex-1 flex flex-col justify-center">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-nv-600 rounded-2xl mb-4 shadow-lg shadow-nv-600/20"><span class="text-white font-extrabold text-2xl">K</span></div>
+      <h1 class="text-[22px] font-extrabold text-g-900">케빈샘 AI코딩</h1>
+      <p class="text-[13px] text-g-500 mt-1">성인 1:1 AI활용 과정</p>
+    </div>
+    <div class="space-y-3">
+      <input x-model="userName" placeholder="이름" class="w-full h-[50px] px-4 bg-g-100 rounded-xl text-[15px] placeholder-g-400">
+      <input x-model="userCode" placeholder="인증번호 4자리" maxlength="4" inputmode="numeric" class="w-full h-[50px] px-4 bg-g-100 rounded-xl text-[15px] placeholder-g-400">
+      <p x-show="loginErr" x-text="loginErr" class="text-xs text-red-500 text-center"></p>
+    </div>
+    <button @click="doLogin()" class="w-full h-[50px] mt-4 bg-nv-600 text-white rounded-xl font-bold text-[15px] active:bg-nv-700">로그인</button>
+    <div class="flex items-center justify-center gap-4 mt-5 text-[13px] text-g-400">
+      <span class="cursor-pointer" @click="toast('카카오 알림톡으로 인증번호를 발송했습니다')">인증번호 찾기</span>
+      <span class="text-g-300">|</span>
+      <span class="cursor-pointer" @click="toast('카카오톡 상담으로 연결됩니다')">수강 문의</span>
+    </div>
+  </div>
+  <p class="text-center text-[10px] text-g-300 pb-6">케빈샘AI코딩 · 안산선부캠퍼스</p>
+</div>
+</template>
+
+<!-- ===== 2. 홈 ===== -->
+<template x-if="p==='home'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-nv-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+    <div class="flex items-center justify-between mb-5">
+      <div><p class="text-nv-200 text-[12px]">안녕하세요</p><h2 class="text-[20px] font-bold mt-0.5" x-text="userName+'님'"></h2></div>
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm" x-text="userName[0]"></div>
+    </div>
+    <div class="bg-white/15 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3"><span class="text-nv-100 text-[12px]">남은 수업</span><span class="text-white/70 text-[12px]">안산선부캠퍼스</span></div>
+      <div class="flex items-end gap-2">
+        <span class="text-[42px] font-extrabold leading-none" x-text="remaining"></span><span class="text-[14px] text-nv-100 pb-1.5">회</span>
+        <div class="flex-1"></div>
+        <button @click="go('booking')" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] active:scale-[.97]">예약하기</button>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 -mt-3 space-y-4">
+    <div class="card p-4 grid grid-cols-4 gap-1 fade s1">
+      <button @click="go('booking')" class="flex flex-col items-center gap-1.5 py-2"><div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div><span class="text-[11px] text-g-600">수업예약</span></button>
+      <button @click="go('dash')" class="flex flex-col items-center gap-1.5 py-2"><div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div><span class="text-[11px] text-g-600">학습현황</span></button>
+      <button @click="go('msg')" class="flex flex-col items-center gap-1.5 py-2 relative"><div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><div x-show="unreadTotal>0" class="absolute top-1 right-3 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center" x-text="unreadTotal"></div><span class="text-[11px] text-g-600">메시지</span></button>
+      <button @click="go('pay')" class="flex flex-col items-center gap-1.5 py-2"><div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="text-[11px] text-g-600">수강/결제</span></button>
+    </div>
+    <div class="fade s2">
+      <div class="flex justify-between items-center mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">다가오는 수업</h3><a @click="go('mybk')" class="text-[12px] text-nv-600 cursor-pointer font-medium">전체 &rsaquo;</a></div>
+      <template x-if="upcomingBookings.length"><div class="card p-4"><div class="flex items-center gap-3" x-data="{b:upcomingBookings[0]}"><div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center"><span class="text-[10px] text-nv-500" x-text="b.mo+'월'"></span><span class="text-[16px] font-extrabold text-nv-700 -mt-0.5" x-text="b.dy"></span></div><div class="flex-1"><p class="text-[14px] font-bold text-g-800" x-text="b.te+' 선생님'"></p><p class="text-[12px] text-g-400" x-text="b.tm+' · '+b.dn+'요일'"></p></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full" x-text="'D-'+b.dd"></span></div></div></template>
+      <template x-if="!upcomingBookings.length"><div class="card p-4 text-center text-g-400 text-sm py-8">예약된 수업이 없습니다<br><a @click="go('booking')" class="mt-2 inline-block text-nv-600 font-medium text-[13px] cursor-pointer">수업 예약하기 &rsaquo;</a></div></template>
+    </div>
+    <a @click="go('notice')" class="block fade s3 cursor-pointer"><div class="bg-amber-50 rounded-2xl p-4 flex items-center gap-3"><div class="w-9 h-9 bg-amber-100 rounded-lg ic flex-shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#92400E" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="flex-1"><p class="text-[13px] font-bold text-g-800" x-text="notices[0].title"></p><p class="text-[11px] text-g-500 mt-0.5" x-text="notices[0].summary"></p></div><span class="text-g-300">&rsaquo;</span></div></a>
+    <div class="fade s4">
+      <div class="flex justify-between items-center mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">내 예약</h3><a @click="go('mybk')" class="text-[12px] text-nv-600 cursor-pointer font-medium">전체 &rsaquo;</a></div>
+      <template x-if="upcomingBookings.length"><div class="card divide-y divide-g-200"><template x-for="b in upcomingBookings.slice(0,2)" :key="b.idx"><div class="p-4 flex items-center gap-3"><div class="w-10 h-10 bg-nv-50 rounded-lg flex flex-col items-center justify-center"><span class="text-[9px] text-nv-500" x-text="b.mo+'월'"></span><span class="text-[14px] font-extrabold text-nv-700 -mt-0.5" x-text="b.dy"></span></div><div class="flex-1"><p class="text-[13px] font-bold text-g-800" x-text="b.te+' 선생님'"></p><p class="text-[11px] text-g-400" x-text="b.tm"></p></div><span class="text-[10px] font-bold text-nv-600 bg-nv-50 px-2 py-0.5 rounded-full" x-text="'D-'+b.dd"></span></div></template></div></template>
+      <template x-if="!upcomingBookings.length"><div class="card p-4 text-center text-g-400 text-sm py-6">예약된 수업이 없습니다</div></template>
+    </div>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 3. 예약 ===== -->
+<template x-if="p==='booking'">
+<div class="min-h-screen bg-g-100 pb-24 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="bkBack()" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1" x-text="bkTitle"></h1><span class="text-[12px] text-nv-600 font-bold" x-text="bkNum"></span>
+  </div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500 transition-all duration-500" :style="'width:'+bkProg+'%'"></div></div>
+  <div class="px-4 pt-4 space-y-3">
+    <div class="flex items-center gap-2 px-1"><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-1 rounded-full" x-text="'남은 수업 '+remaining+'회'"></span></div>
+    <div class="card overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-g-100">
+        <button @click="cmv(-1)" class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span class="font-bold text-g-800" x-text="cy+'년 '+(cmo+1)+'월'"></span>
+        <button @click="cmv(1)" class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="p-3"><div class="grid grid-cols-7 text-center mb-1"><template x-for="d in '일월화수목금토'.split('')"><span class="text-[11px] font-medium py-1" :class="d==='일'?'text-red-400':d==='토'?'text-blue-400':'text-g-400'" x-text="d"></span></template></div>
+      <div class="grid grid-cols-7 gap-1"><template x-for="c in calCells" :key="c.k"><button @click="c.a&&pickDate(c.d)" class="aspect-square flex items-center justify-center rounded-full text-[13px] transition" :class="{'bg-nv-500 text-white font-bold shadow-md':c.d===sd?.d,'bg-nv-50 text-nv-700 font-medium':c.a&&c.d!==sd?.d,'text-g-300':!c.a&&c.d>0}" x-text="c.d>0?c.d:''"></button></template></div></div>
+    </div>
+    <template x-if="sd&&st===null"><div class="space-y-2 fade"><h3 class="text-[14px] font-bold text-g-800 px-1" x-text="(sd.m+1)+'/'+sd.d+' 시간 선택'"></h3>
+      <template x-for="(s,i) in tSlots" :key="i"><button @click="s.c>0&&pickTime(i)" class="w-full card px-4 py-3.5 flex items-center justify-between active:bg-g-50 transition" :class="!s.c&&'opacity-30 cursor-default'">
+        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-g-50 rounded-lg ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><p class="text-[15px] font-bold text-g-800" x-text="s.t"></p><p class="text-[11px] text-g-400 mt-0.5" x-text="s.c>0?'예약 가능':'마감'"></p></div></div>
+        <span class="text-[11px] font-bold px-3 py-1 rounded-full" :class="s.c>0?'bg-nv-50 text-nv-600':'bg-g-100 text-g-400'" x-text="s.c>0?'강사 '+s.c+'명':'마감'"></span>
+      </button></template>
+    </div></template>
+    <template x-if="st!==null&&ste===null"><div class="space-y-2 fade"><h3 class="text-[14px] font-bold text-g-800 px-1">강사 선택</h3>
+      <template x-for="(t,i) in avT" :key="t.id"><button @click="pickTeacher(i)" class="w-full card p-4 flex items-center gap-3 active:bg-g-50 transition" :class="ste===i&&'ring-2 ring-nv-400'">
+        <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg" x-text="t.ini"></div>
+        <div class="flex-1 text-left"><p class="text-[14px] font-bold text-g-800" x-text="t.n+' 선생님'"></p><p class="text-[12px] text-g-400" x-text="t.f"></p><span x-show="t.tag" class="inline-block mt-1 text-[10px] font-bold bg-g-100 text-g-600 px-2 py-0.5 rounded" x-text="t.tag"></span></div>
+        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px]" :class="ste===i?'bg-nv-500 border-nv-500 text-white':'border-g-300'"><span x-show="ste===i">✓</span></div>
+      </button></template>
+    </div></template>
+    <template x-if="ste!==null"><div class="bg-nv-50 rounded-xl p-4 flex items-center gap-3 fade"><div class="w-10 h-10 bg-nv-100 rounded-full flex items-center justify-center font-bold text-nv-700" x-text="avT[ste].ini"></div><div><p class="text-sm font-bold text-nv-800" x-text="avT[ste].n+' 선생님'"></p><p class="text-xs text-nv-500" x-text="(sd.m+1)+'/'+sd.d+' '+tSlots[st].t"></p></div></div></template>
+  </div>
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20"><button @click="ste!==null&&go('repeat')" :disabled="ste===null" class="w-full h-[50px] rounded-xl font-bold text-[15px] transition active:scale-[.98]" :class="ste!==null?'bg-nv-600 text-white':'bg-g-200 text-g-400'" x-text="ste!==null?'다음 단계 →':'강사를 선택하세요'"></button></div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 4. 반복예약 ===== -->
+<template x-if="p==='repeat'">
+<div class="min-h-screen bg-g-100 pb-24 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('booking')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800 flex-1">반복 예약</h1><span class="text-[12px] text-nv-600 font-bold">5/7</span></div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500" style="width:71%"></div></div>
+  <div class="px-4 pt-4 space-y-4">
+    <div><h2 class="text-[18px] font-bold text-g-900">매주 같은 시간에<br>추가 예약하시겠어요?</h2><p class="text-[13px] text-g-400 mt-1">최대 12주, 잔여 횟수 이내</p></div>
+    <div class="bg-nv-50 rounded-xl p-3 flex items-center gap-3"><span class="text-[11px] font-bold text-nv-600">남은 수업</span><span class="text-[14px] font-extrabold text-nv-700" x-text="remaining+'회'"></span><span class="text-[12px] text-g-400 ml-auto" x-text="'선택: '+rSel.length+'회'"></span></div>
+    <div class="space-y-1.5"><template x-for="(w,i) in rWeeks" :key="i">
+      <button @click="togRep(i)" class="w-full flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm transition active:scale-[.98]" :class="{'ring-2 ring-nv-400 bg-nv-50':i===0,'ring-2 ring-nv-300 bg-nv-50':rSel.includes(i)&&i!==0,'opacity-30 cursor-default':w.dis}">
+        <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center text-[10px]" :class="{'bg-nv-500 border-nv-500 text-white':i===0||rSel.includes(i),'border-g-300':!rSel.includes(i)&&i!==0}"><span x-show="i===0||rSel.includes(i)">✓</span></div>
+        <span class="flex-1 text-left text-[13px] font-medium text-g-700" x-text="w.lb"></span>
+        <span class="text-[10px] font-bold" :class="{'text-nv-600':i===0,'text-nv-500':rSel.includes(i)&&i!==0,'text-red-400':w.dis,'text-g-300':!rSel.includes(i)&&!w.dis&&i!==0}" x-text="i===0?'기본':(w.dis?'마감':(rSel.includes(i)?'선택됨':'선택'))"></span>
+      </button>
+    </template></div>
+    <p class="text-center text-[13px] text-g-400">총 <strong class="text-nv-600" x-text="rSel.length+'회'"></strong> 예약 · 잔여 <strong class="text-nv-600" x-text="(remaining-rSel.length)+'회'"></strong></p>
+  </div>
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20"><div class="flex gap-2"><button @click="rSel=[0];go('confirm')" class="flex-1 h-[50px] bg-g-200 rounded-xl font-bold text-[14px] text-g-500 active:bg-g-300">1회만 예약</button><button @click="go('confirm')" class="flex-1 h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[14px] active:bg-nv-700">선택 완료</button></div></div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 5. 예약확인 ===== -->
+<template x-if="p==='confirm'">
+<div class="min-h-screen bg-g-100 pb-24 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200"><button @click="go('repeat')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800 flex-1">예약 확인</h1><span class="text-[12px] text-nv-600 font-bold">6/7</span></div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500" style="width:85%"></div></div>
+  <div class="px-4 pt-4"><div class="card overflow-hidden">
+    <div class="bg-nv-600 p-5 text-center text-white"><div class="w-10 h-10 mx-auto mb-2 bg-white/20 rounded-full ic"><svg width="20" height="20" viewBox="0 0 24 24" stroke="white" stroke-width="1.5" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></div><h2 class="font-bold">예약 내역을 확인하세요</h2></div>
+    <div class="divide-y divide-g-200">
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">수강생</span><span class="text-[13px] font-bold" x-text="userName"></span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">강사</span><span class="text-[13px] font-bold" x-text="cfmTe+' 선생님'"></span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">수업일</span><span class="text-[13px] font-bold text-right max-w-[200px]" x-text="cfmDates"></span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">시간</span><span class="text-[13px] font-bold" x-text="cfmTime"></span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">예약 횟수</span><span class="text-[13px] font-bold" x-text="rSel.length+'회'"></span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">캠퍼스</span><span class="text-[13px] font-bold">안산선부캠퍼스</span></div>
+      <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">예약 후 잔여</span><span class="text-[13px] font-extrabold text-nv-600" x-text="(remaining-rSel.length)+'회'"></span></div>
+    </div>
+  </div></div>
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20"><button @click="doBooking()" class="w-full h-[50px] bg-red-500 text-white rounded-xl font-bold text-[15px] active:bg-red-600">예약 확정하기</button></div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 6. 예약완료 ===== -->
+<template x-if="p==='complete'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 border-b border-g-200 text-center"><h1 class="text-[16px] font-bold text-g-800">예약 완료</h1></div>
+  <div class="h-1 bg-nv-500"></div>
+  <div class="px-4 pt-10 text-center">
+    <div class="w-20 h-20 bg-nv-50 rounded-full ic mx-auto mb-5 pop"><svg width="36" height="36" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h2 class="text-[20px] font-extrabold text-g-900 mb-1">예약 완료!</h2>
+    <p class="text-[14px] text-g-400">카카오톡으로 예약 확인 메시지를<br>보내드렸습니다</p>
+    <div class="card p-5 text-left mt-6 space-y-2.5">
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">강사</span><span class="font-bold" x-text="cfmTe+' 선생님'"></span></div>
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">예약</span><span class="font-bold" x-text="lastBookedCount+'회'"></span></div>
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">잔여 수업</span><span class="font-bold text-nv-600" x-text="remaining+'회'"></span></div>
+    </div>
+    <div class="flex gap-2 mt-6"><button @click="go('mybk')" class="flex-1 h-12 bg-g-100 rounded-xl font-bold text-g-600 text-[13px] active:bg-g-200">내 예약</button><button @click="resetBk();go('home')" class="flex-1 h-12 bg-nv-600 text-white rounded-xl font-bold text-[13px] active:bg-nv-700">홈으로</button></div>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 7. 내 예약 ===== -->
+<template x-if="p==='mybk'">
+<div class="min-h-screen bg-g-100 pb-24 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">내 예약</h1></div>
+  <div class="px-4 pt-4 space-y-3">
+    <div class="bg-nv-50 rounded-xl p-3 flex items-center gap-3"><span class="text-[24px] font-extrabold text-nv-700" x-text="remaining"></span><div><p class="text-[11px] text-nv-500 font-medium">남은 수업</p><p class="text-[13px] font-bold text-nv-700" x-text="remaining+'회'"></p></div></div>
+    <template x-if="!bookings.length"><div class="text-center py-16 text-g-400"><div class="w-12 h-12 mx-auto mb-3 ic"><svg width="28" height="28" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><p class="text-[14px]">예약 내역이 없습니다</p></div></template>
+    <template x-for="(b,i) in bookings" :key="b.idx"><div class="card p-4">
+      <div class="flex justify-between items-center mb-2"><span class="text-[15px] font-bold text-g-800" x-text="b.dl"></span><span class="text-[10px] font-bold px-2.5 py-1 rounded-full" :class="b.st===1?'bg-nv-50 text-nv-600':'bg-red-50 text-red-500'" x-text="b.st===1?'예약확정':'취소됨'"></span></div>
+      <p class="text-[12px] text-g-400" x-text="b.tm+' · '+b.te+' 선생님'"></p>
+      <template x-if="b.st===1"><div class="flex gap-2 mt-3 pt-3 border-t border-g-100">
+        <button @click="cancelBk(i)" class="flex-1 py-2 rounded-lg text-[12px] font-bold border border-red-400 text-red-500 active:bg-red-50">예약 취소</button>
+        <button @click="toast('취소 후 재예약해주세요')" class="flex-1 py-2 rounded-lg text-[12px] font-bold border border-g-200 text-g-400 active:bg-g-50">변경</button>
+      </div></template>
+    </div></template>
+  </div>
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20"><button @click="resetBk();go('booking')" class="w-full h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[15px] active:bg-nv-700">새 예약하기</button></div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 8. 학습 대시보드 ===== -->
+<template x-if="p==='dash'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">학습 현황</h1></div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 fade"><div class="grid grid-cols-3 gap-4 text-center"><div><p class="text-[28px] font-extrabold text-g-900" x-text="completedCount"></p><p class="text-[11px] text-g-400 mt-1">완료 수업</p></div><div><p class="text-[28px] font-extrabold text-nv-600" x-text="remaining"></p><p class="text-[11px] text-g-400 mt-1">남은 수업</p></div><div><p class="text-[28px] font-extrabold text-blue-600" x-text="attendRate+'%'"></p><p class="text-[11px] text-g-400 mt-1">출석률</p></div></div></div>
+    <div class="card p-4 fade s1"><p class="text-[12px] text-g-400 mb-2">수강 과정</p><p class="text-[15px] font-bold text-g-800">AI활용 실무 과정</p><div class="mt-3 h-2 bg-g-200 rounded-full overflow-hidden"><div class="h-full bg-nv-500 rounded-full transition-all" :style="'width:'+progressRate+'%'"></div></div><p class="text-[11px] text-g-400 mt-2" x-text="'진도율 '+progressRate+'% · 20회 중 '+completedCount+'회 완료'"></p></div>
+    <div class="fade s2"><h3 class="text-[14px] font-bold text-g-800 mb-3 px-1">최근 수업</h3><div class="card divide-y divide-g-100">
+      <template x-for="l in lessonHistory" :key="l.topic"><div class="p-4 flex items-center gap-3"><div class="w-9 h-9 bg-nv-50 rounded-lg ic"><svg width="16" height="16" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></div><div><p class="text-[13px] font-medium text-g-800" x-text="l.topic"></p><p class="text-[11px] text-g-400" x-text="l.date+' · '+l.teacher+' 선생님'"></p></div></div></template>
+    </div></div>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 9. 메시지 ===== -->
+<template x-if="p==='msg'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">메시지</h1></div>
+  <div class="px-4 pt-4 space-y-2">
+    <template x-for="cv in convos" :key="cv.tid"><div @click="openChat(cv.tid)" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg" x-text="cv.name[0]"></div>
+      <div class="flex-1 min-w-0"><div class="flex justify-between"><p class="text-[14px] font-bold text-g-800" x-text="cv.name+' 선생님'"></p><span class="text-[10px] text-g-400" x-text="cv.lastTime"></span></div><p class="text-[12px] text-g-400 truncate mt-0.5" x-text="cv.lastMsg"></p></div>
+      <div x-show="cv.unread>0" class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold flex-shrink-0" x-text="cv.unread"></div>
+    </div></template>
+    <div @click="go('notice')" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer"><div class="w-12 h-12 bg-g-100 rounded-full ic"><svg width="20" height="20" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><div class="flex-1 min-w-0"><div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">케빈샘 AI코딩</p><span class="text-[10px] text-g-400">3/18</span></div><p class="text-[12px] text-g-400 truncate mt-0.5">4월 특강 신청이 시작되었습니다.</p></div></div>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 10. 채팅방 ===== -->
+<template x-if="p==='chat'">
+<div class="min-h-screen bg-g-100 flex flex-col fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('msg')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><div class="flex-1"><p class="text-[15px] font-bold text-g-800" x-text="chatTarget.name+' 선생님'"></p><p class="text-[11px] text-g-400" x-text="chatTarget.field"></p></div></div>
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3" id="chatArea">
+    <template x-for="(m,i) in chatMsgs" :key="i">
+      <div :class="m.mine?'flex justify-end':'flex gap-2'">
+        <template x-if="!m.mine&&m.showAv"><div class="w-8 h-8 bg-g-100 rounded-full flex items-center justify-center text-g-600 font-bold text-xs flex-shrink-0 mt-4" x-text="chatTarget.name[0]"></div></template>
+        <template x-if="!m.mine&&!m.showAv"><div class="w-8 flex-shrink-0"></div></template>
+        <div :class="m.mine?'flex flex-col items-end':'flex flex-col'">
+          <template x-if="!m.mine&&m.showAv"><span class="text-[11px] font-medium text-g-500 mb-1" x-text="chatTarget.name+' 선생님'"></span></template>
+          <span class="text-[10px] text-g-400 mb-1" x-text="m.time"></span>
+          <div :class="m.mine?'bg-nv-500 text-white rounded-2xl rounded-tr-sm':'bg-white rounded-2xl rounded-tl-sm shadow-sm text-g-800'" class="px-4 py-2.5 max-w-[260px] text-[14px]" x-text="m.text"></div>
+        </div>
+      </div>
+    </template>
+  </div>
+  <div class="bg-white border-t border-g-200 px-4 py-3" x-data="{nm:''}">
+    <div class="flex items-center gap-2">
+      <input x-model="nm" @keydown.enter="nm.trim()&&(sendMsg(nm),nm='')" placeholder="메시지를 입력하세요" class="flex-1 h-[42px] px-4 bg-g-100 rounded-full text-[14px] placeholder-g-400">
+      <button @click="nm.trim()&&(sendMsg(nm),nm='')" :disabled="!nm.trim()" class="w-[42px] h-[42px] rounded-full ic transition" :class="nm.trim()?'bg-nv-500 text-white':'bg-g-200 text-g-400'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ===== 11. 수강/결제 ===== -->
+<template x-if="p==='pay'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">수강 / 결제</h1></div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 fade"><p class="text-[12px] font-bold text-nv-600 mb-3">현재 수강중</p><p class="text-[16px] font-bold text-g-800" x-text="curPlan.name"></p><p class="text-[12px] text-g-400 mt-1" x-text="curPlan.desc"></p><div class="h-px bg-g-200 my-4"></div>
+      <div class="grid grid-cols-2 gap-3"><div><p class="text-[11px] text-g-400">결제일</p><p class="text-[13px] font-medium" x-text="curPlan.date"></p></div><div><p class="text-[11px] text-g-400">결제금액</p><p class="text-[13px] font-medium" x-text="curPlan.amount"></p></div><div><p class="text-[11px] text-g-400">수강기간</p><p class="text-[13px] font-medium" x-text="curPlan.period"></p></div><div><p class="text-[11px] text-g-400">남은 수업</p><p class="text-[13px] font-extrabold text-nv-600" x-text="remaining+'회'"></p></div></div></div>
+    <div class="fade s1"><h3 class="text-[14px] font-bold text-g-800 mb-3 px-1">수강신청</h3><div class="space-y-2">
+      <template x-for="pk in packages" :key="pk.code"><div @click="enrollPkg(pk)" class="card p-4 active:bg-g-50 cursor-pointer relative overflow-hidden">
+        <template x-if="pk.best"><div class="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-bold px-3 py-0.5 rounded-bl-lg">BEST</div></template>
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800" x-text="pk.name"></p><p class="text-[14px] font-extrabold text-nv-600" x-text="pk.price"></p></div><p class="text-[11px] text-g-400 mt-1" x-text="pk.desc"></p>
+      </div></template>
+    </div></div>
+    <template x-if="payHistory.length"><div class="fade s2"><h3 class="text-[14px] font-bold text-g-800 mb-3 px-1">결제 내역</h3><div class="card divide-y divide-g-100">
+      <template x-for="ph in payHistory" :key="ph.date"><div class="p-4 flex justify-between items-center"><div><p class="text-[13px] font-medium text-g-800" x-text="ph.name"></p><p class="text-[11px] text-g-400" x-text="ph.date"></p></div><p class="text-[13px] font-bold text-g-700" x-text="ph.amount"></p></div></template>
+    </div></div></template>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 12. 공지사항 ===== -->
+<template x-if="p==='notice'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">공지사항</h1></div>
+  <div class="bg-white px-4 py-2 border-b border-g-200 flex gap-2">
+    <button @click="nTab='all'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='all'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">전체</button>
+    <button @click="nTab='notice'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='notice'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">공지</button>
+    <button @click="nTab='event'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='event'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">이벤트</button>
+  </div>
+  <div class="px-4 pt-4 space-y-2">
+    <template x-for="n in filteredNotices" :key="n.title">
+      <div @click="viewNotice=n;go('noticeDetail')" class="card p-4 cursor-pointer active:bg-g-50">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-[9px] font-bold px-2 py-0.5 rounded-md" :class="n.isNew?'text-nv-600 bg-nv-50':n.type==='event'?'text-orange-600 bg-orange-50':'text-g-500 bg-g-100'" x-text="n.isNew?'NEW':n.type==='event'?'이벤트':'공지'"></span>
+          <span class="text-[11px] text-g-400" x-text="n.date"></span>
+        </div>
+        <p class="text-[14px] font-bold text-g-800" x-text="n.title"></p>
+        <p class="text-[12px] text-g-400 mt-1" x-text="n.summary"></p>
+      </div>
+    </template>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 12-1. 공지 상세 ===== -->
+<template x-if="p==='noticeDetail'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('notice')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">공지사항</h1></div>
+  <div class="px-4 pt-4"><div class="card p-5">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-[9px] font-bold px-2 py-0.5 rounded-md" :class="viewNotice?.type==='event'?'text-orange-600 bg-orange-50':'text-g-500 bg-g-100'" x-text="viewNotice?.type==='event'?'이벤트':'공지'"></span>
+      <span class="text-[11px] text-g-400" x-text="viewNotice?.date"></span>
+    </div>
+    <h2 class="text-[18px] font-bold text-g-900 mb-4" x-text="viewNotice?.title"></h2>
+    <p class="text-[14px] text-g-600 leading-relaxed" x-text="viewNotice?.content"></p>
+  </div></div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- ===== 13. MY ===== -->
+<template x-if="p==='my'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30"><button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button><h1 class="text-[16px] font-bold text-g-800">MY</h1></div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 text-center fade">
+      <div class="w-16 h-16 bg-nv-500 rounded-full flex items-center justify-center mx-auto text-white font-bold text-xl" x-text="userName[0]"></div>
+      <h3 class="text-[18px] font-bold text-g-800 mt-3" x-text="userName"></h3>
+      <p class="text-[12px] text-g-400 mt-0.5">안산선부캠퍼스 · AI활용 과정</p>
+      <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-g-100"><div><p class="text-[18px] font-extrabold text-nv-600" x-text="remaining"></p><p class="text-[10px] text-g-400">남은 수업</p></div><div><p class="text-[18px] font-extrabold text-g-800" x-text="completedCount"></p><p class="text-[10px] text-g-400">완료</p></div><div><p class="text-[18px] font-extrabold text-blue-600" x-text="attendRate+'%'"></p><p class="text-[10px] text-g-400">출석률</p></div></div>
+    </div>
+    <div class="card overflow-hidden fade s1">
+      <template x-for="m in myMenus" :key="m.label"><button @click="go(m.page)" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 last:border-0 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic" x-html="m.icon"></div><span class="text-[14px] text-g-700" x-text="m.label"></span></div><span class="text-g-300">&rsaquo;</span></button></template>
+    </div>
+    <div class="card overflow-hidden fade s2">
+      <button @click="toast('카카오톡 상담으로 연결됩니다')" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><span class="text-[14px] text-g-700">카카오톡 상담</span></div><span class="text-g-300">&rsaquo;</span></button>
+      <button @click="toast('0507-1307-9398')" class="w-full flex items-center justify-between px-5 py-4 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.88.37 1.73.7 2.55a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.82.33 1.67.57 2.55.7A2 2 0 0122 16.92z"/></svg></div><span class="text-[14px] text-g-700">전화 문의</span></div><span class="text-[12px] text-g-400">0507-1307-9398</span></button>
+    </div>
+    <button @click="go('login')" class="w-full card px-5 py-4 text-left text-red-500 text-[14px] font-medium active:bg-g-50 fade s3">로그아웃</button>
+  </div>
+  <div x-html="tabH()"></div>
+</div>
+</template>
+
+<!-- 토스트 -->
+<div x-show="tm" x-transition class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-g-800 text-white px-5 py-2.5 rounded-xl text-[13px] font-medium shadow-lg z-[999] whitespace-nowrap" x-text="tm"></div>
+</div>
+
+<script>
+function app(){
+const T=[{id:'T1',n:'김코딩',f:'AI활용 / Python',tag:'인기',ini:'김'},{id:'T2',n:'박데이터',f:'데이터분석 / ML',tag:'추천',ini:'박'},{id:'T3',n:'이웹개발',f:'웹개발 / JS',tag:'NEW',ini:'이'}];
+const AV=[1,2,3,7,8,9,10,14,15,16,17,21,22,23,24,28,29,30];
+const TS=[{t:'10:00~10:50',te:['T1','T2'],c:2},{t:'11:00~11:50',te:['T1'],c:1},{t:'14:00~14:50',te:['T1','T2','T3'],c:3},{t:'16:00~16:50',te:[],c:0},{t:'17:00~17:50',te:['T3'],c:1}];
+const DK=['일','월','화','수','목','금','토'];
+const TI={home:`<svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,booking:`<svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>`,dash:`<svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>`,msg:`<svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>`,my:`<svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`};
+const MI=[
+  {page:'mybk',label:'내 예약',icon:'<svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>'},
+  {page:'dash',label:'학습 현황',icon:'<svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>'},
+  {page:'pay',label:'수강 / 결제',icon:'<svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'},
+  {page:'notice',label:'공지사항',icon:'<svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'}
+];
+return{
+  p:'login',userName:'김수강',userCode:'1234',loginErr:'',remaining:7,totalClass:20,bookings:[],tm:'',
+  cy:2026,cmo:3,sd:null,st:null,ste:null,tSlots:TS,rSel:[0],lastBookedCount:0,
+  nTab:'all',viewNotice:null,chatTid:null,
+  curPlan:{name:'AI활용 실무 과정',desc:'진로반 주2회 · 20회 패키지',date:'2026.03.01',amount:'290,000원',period:'03.01 ~ 04.30'},
+  packages:[{code:101,name:'취미반 주2회',price:'210,000원',desc:'94.5분/회 · 주2회 4주',cnt:8,best:false},{code:102,name:'진로반 주2회',price:'290,000원',desc:'157.5분/회 · 주2회 4주',cnt:20,best:false},{code:103,name:'월정기 진로반',price:'450,000원',desc:'157.5분/회 · 주5회',cnt:40,best:true}],
+  payHistory:[{name:'진로반 주2회',date:'2026.03.01',amount:'290,000원'}],
+  notices:[
+    {title:'4월 AI활용 특강 안내',summary:'ChatGPT, Claude 실전 활용법',content:'ChatGPT, Midjourney, Claude를 활용한 실전 AI 활용법을 배우는 특강이 4월에 진행됩니다. 수강생 여러분의 많은 관심 부탁드립니다.',type:'notice',date:'2026.03.20',isNew:true},
+    {title:'설 연휴 휴원 안내',summary:'2/7~2/11 휴원',content:'2/7(금)~2/11(화) 설 연휴 기간 동안 휴원합니다. 수업은 2/12(수)부터 정상 진행됩니다.',type:'notice',date:'2026.03.15',isNew:false},
+    {title:'친구 추천 이벤트 - 1회 무료!',summary:'추천인+피추천인 1회 무료',content:'성인반 친구를 추천하시면 추천인과 피추천인 모두 1회 무료 수업을 드립니다. 카카오톡으로 문의해주세요.',type:'event',date:'2026.03.10',isNew:false},
+    {title:'Python 기초 무료 특강',summary:'3월 마지막 주 진행',content:'Python을 처음 접하시는 분들을 위한 무료 특강이 3월 마지막 주에 진행됩니다.',type:'event',date:'2026.03.05',isNew:false}
+  ],
+  convos:[
+    {tid:'T1',name:'김코딩',field:'AI활용 / Python',lastMsg:'OpenAI API 키만 준비해주시면 됩니다.',lastTime:'오늘',unread:2},
+    {tid:'T2',name:'박데이터',field:'데이터분석 / ML',lastMsg:'과제 확인했습니다. 잘 하셨어요!',lastTime:'어제',unread:0}
+  ],
+  chatMsgs:[],
+  chatTarget:{name:'',field:''},
+  lessonHistory:[
+    {topic:'ChatGPT API 활용',date:'3/19',teacher:'김코딩'},
+    {topic:'Python 데이터 분석',date:'3/17',teacher:'박데이터'},
+    {topic:'AI 이미지 생성',date:'3/14',teacher:'김코딩'},
+    {topic:'Pandas 기초',date:'3/12',teacher:'박데이터'},
+    {topic:'ChatGPT 프롬프트 작성법',date:'3/10',teacher:'김코딩'}
+  ],
+  myMenus:MI,
+  get upcomingBookings(){return this.bookings.filter(b=>b.st===1).sort((a,b)=>a.dt-b.dt)},
+  get completedCount(){return this.totalClass-this.remaining},
+  get attendRate(){const t=this.completedCount;return t>0?Math.round((t/(t+1))*100):0},
+  get progressRate(){return Math.round(this.completedCount/this.totalClass*100)},
+  get unreadTotal(){return this.convos.reduce((s,c)=>s+c.unread,0)},
+  get filteredNotices(){return this.nTab==='all'?this.notices:this.notices.filter(n=>n.type===this.nTab)},
+  get calCells(){const f=new Date(this.cy,this.cmo,1).getDay(),l=new Date(this.cy,this.cmo+1,0).getDate();let c=[];for(let i=0;i<f;i++)c.push({k:'e'+i,d:0,a:false});for(let d=1;d<=l;d++)c.push({k:'d'+d,d,a:AV.includes(d)});return c},
+  get avT(){return this.st===null?[]:T.filter(t=>TS[this.st].te.includes(t.id))},
+  get bkTitle(){return this.st!==null?'강사 선택':this.sd?'시간 선택':'날짜 선택'},
+  get bkNum(){return this.st!==null?'4/7':this.sd?'3/7':'2/7'},
+  get bkProg(){return this.st!==null?57:this.sd?42:28},
+  get rWeeks(){if(!this.sd||this.st===null)return[];const b=new Date(this.sd.y,this.sd.m,this.sd.d),dis=[6,9];return Array.from({length:12},(_,w)=>{const n=new Date(b.getTime()+w*7*864e5);return{lb:(n.getMonth()+1)+'/'+n.getDate()+' ('+DK[n.getDay()]+') '+TS[this.st].t,dis:dis.includes(w)}})},
+  get cfmTe(){return this.avT[this.ste]?.n||''},
+  get cfmTime(){return this.st!==null?TS[this.st].t:''},
+  get cfmDates(){if(!this.sd)return'';const b=new Date(this.sd.y,this.sd.m,this.sd.d);return this.rSel.map(w=>{const n=new Date(b.getTime()+w*7*864e5);return(n.getMonth()+1)+'/'+n.getDate()+'('+DK[n.getDay()]+')'}).join(', ')},
+  tabH(){const tabs=[{id:'home',l:'홈'},{id:'booking',l:'예약'},{id:'dash',l:'학습'},{id:'msg',l:'메시지'},{id:'my',l:'MY'}];const bkPages=['booking','repeat','confirm','complete','mybk'];
+    return `<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-200 z-50"><div class="flex py-1.5 px-2">${tabs.map(t=>{const on=this.p===t.id||(t.id==='booking'&&bkPages.includes(this.p));return`<button onclick="document.querySelector('[x-data]').__x.$data.go('${t.id}')" class="tab ${on?'on':''} flex-1 flex flex-col items-center gap-0.5 py-1.5${t.id==='msg'?' relative':''}">${TI[t.id]}${t.id==='msg'&&this.unreadTotal>0?`<div class="absolute top-0.5 right-1/4 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">${this.unreadTotal}</div>`:''}<span class="text-[10px]">${t.l}</span></button>`}).join('')}</div></nav>`;},
+  go(pg){this.p=pg},
+  doLogin(){if(!this.userName.trim()){this.loginErr='이름을 입력하세요';return}if(this.userCode.length!==4){this.loginErr='인증번호 4자리를 입력하세요';return}this.loginErr='';this.p='home';this.toast(this.userName+'님, 환영합니다!')},
+  bkBack(){if(this.ste!==null)this.ste=null;else if(this.st!==null){this.st=null;this.ste=null}else if(this.sd)this.sd=null;else this.p='home'},
+  cmv(d){this.cmo+=d;if(this.cmo>11){this.cmo=0;this.cy++}if(this.cmo<0){this.cmo=11;this.cy--}this.sd=null;this.st=null;this.ste=null},
+  pickDate(d){this.sd={y:this.cy,m:this.cmo,d};this.st=null;this.ste=null},
+  pickTime(i){this.st=i;this.ste=null},
+  pickTeacher(i){this.ste=i},
+  togRep(i){if(i===0||this.rWeeks[i].dis)return;const p=this.rSel.indexOf(i);if(p>-1)this.rSel.splice(p,1);else{if(this.rSel.length>=this.remaining){this.toast('남은 수업 횟수를 초과할 수 없습니다');return}this.rSel.push(i)}},
+  doBooking(){const c=this.rSel.length;this.remaining-=c;this.lastBookedCount=c;const b=new Date(this.sd.y,this.sd.m,this.sd.d);this.rSel.forEach(w=>{const n=new Date(b.getTime()+w*7*864e5);this.bookings.push({idx:Date.now()+w,dt:n,dl:n.getFullYear()+'.'+(n.getMonth()+1)+'.'+n.getDate()+' ('+DK[n.getDay()]+')',mo:n.getMonth()+1,dy:n.getDate(),dn:DK[n.getDay()],tm:TS[this.st].t,te:this.cfmTe,st:1,dd:Math.max(1,Math.ceil((n-new Date())/(864e5)))})});this.p='complete';this.toast('카카오 알림톡을 발송했습니다')},
+  cancelBk(i){if(!confirm('이 예약을 취소하시겠습니까?\n취소 시 수업 1회가 복원됩니다.'))return;this.bookings[i].st=0;this.remaining++;this.toast('예약이 취소되었습니다. 1회 복원')},
+  resetBk(){this.sd=null;this.st=null;this.ste=null;this.rSel=[0]},
+  openChat(tid){const cv=this.convos.find(c=>c.tid===tid);this.chatTarget={name:cv.name,field:cv.field};
+    const msgs={T1:[{text:'선생님 다음 수업은 어떤 내용인가요?',mine:true,time:'오후 2:30',showAv:false},{text:'다음 수업에서는 ChatGPT API를 활용한 프롬프트 엔지니어링을 다룰 예정입니다.',mine:false,time:'오후 2:35',showAv:true},{text:'준비물이 있을까요?',mine:true,time:'오후 2:36',showAv:false},{text:'OpenAI API 키만 준비해주시면 됩니다. 수업 전에 발급 방법도 안내드릴게요!',mine:false,time:'오후 2:40',showAv:true}],T2:[{text:'선생님 과제 제출했습니다!',mine:true,time:'어제 오전 9:50',showAv:false},{text:'과제 확인했습니다. 잘 하셨어요!',mine:false,time:'어제 오전 10:15',showAv:true}]};
+    this.chatMsgs=msgs[tid]||[];cv.unread=0;this.p='chat';this.$nextTick(()=>{const el=document.getElementById('chatArea');if(el)el.scrollTop=el.scrollHeight})},
+  sendMsg(text){const now=new Date();const h=now.getHours();const m=now.getMinutes();const ampm=h>=12?'오후':'오전';const timeStr=ampm+' '+(h>12?h-12:h)+':'+String(m).padStart(2,'0');
+    this.chatMsgs.push({text,mine:true,time:timeStr,showAv:false});
+    this.$nextTick(()=>{const el=document.getElementById('chatArea');if(el)el.scrollTop=el.scrollHeight});
+    setTimeout(()=>{const replies=['네, 알겠습니다!','좋은 질문이에요. 수업 시간에 자세히 다루겠습니다.','확인했습니다. 감사합니다!','다음 수업 때 함께 실습해보아요.','궁금한 점이 있으면 언제든 물어보세요!'];
+      this.chatMsgs.push({text:replies[Math.floor(Math.random()*replies.length)],mine:false,time:timeStr,showAv:true});
+      const cv=this.convos.find(c=>c.tid===this.chatTid);if(cv)cv.lastMsg=text;cv.lastTime='방금';
+      this.$nextTick(()=>{const el=document.getElementById('chatArea');if(el)el.scrollTop=el.scrollHeight})
+    },1200)},
+  enrollPkg(pk){if(confirm(pk.name+'을(를) 수강신청하시겠습니까?\n결제금액: '+pk.price)){this.curPlan={name:pk.name+' (AI활용 과정)',desc:pk.desc,date:new Date().toISOString().slice(0,10).replace(/-/g,'.'),amount:pk.price,period:'신규 등록'};this.totalClass=pk.cnt;this.remaining=pk.cnt;this.bookings=[];this.payHistory.unshift({name:pk.name,date:new Date().toISOString().slice(0,10).replace(/-/g,'.'),amount:pk.price});this.toast(pk.name+' 수강신청이 완료되었습니다!')}},
+  toast(m){this.tm=m;setTimeout(()=>this.tm='',2500)}
+}
+}
+</script>
+</body>
+</html>

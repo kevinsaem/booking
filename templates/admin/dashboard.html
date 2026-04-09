@@ -1,0 +1,80 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}대시보드{% endblock %}
+{% block page_title %}대시보드{% endblock %}
+
+{% block content %}
+<!-- 통계 카드 -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">전체 수강생</p>
+    <p class="text-2xl font-bold text-slate-800">{{ stats.total_students }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">활성 수강생</p>
+    <p class="text-2xl font-bold text-green-600">{{ stats.active_students }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">오늘 예약</p>
+    <p class="text-2xl font-bold text-slate-800">{{ stats.today_bookings }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">이번 달 매출</p>
+    <p class="text-2xl font-bold text-slate-800">{{ "{:,}".format(stats.month_revenue) }}원</p>
+  </div>
+</div>
+
+<!-- 빠른 링크 -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+  <a href="/admin/students" class="bg-white rounded-lg border border-slate-200 p-3 text-center hover:bg-slate-50 transition-colors">
+    <p class="text-sm font-medium text-slate-700">수강생 관리</p>
+  </a>
+  <a href="/admin/schedule" class="bg-white rounded-lg border border-slate-200 p-3 text-center hover:bg-slate-50 transition-colors">
+    <p class="text-sm font-medium text-slate-700">시간표 관리</p>
+  </a>
+  <a href="/admin/bookings" class="bg-white rounded-lg border border-slate-200 p-3 text-center hover:bg-slate-50 transition-colors">
+    <p class="text-sm font-medium text-slate-700">예약 현황</p>
+  </a>
+  <a href="/admin/notices/new" class="bg-white rounded-lg border border-slate-200 p-3 text-center hover:bg-slate-50 transition-colors">
+    <p class="text-sm font-medium text-slate-700">공지 작성</p>
+  </a>
+</div>
+
+<!-- 최근 예약 -->
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="px-4 py-3 border-b border-slate-200">
+    <h2 class="text-sm font-semibold text-slate-800">최근 예약</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">수강생</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">멘토</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">일시</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">상태</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for b in recent_bookings %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 text-slate-700">{{ b.mem_MbrName or b.mem_mbrid }}</td>
+          <td class="px-4 py-2.5 text-slate-700">{{ b.teacher_name or b.sch_teach_id or '-' }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ b.l_s_date[:16] if b.l_s_date else '-' }}</td>
+          <td class="px-4 py-2.5">
+            {% if b.status == 1 %}
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">확정</span>
+            {% elif b.status == 0 %}
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700">취소</span>
+            {% else %}
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">{{ b.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">예약 내역이 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

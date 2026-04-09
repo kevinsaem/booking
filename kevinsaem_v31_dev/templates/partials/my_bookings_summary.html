@@ -1,0 +1,24 @@
+<!-- templates/partials/my_bookings_summary.html -->
+<!-- HTMX partial: 홈 화면의 내 예약 요약 (최대 2건) -->
+<!-- hx-get="/booking/partials/my-bookings-summary" 로 호출 -->
+{% if bookings %}
+<div class="card divide-y divide-gray-100">
+    {% for b in bookings[:2] %}
+    <div class="p-4 flex items-center gap-3">
+        <div class="w-10 h-10 bg-green-50 rounded-lg flex flex-col items-center justify-center">
+            <span class="text-[9px] text-green-500">{{ b.month }}월</span>
+            <span class="text-[14px] font-extrabold text-green-700 -mt-0.5">{{ b.day }}</span>
+        </div>
+        <div class="flex-1">
+            <p class="text-[13px] font-bold text-gray-800">{{ b.teacher_name }} 선생님</p>
+            <p class="text-[11px] text-gray-400">{{ b.time }}</p>
+        </div>
+        <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{{ b.dday }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card p-4 text-center text-gray-400 text-sm py-6">
+    예약된 수업이 없습니다
+</div>
+{% endif %}

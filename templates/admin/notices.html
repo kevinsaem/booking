@@ -1,0 +1,45 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}공지사항{% endblock %}
+{% block page_title %}공지사항{% endblock %}
+
+{% block content %}
+<div class="flex justify-end mb-4">
+  <a href="/admin/notices/new" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+    새 공지 작성
+  </a>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">ID</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">제목</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">작성일</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">관리</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for n in notices %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 text-slate-500 text-xs">{{ n.notice_id }}</td>
+          <td class="px-4 py-2.5 font-medium text-slate-800">{{ n.title }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ n.created_at }}</td>
+          <td class="px-4 py-2.5">
+            <div class="flex gap-2">
+              <a href="/admin/notices/edit/{{ n.notice_id }}" class="text-xs text-blue-500 hover:text-blue-700">수정</a>
+              <form method="post" action="/admin/notices/delete/{{ n.notice_id }}" onsubmit="return confirm('이 공지를 삭제하시겠습니까?')" class="inline">
+                <button type="submit" class="text-xs text-red-500 hover:text-red-700">삭제</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">공지사항이 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

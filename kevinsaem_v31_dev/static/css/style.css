@@ -1,0 +1,195 @@
+/* static/css/style.css */
+/* 케빈샘 AI코딩 - 네이버/카카오 스타일 디자인 시스템 */
+/* Tailwind CSS 빌드 결과가 이 파일에 포함됩니다 */
+/* 개발 단계에서는 CDN 사용, 배포 시 빌드로 교체 */
+
+/* ===== 기본 설정 ===== */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+html, body { overscroll-behavior-y: contain; }
+input:focus, select:focus, textarea:focus { outline: none; }
+::-webkit-scrollbar { display: none; }
+
+/* ===== 색상 변수 (네이버 그린 기반) ===== */
+:root {
+    --color-primary: #43A047;
+    --color-primary-light: #E8F5E9;
+    --color-primary-dark: #2E7D32;
+    --color-accent: #FBC02D;
+    --color-accent-light: #FFF9C4;
+    --color-danger: #E53935;
+    --color-danger-light: #FFEBEE;
+    --color-text: #212121;
+    --color-text-sub: #757575;
+    --color-text-hint: #BDBDBD;
+    --color-bg: #F5F5F5;
+    --color-card: #FFFFFF;
+    --color-border: #EEEEEE;
+}
+
+/* ===== 애니메이션 ===== */
+.fade-up {
+    animation: fadeUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-up.s1 { animation-delay: 0.05s; }
+.fade-up.s2 { animation-delay: 0.10s; }
+.fade-up.s3 { animation-delay: 0.15s; }
+.fade-up.s4 { animation-delay: 0.20s; }
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+.pop-in {
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ===== HTMX 로딩 인디케이터 ===== */
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator {
+    display: inline-flex;
+}
+.htmx-request .htmx-content {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+/* ===== 탭바 스타일 ===== */
+.tab-item {
+    color: #BDBDBD;
+    transition: color 0.15s;
+}
+.tab-item.active {
+    color: #43A047;
+    font-weight: 700;
+}
+.tab-item span:first-child {
+    filter: grayscale(100%) opacity(0.3);
+}
+.tab-item.active span:first-child {
+    filter: none;
+}
+
+/* ===== 카드 스타일 ===== */
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+}
+.card-sm {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.02);
+}
+
+/* ===== 입력 필드 ===== */
+.input-field {
+    width: 100%;
+    height: 50px;
+    padding: 0 16px;
+    background: #F5F5F5;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #212121;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+.input-field::placeholder {
+    color: #BDBDBD;
+}
+.input-field:focus {
+    background: #EEEEEE;
+    box-shadow: 0 0 0 2px rgba(67, 160, 71, 0.2);
+}
+
+/* ===== 버튼 스타일 ===== */
+.btn-primary {
+    width: 100%;
+    height: 50px;
+    background: #43A047;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+.btn-primary:active {
+    background: #388E3C;
+}
+.btn-primary:disabled {
+    background: #E0E0E0;
+    color: #9E9E9E;
+    cursor: default;
+}
+
+.btn-secondary {
+    width: 100%;
+    height: 50px;
+    background: #F5F5F5;
+    color: #616161;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+.btn-secondary:active {
+    background: #EEEEEE;
+}
+
+/* ===== 안전 영역 (아이폰 하단) ===== */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== 뱃지 ===== */
+.badge-new {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #43A047;
+    background: #E8F5E9;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.badge-notice {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #757575;
+    background: #F5F5F5;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.badge-event {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #E65100;
+    background: #FFF3E0;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* ===== 구분선 ===== */
+.divider {
+    height: 1px;
+    background: #EEEEEE;
+}
+.divider-thick {
+    height: 8px;
+    background: #F5F5F5;
+}

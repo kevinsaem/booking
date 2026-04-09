@@ -1,0 +1,109 @@
+<!-- templates/booking/agreement_history.html -->
+<!-- 화면: 서명 이력 조회 + 계약서 본문 (MY페이지에서 접근) -->
+{% extends "base.html" %}
+
+{% block title %}계약서 확인 - 케빈샘AI코딩학원{% endblock %}
+
+{% block head %}
+<style>
+  .agreement-body h1 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; color: #424242; }
+  .agreement-body h2 { font-size: 15px; font-weight: 700; margin: 14px 0 6px; color: #424242; }
+  .agreement-body h3 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #616161; }
+  .agreement-body p { margin: 6px 0; }
+  .agreement-body ol, .agreement-body ul { padding-left: 20px; margin: 6px 0; }
+  .agreement-body li { margin: 3px 0; }
+  .agreement-body hr { border: none; border-top: 1px solid #E0E0E0; margin: 12px 0; }
+  .agreement-body table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px; }
+  .agreement-body th, .agreement-body td { border: 1px solid #E0E0E0; padding: 6px 8px; text-align: left; }
+  .agreement-body th { background: #F5F5F5; font-weight: 600; }
+  .agreement-body strong { font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/mypage" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">계약서 확인</h1>
+  </div>
+
+  <div class="px-4 pt-4 space-y-3">
+
+    {% if history %}
+      {% for item in history %}
+      <!-- 서명 정보 카드 -->
+      <div class="card p-4 fade">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[14px] font-medium text-g-800">{{ item.title }}</p>
+            <p class="text-[12px] text-g-400 mt-0.5">{{ item.course_type }} · {{ item.version }}</p>
+          </div>
+          <span class="text-[11px] bg-nv-50 text-nv-700 px-2 py-1 rounded-full font-medium">
+            서명완료
+          </span>
+        </div>
+
+        <!-- 서명 이미지 -->
+        <div class="mt-3 pt-3 border-t border-g-100">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <p class="text-[11px] text-g-400 mb-1">교육기관 서명</p>
+              <div class="bg-g-50 rounded-lg p-2 text-center">
+                <p class="text-[14px] font-medium text-g-700">이관희</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-[11px] text-g-400 mb-1">수강생 서명</p>
+              <div class="bg-g-50 rounded-lg p-1">
+                {% if item.signature_image %}
+                <img src="{{ item.signature_image }}" alt="수강생 서명"
+                     class="w-full h-[50px] object-contain">
+                {% else %}
+                <p class="text-[12px] text-g-400 text-center py-2">-</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-2 text-[11px] text-g-400">
+          {{ item.agreed_at[:16] if item.agreed_at else '-' }} · {{ item.device_info or '-' }}
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- 계약서 본문 -->
+      {% if content_html %}
+      <div class="card overflow-hidden fade" x-data="{ open: false }">
+        <button @click="open = !open"
+                class="w-full flex items-center justify-between px-4 py-3 active:bg-g-50">
+          <span class="text-[14px] font-medium text-g-700">계약서 내용 보기</span>
+          <svg :class="open && 'rotate-180'" class="w-5 h-5 text-g-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div x-show="open" x-collapse>
+          <div class="px-4 pb-4 text-[13px] leading-relaxed text-g-700 agreement-body border-t border-g-100 pt-3">
+            {{ content_html | safe }}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    {% else %}
+      <div class="text-center py-16 text-g-400">
+        <svg class="w-12 h-12 mx-auto mb-3 text-g-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <p class="text-[14px]">서명 이력이 없습니다.</p>
+      </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}

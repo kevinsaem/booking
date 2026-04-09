@@ -1,0 +1,191 @@
+/* static/css/style.css */
+/* 케빈샘AI코딩 - 프로토타입 v3 완전 동일 CSS */
+/* Tailwind CSS CDN과 함께 사용 */
+
+/* ===== 기본 설정 (프로토타입 v3 동일) ===== */
+[x-cloak] { display: none !important; }
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+html { overscroll-behavior: contain; }
+input:focus, textarea:focus { outline: none; }
+::-webkit-scrollbar { display: none; }
+
+/* ===== 색상 변수 ===== */
+:root {
+    --color-primary: #43A047;
+    --color-primary-light: #E8F5E9;
+    --color-primary-dark: #2E7D32;
+    --color-accent: #FBC02D;
+    --color-accent-light: #FFF9C4;
+    --color-danger: #E53935;
+    --color-danger-light: #FFEBEE;
+    --color-text: #212121;
+    --color-text-sub: #757575;
+    --color-text-hint: #BDBDBD;
+    --color-bg: #F5F5F5;
+    --color-card: #FFFFFF;
+    --color-border: #EEEEEE;
+}
+
+/* ===== 애니메이션 (프로토타입 v3 동일) ===== */
+.fade { animation: fadeUp .3s ease both; }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes popIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+.pop { animation: popIn .4s cubic-bezier(.175, .885, .32, 1.275); }
+
+/* 스태거 딜레이 */
+.s1 { animation-delay: .05s; }
+.s2 { animation-delay: .1s; }
+.s3 { animation-delay: .15s; }
+.s4 { animation-delay: .2s; }
+
+/* 하위호환: fade-up 클래스도 지원 */
+.fade-up { animation: fadeUp .35s cubic-bezier(.22, 1, .36, 1) both; }
+.fade-up.s1 { animation-delay: .05s; }
+.fade-up.s2 { animation-delay: .10s; }
+.fade-up.s3 { animation-delay: .15s; }
+.fade-up.s4 { animation-delay: .20s; }
+
+.pop-in { animation: popIn .4s cubic-bezier(.175, .885, .32, 1.275); }
+
+/* ===== 카드 스타일 (프로토타입 v3 동일) ===== */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.03);
+}
+
+/* ===== 탭바 스타일 (프로토타입 v3 동일) ===== */
+.tab { color: #BDBDBD; }
+.tab.on { color: #43A047; font-weight: 700; }
+
+/* ===== 아이콘 유틸리티 (프로토타입 v3 동일) ===== */
+.ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ic svg {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+/* ===== 뒤로가기 버튼 (프로토타입 v3 동일) ===== */
+.back-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9E9E9E;
+}
+
+/* ===== HTMX 로딩 인디케이터 ===== */
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator {
+    display: inline-flex;
+}
+.htmx-request .htmx-content {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+/* ===== 입력 필드 ===== */
+.input-field {
+    width: 100%;
+    height: 50px;
+    padding: 0 16px;
+    background: #F5F5F5;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #212121;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+.input-field::placeholder {
+    color: #BDBDBD;
+}
+.input-field:focus {
+    background: #EEEEEE;
+    box-shadow: 0 0 0 2px rgba(67, 160, 71, 0.2);
+}
+
+/* ===== 버튼 스타일 ===== */
+.btn-primary {
+    width: 100%;
+    height: 50px;
+    background: #43A047;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+.btn-primary:active { background: #388E3C; }
+.btn-primary:disabled { background: #E0E0E0; color: #9E9E9E; cursor: default; }
+
+.btn-secondary {
+    width: 100%;
+    height: 50px;
+    background: #F5F5F5;
+    color: #616161;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+.btn-secondary:active { background: #EEEEEE; }
+
+/* ===== 안전 영역 (아이폰 하단) ===== */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== 뱃지 ===== */
+.badge-new {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #43A047;
+    background: #E8F5E9;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.badge-notice {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #757575;
+    background: #F5F5F5;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+.badge-event {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    color: #E65100;
+    background: #FFF3E0;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* ===== 구분선 ===== */
+.divider { height: 1px; background: #EEEEEE; }
+.divider-thick { height: 8px; background: #F5F5F5; }

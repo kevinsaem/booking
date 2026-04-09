@@ -1,0 +1,66 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}사용자 관리{% endblock %}
+{% block page_title %}사용자 관리{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <p class="text-sm text-slate-500">카카오 로그인 사용자 목록 및 역할 관리</p>
+  </div>
+
+  <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">회원ID</th>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">닉네임</th>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">이메일</th>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">역할</th>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">가입일</th>
+            <th class="text-left px-4 py-3 font-medium text-slate-600">변경</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for u in users %}
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 text-slate-800 font-mono text-xs">{{ u.mem_id }}</td>
+            <td class="px-4 py-3 text-slate-800">{{ u.nickname or '-' }}</td>
+            <td class="px-4 py-3 text-slate-500">{{ u.email or '-' }}</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                {% if u.role == 'admin' %}bg-red-100 text-red-700
+                {% elif u.role == 'teacher' %}bg-blue-100 text-blue-700
+                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                {% if u.role == 'admin' %}관리자{% elif u.role == 'teacher' %}멘토{% else %}수강생{% endif %}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-500 text-xs">{{ u.created_at or '-' }}</td>
+            <td class="px-4 py-3">
+              {% if u.mem_id != admin_user.mem_MbrId %}
+              <form method="post" action="/admin/users/{{ u.mem_id }}/role" class="flex items-center gap-2">
+                <select name="role" class="text-xs border border-slate-300 rounded-md px-2 py-1 bg-white">
+                  <option value="student" {% if u.role == 'student' %}selected{% endif %}>수강생</option>
+                  <option value="teacher" {% if u.role == 'teacher' %}selected{% endif %}>멘토</option>
+                  <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>관리자</option>
+                </select>
+                <button type="submit" class="text-xs px-2 py-1 bg-accent-500 text-white rounded-md hover:bg-accent-600">적용</button>
+              </form>
+              {% else %}
+              <span class="text-xs text-slate-400">본인</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          {% if not users %}
+          <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">등록된 사용자가 없습니다</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

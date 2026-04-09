@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+dev.db
+
+# 환경변수 (민감정보)
+.env
+credentials.json
+token.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# 임시파일
+.tmp/
+*.log

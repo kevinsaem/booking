@@ -1,0 +1,35 @@
+<!-- 예약 불가: 남은 수업 0회 -->
+{% extends "base.html" %}
+
+{% block title %}예약 불가 - 케빈샘AI코딩학원{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">수업 예약</h1>
+  </div>
+
+  <div class="px-4 pt-16 text-center">
+    <div class="w-20 h-20 bg-g-100 rounded-full ic mx-auto mb-6">
+      <svg width="36" height="36" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+    </div>
+    <h2 class="text-[20px] font-extrabold text-g-900 mb-2">남은 수업이 없습니다</h2>
+    <p class="text-[14px] text-g-400 mb-8">수강권을 추가 구매하시면<br>수업을 예약할 수 있습니다.</p>
+
+    <div class="flex gap-2">
+      <a href="/booking/" class="flex-1 h-12 bg-g-100 rounded-xl font-bold text-g-600 text-[13px] flex items-center justify-center active:bg-g-200">홈으로</a>
+      <a href="/booking/payment" class="flex-1 h-12 bg-nv-600 text-white rounded-xl font-bold text-[13px] flex items-center justify-center active:bg-nv-700">수강권 구매</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

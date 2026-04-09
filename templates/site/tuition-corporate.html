@@ -1,0 +1,356 @@
+{% extends "site/base.html" %}
+
+{% block title %}기업/단체 맞춤 AI 교육 | 케빈샘AI코딩{% endblock %}
+{% block description %}기업·단체 맞춤 AI 교육. 실습 100%, 교육 당일부터 업무 적용. 8년 경력, 1,439명 교육 실적.{% endblock %}
+
+{% block head_extra %}
+<style>
+  /* 기업 페이지: nav 초기 상태를 밝은 배경에 맞게 */
+  nav .logo { color: var(--ink); }
+  nav .nlinks a { color: var(--ink3); }
+  nav .nlinks a:hover { color: var(--corp); }
+  nav .mob-btn svg { stroke: var(--ink); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ===== 1. HERO (밝은 스타일, 좌우 분할) ===== -->
+<section class="hero" style="min-height: auto; padding: 120px 40px 80px;">
+  <div class="hero-split">
+    <!-- 왼쪽: 텍스트 -->
+    <div class="hero-text" style="word-break: keep-all;">
+      <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; background: var(--corp-bg); border: 1px solid rgba(109,40,217,0.15); font-size: 12px; font-weight: 600; color: var(--corp); margin-bottom: 20px;">기업 맞춤 AI 교육 · Since 2018</div>
+      <h1 style="color: var(--ink);">경쟁사는 이미<br>AI를 도입했습니다.<br><span style="color: var(--corp);">당신의 팀은요?</span></h1>
+      <p class="sub">이론 강의 듣고 돌아가면 다음 날 아무것도 달라지지 않습니다.<br>교육 당일, 직원들이 자기 업무에 AI를 직접 적용하는 교육.</p>
+      <div class="hero-ctas">
+        <a href="#programs" class="btn btn-corp">교육 프로그램 보기</a>
+        <a href="#cta" class="btn btn-outline" style="border-color: var(--line); color: var(--ink2);">맞춤 교육 제안서 받기</a>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <div class="hero-trust-num" style="color: var(--corp);">8년+</div>
+          <div class="hero-trust-lbl">교육 경력</div>
+        </div>
+        <div class="hero-trust-item">
+          <div class="hero-trust-num" style="color: var(--corp);">1,439명</div>
+          <div class="hero-trust-lbl">누적 교육</div>
+        </div>
+        <div class="hero-trust-item">
+          <div class="hero-trust-num" style="color: var(--corp);">100%</div>
+          <div class="hero-trust-lbl">실습 중심</div>
+        </div>
+      </div>
+    </div>
+    <!-- 오른쪽: 히어로 이미지 -->
+    <div>
+      <img src="/static/site/images/ai_corp_hero.png" alt="기업 AI 교육" style="width: 100%; border-radius: 14px; object-fit: cover; box-shadow: 0 8px 32px rgba(0,0,0,0.08);" loading="eager">
+    </div>
+  </div>
+</section>
+
+<!-- ===== 2. 문제 인식 — "이런 교육을 받아보셨나요?" ===== -->
+<section class="sec" style="background: var(--dark-surface);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">PROBLEM</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">이런 교육을 받아보셨나요?</h2>
+    <p class="sec-p rv">많은 기업이 AI 교육을 도입하지만, 실질적인 변화로 이어지지 않습니다.</p>
+    <div class="philo-grid mt-36">
+      <!-- 카드 1 -->
+      <div class="phi border-top-corp rv">
+        <div style="margin-bottom: 12px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 10px;">ChatGPT 특강 들었는데,<br>다음 날 아무도 안 씁니다</h3>
+        <p style="font-size: 13px; color: var(--ink4); line-height: 1.7; margin-bottom: 14px;">이론 위주 교육은 신기함으로 끝납니다. 실제 업무에 어떻게 쓰는지 모르니 다음 날 다시 원래 방식으로 돌아갑니다.</p>
+        <div style="padding: 12px 16px; background: var(--corp-bg); border-radius: 8px;">
+          <p style="font-size: 12px; color: var(--corp); font-weight: 600; line-height: 1.6; margin: 0;">케빈샘 해결 → 교육 시간 안에 자기 업무로 실습. 교육 당일부터 쓸 수 있습니다.</p>
+        </div>
+      </div>
+      <!-- 카드 2 -->
+      <div class="phi border-top-corp rv">
+        <div style="margin-bottom: 12px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg></div>
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 10px;">외부 강사가<br>우리 업무를 모릅니다</h3>
+        <p style="font-size: 13px; color: var(--ink4); line-height: 1.7; margin-bottom: 14px;">범용 AI 교육은 마케팅, 제조, 금융 등 업종별 특성을 반영하지 못합니다. 교육 내용이 현장과 동떨어져 있습니다.</p>
+        <div style="padding: 12px 16px; background: var(--corp-bg); border-radius: 8px;">
+          <p style="font-size: 12px; color: var(--corp); font-weight: 600; line-height: 1.6; margin: 0;">케빈샘 해결 → 사전 미팅에서 업무 프로세스를 파악하고, 맞춤 교안을 설계합니다.</p>
+        </div>
+      </div>
+      <!-- 카드 3 -->
+      <div class="phi border-top-corp rv">
+        <div style="margin-bottom: 12px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 10px;">교육 효과를<br>증명할 수가 없습니다</h3>
+        <p style="font-size: 13px; color: var(--ink4); line-height: 1.7; margin-bottom: 14px;">HR 담당자 입장에서 경영진에게 교육 ROI를 보고해야 하는데, 이론 교육은 만족도 설문 외에 보여줄 게 없습니다.</p>
+        <div style="padding: 12px 16px; background: var(--corp-bg); border-radius: 8px;">
+          <p style="font-size: 12px; color: var(--corp); font-weight: 600; line-height: 1.6; margin: 0;">케빈샘 해결 → 교육 중 만든 결과물이 곧 성과입니다. 눈에 보이는 변화를 만듭니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 3. 우리의 해결 — "교육 다음 날, 직원들이 달라집니다" ===== -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner">
+    <div class="sec-tag rv" style="color: var(--corp);">SOLUTION</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">교육 다음 날, 직원들이 달라집니다</h2>
+    <div class="split mt-36">
+      <!-- 왼쪽: 이미지 -->
+      <div class="rv">
+        <img src="/static/site/images/ai_corp_training.png" alt="실습 100% AI 교육" style="width: 100%; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 32px rgba(0,0,0,0.08);" loading="lazy">
+      </div>
+      <!-- 오른쪽: 텍스트 -->
+      <div class="rv" style="word-break: keep-all;">
+        <h3 style="font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 16px; line-height: 1.4;">교육 당일,<br>자기 업무에 AI를 적용합니다</h3>
+        <p style="font-size: 15px; color: var(--ink2); line-height: 1.9; margin-bottom: 28px;">저희 교육은 <strong style="color: var(--ink);">이론 0%, 실습 100%</strong>입니다. 교육 시간 동안 직원들이 자기 업무에 AI를 직접 적용해봅니다. 보고서, 데이터 분석, 회의 자료 — 실제 업무를 가져와서 AI로 처리해보는 것이 수업입니다.</p>
+        <!-- 결과 박스 -->
+        <div style="padding: 24px; background: var(--dark-surface); border-radius: 12px; border-left: 4px solid var(--corp);">
+          <div style="font-size: 13px; font-weight: 700; color: var(--corp); margin-bottom: 16px; letter-spacing: 1px;">교육 후 변화</div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--corp); flex-shrink: 0;"></div>
+              <span style="font-size: 14px; color: var(--ink); font-weight: 600;">보고서 작성 시간 50% 단축</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--corp); flex-shrink: 0;"></div>
+              <span style="font-size: 14px; color: var(--ink); font-weight: 600;">회의 자료 30분 안에 완성</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--corp); flex-shrink: 0;"></div>
+              <span style="font-size: 14px; color: var(--ink); font-weight: 600;">AI 도구 자발적 사용률 80%+</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. 교육 프로그램 ===== -->
+<section class="sec" id="programs" style="background: var(--dark-surface);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">PROGRAMS</div>
+    <h2 class="sec-h rv">교육 프로그램</h2>
+    <div class="grid-3 mt-36">
+      <!-- BASIC -->
+      <div class="prog-card rv">
+        <div class="prog-type" style="color: var(--corp);">BASIC</div>
+        <h3>AI 활용 기초</h3>
+        <p style="word-break: keep-all;">ChatGPT, Claude 등 생성형 AI의 기본 활용법과 프롬프트 작성법을 배우고, 자기 업무에 직접 적용해봅니다. 교육이 끝나면 직원들이 바로 업무에 AI를 쓸 수 있습니다.</p>
+        <ul>
+          <li>· 2~4시간 / 1일</li>
+          <li>· 비개발 직군 대상</li>
+          <li>· 10~50명 동시 진행 가능</li>
+        </ul>
+      </div>
+      <!-- ADVANCED (인기) -->
+      <div class="prog-card popular corp rv">
+        <div class="fee-badge corp" style="position: absolute; top: -8px; right: 14px;">인기</div>
+        <div class="prog-type" style="color: var(--corp);">ADVANCED</div>
+        <h3>AI활용&바이브코딩 실무</h3>
+        <p style="word-break: keep-all;">AI로 업무 도구를 직접 만듭니다. 대시보드, 자동화 도구, 데이터 분석 등 실제 회사 업무에 바로 쓸 수 있는 결과물을 교육 시간 안에 완성합니다.</p>
+        <ul>
+          <li>· 4~8시간 / 1~2일</li>
+          <li>· IT·기획 직군 대상</li>
+          <li>· 5~20명 권장</li>
+        </ul>
+      </div>
+      <!-- CUSTOM -->
+      <div class="prog-card rv">
+        <div class="prog-type" style="color: var(--corp);">CUSTOM</div>
+        <h3>맞춤 교육 설계</h3>
+        <p style="word-break: keep-all;">귀사의 업종, 규모, 목표에 맞춰 커리큘럼을 처음부터 설계합니다. 사전 미팅에서 실제 업무 프로세스를 분석하고, 가장 효과적인 AI 적용 포인트를 찾아 교육합니다.</p>
+        <ul>
+          <li>· 기간·인원 협의</li>
+          <li>· 전 직군 대상</li>
+          <li>· 후속 Q&A 지원 포함</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. 교육 진행 절차 ===== -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">PROCESS</div>
+    <h2 class="sec-h rv">교육 진행 절차</h2>
+    <div class="grid-4 mt-36">
+      <div class="circle-step rv">
+        <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">1</div>
+        <h4>니즈 파악</h4>
+        <p style="word-break: keep-all;">귀사의 업무 프로세스와 교육 목표를 파악합니다</p>
+      </div>
+      <div class="circle-step rv">
+        <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">2</div>
+        <h4>커리큘럼 설계</h4>
+        <p style="word-break: keep-all;">실제 업무 데이터를 활용한 맞춤 교안을 설계합니다</p>
+      </div>
+      <div class="circle-step rv">
+        <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">3</div>
+        <h4>교육 실시</h4>
+        <p style="word-break: keep-all;">방문 또는 온라인으로 실습 100% 교육을 진행합니다</p>
+      </div>
+      <div class="circle-step rv">
+        <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">4</div>
+        <h4>후속 지원</h4>
+        <p style="word-break: keep-all;">교육 후 1개월간 Q&A와 활용 컨설팅을 제공합니다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6. 교육 후기 ===== -->
+<section class="sec" style="background: var(--dark-surface);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">CLIENT REVIEWS</div>
+    <h2 class="sec-h rv">교육받은 기업의 실제 후기</h2>
+    <div class="rev-grid mt-32">
+      <div class="rev corp rv">
+        <div class="stars" style="color: var(--corp);">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="qt" style="font-family: 'Pretendard', sans-serif; font-style: normal;">"교육 다음 날부터 직원들이 바로 AI를 활용했습니다. 보고서 작성 시간이 절반으로 줄었고, 회의 자료 준비도 AI로 30분이면 끝납니다."</div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
+          <img src="/static/site/images/ai_corp_review1.png" alt="이OO님" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" loading="lazy">
+          <div class="who"><strong>이OO님</strong> · 제조업체 대표 · 임직원 30명 교육</div>
+        </div>
+      </div>
+      <div class="rev corp rv">
+        <div class="stars" style="color: var(--corp);">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="qt" style="font-family: 'Pretendard', sans-serif; font-style: normal;">"기존에 외부 교육을 여러 번 받아봤는데, 이론만 듣고 끝이었습니다. 여기는 교육 당일 자기 업무에 직접 적용해보니까 확실히 달랐습니다."</div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
+          <img src="/static/site/images/ai_corp_review2.png" alt="박OO님" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" loading="lazy">
+          <div class="who"><strong>박OO님</strong> · IT 서비스 기획팀장 · 팀원 15명 교육</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 7. 교육장 안내 ===== -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">VENUE</div>
+    <h2 class="sec-h rv">교육장 안내</h2>
+    <p class="sec-p rv">기업 방문 교육 또는 학원 교육장에서 진행 가능합니다</p>
+    <div class="grid-2 mt-28">
+      <div class="rv" style="border: 1px solid var(--line); border-radius: 10px; overflow: hidden;">
+        <img src="/static/site/images/ai_corp_venue1.png" alt="기업 방문 교육 현장" style="width: 100%; height: 200px; object-fit: cover;" loading="lazy">
+        <div style="padding: 20px;">
+          <div style="display: inline-block; padding: 3px 10px; border-radius: 4px; background: var(--corp-bg); color: var(--corp); font-size: 10px; font-weight: 700; margin-bottom: 8px;">방문 교육</div>
+          <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 4px;">기업 현장 방문 교육</h4>
+          <p style="font-size: 12px; color: var(--ink3); line-height: 1.7;">귀사의 회의실, 교육장으로 직접 방문하여 교육합니다.<br>빔프로젝터와 노트북만 준비해 주세요.</p>
+        </div>
+      </div>
+      <div class="rv" style="border: 1px solid var(--line); border-radius: 10px; overflow: hidden;">
+        <img src="/static/site/images/ai_corp_venue2.png" alt="학원 1:1 교육장" style="width: 100%; height: 200px; object-fit: cover;" loading="lazy">
+        <div style="padding: 20px;">
+          <div style="display: inline-block; padding: 3px 10px; border-radius: 4px; background: var(--corp-bg); color: var(--corp); font-size: 10px; font-weight: 700; margin-bottom: 8px;">학원 교육장</div>
+          <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 4px;">안산 선부 캠퍼스</h4>
+          <p style="font-size: 12px; color: var(--ink3); line-height: 1.7;">경기도 안산시 단원구 선부로 183, 화성프라자 8층<br>0507-1307-9398</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 8. FAQ ===== -->
+<section class="sec" style="background: var(--dark-surface);">
+  <div class="sec-inner" style="max-width: 740px;">
+    <div class="sec-tag rv center" style="color: var(--corp);">FAQ</div>
+    <h2 class="sec-h rv center">자주 묻는 질문</h2>
+    <div class="mt-32" x-data="{ open: null }">
+      <!-- Q1 -->
+      <div class="rv" style="border-bottom: 1px solid var(--line);">
+        <button @click="open = open === 1 ? null : 1" style="width: 100%; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; background: none; border: none; cursor: pointer; text-align: left;">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--ink);">Q. 출장 교육도 가능한가요?</h4>
+          <span style="font-size: 18px; color: var(--ink4); transition: transform 0.3s; flex-shrink: 0; margin-left: 12px;" :style="open === 1 ? 'transform: rotate(45deg)' : ''">+</span>
+        </button>
+        <div x-show="open === 1" x-collapse style="padding-bottom: 20px;">
+          <p style="font-size: 13px; color: var(--ink3); line-height: 1.8;">네, 전국 어디든 방문 교육 가능합니다. 수도권은 추가 비용 없이, 지방은 출장비만 별도 협의합니다.</p>
+        </div>
+      </div>
+      <!-- Q2 -->
+      <div class="rv" style="border-bottom: 1px solid var(--line);">
+        <button @click="open = open === 2 ? null : 2" style="width: 100%; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; background: none; border: none; cursor: pointer; text-align: left;">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--ink);">Q. 최소 인원은 몇 명인가요?</h4>
+          <span style="font-size: 18px; color: var(--ink4); transition: transform 0.3s; flex-shrink: 0; margin-left: 12px;" :style="open === 2 ? 'transform: rotate(45deg)' : ''">+</span>
+        </button>
+        <div x-show="open === 2" x-collapse style="padding-bottom: 20px;">
+          <p style="font-size: 13px; color: var(--ink3); line-height: 1.8;">5명부터 진행 가능합니다. 1명~4명은 1:1 성인 AI활용 과정으로 안내해 드립니다. 50명 이상도 분반으로 운영 가능합니다.</p>
+        </div>
+      </div>
+      <!-- Q3 -->
+      <div class="rv" style="border-bottom: 1px solid var(--line);">
+        <button @click="open = open === 3 ? null : 3" style="width: 100%; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; background: none; border: none; cursor: pointer; text-align: left;">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--ink);">Q. 교육 비용은 어떻게 되나요?</h4>
+          <span style="font-size: 18px; color: var(--ink4); transition: transform 0.3s; flex-shrink: 0; margin-left: 12px;" :style="open === 3 ? 'transform: rotate(45deg)' : ''">+</span>
+        </button>
+        <div x-show="open === 3" x-collapse style="padding-bottom: 20px;">
+          <p style="font-size: 13px; color: var(--ink3); line-height: 1.8;">교육 인원, 시간, 커리큘럼에 따라 맞춤 견적을 제공합니다. 무료 상담 후 상세한 제안서를 보내드립니다.</p>
+        </div>
+      </div>
+      <!-- Q4 -->
+      <div class="rv" style="border-bottom: 1px solid var(--line);">
+        <button @click="open = open === 4 ? null : 4" style="width: 100%; padding: 20px 0; display: flex; justify-content: space-between; align-items: center; background: none; border: none; cursor: pointer; text-align: left;">
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--ink);">Q. 교육 후 후속 지원이 있나요?</h4>
+          <span style="font-size: 18px; color: var(--ink4); transition: transform 0.3s; flex-shrink: 0; margin-left: 12px;" :style="open === 4 ? 'transform: rotate(45deg)' : ''">+</span>
+        </button>
+        <div x-show="open === 4" x-collapse style="padding-bottom: 20px;">
+          <p style="font-size: 13px; color: var(--ink3); line-height: 1.8;">교육 후 1개월간 자체 메신저를 통한 Q&A 지원을 제공합니다. 심화 교육이나 AI 도입 컨설팅도 별도 진행 가능합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 사전 설문 ===== -->
+<section class="sec" style="background: var(--corp-bg);">
+  <div class="sec-inner center">
+    <div class="rv" style="max-width: 640px; margin: 0 auto; word-break: keep-all;">
+      <div style="display: inline-block; padding: 4px 14px; border-radius: 20px; background: var(--corp); color: white; font-size: 11px; font-weight: 600; margin-bottom: 16px;">사전 설문</div>
+      <h2 class="sec-h" style="font-size: clamp(24px, 3.5vw, 36px);">우리 회사에 맞는 AI 교육은?</h2>
+      <p style="font-size: 15px; color: var(--ink3); line-height: 1.8; margin-bottom: 28px;">간단한 사전 설문을 작성해 주시면, 귀사의 상황에 맞는 최적의 교육 프로그램을 설계하여 제안서를 보내드립니다.</p>
+      <a href="/corporate-survey" class="btn btn-corp" style="padding: 16px 40px; font-size: 15px; border-radius: 10px;" target="_blank">AI 교육 사전 설문 작성하기 →</a>
+      <p style="font-size: 12px; color: var(--ink4); margin-top: 16px;">약 3분 소요 · 설문 결과를 바탕으로 맞춤 제안서를 보내드립니다</p>
+    </div>
+  </div>
+</section>
+
+<!-- TUITION -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">PRICING</div>
+    <h2 class="sec-h rv">교육비 안내</h2>
+    <p class="sec-p rv">기업 교육은 인원, 시간, 커리큘럼에 따라 맞춤 견적으로 운영됩니다.<br>무료 상담 후 상세한 제안서를 보내드립니다.</p>
+    <div class="rv" style="margin-top: 24px; padding: 24px; background: var(--corp-bg); border-radius: 14px; border-left: 3px solid var(--corp); max-width: 600px; margin-left: auto; margin-right: auto; word-break: keep-all;">
+      <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 8px;">견적 포함 사항</h4>
+      <ul style="list-style: none; font-size: 13px; color: var(--ink3); line-height: 2;">
+        <li>· 교육 인원 및 시간에 따른 교육비</li>
+        <li>· 맞춤 커리큘럼 설계비 (무료)</li>
+        <li>· 교육 자료 및 실습 환경 제공</li>
+        <li>· 교육 후 1개월 Q&A 지원 포함</li>
+        <li>· 방문 교육 시 출장비 (수도권 무료)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 9. CTA ===== -->
+<section class="cta-end" id="cta" style="background: linear-gradient(135deg, var(--corp-dark), var(--corp));">
+  <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.2); z-index: 1;"></div>
+  <div class="inner">
+    <h2 class="rv" style="font-family: 'Pretendard', sans-serif;">우리 회사에 맞는 AI 교육,<br>함께 설계합니다</h2>
+    <p class="cd rv">무료 사전 상담으로 최적의 교육 방안을 제안받으세요</p>
+    <div class="cbs rv">
+      <a href="/corporate-survey" class="btn" style="background: var(--corp); color: white; font-size: 15px; padding: 16px 36px; border-radius: 1000px; font-weight: 700;" target="_blank">사전 설문 작성</a>
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" class="btn btn-w" target="_blank">맞춤 교육 제안서 받기</a>
+      <a href="tel:0507-1307-9398" class="btn btn-t">전화 상담</a>
+    </div>
+    <div class="info rv">담당자: 이관희 · kevin@kevinsaem.com · 0507-1307-9398</div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{% endblock %}

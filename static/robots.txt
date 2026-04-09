@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /booking/
+Disallow: /teacher/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /tuition/
+
+Sitemap: https://booking.kevinsaem.com/sitemap.xml

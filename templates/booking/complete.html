@@ -1,0 +1,50 @@
+<!-- templates/booking/complete.html -->
+<!-- 화면: 예약 완료 (성공 애니메이션 + 알림톡 안내) -->
+<!-- 프로토타입 v3 섹션 6 (p==='complete') 완전 동일 -->
+{% extends "base.html" %}
+
+{% block title %}예약 완료 - 케빈샘AI코딩학원{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 border-b border-g-200 text-center">
+    <h1 class="text-[16px] font-bold text-g-800">예약 완료</h1>
+  </div>
+  <div class="h-1 bg-nv-500"></div>
+
+  <div class="px-4 pt-10 text-center">
+    <!-- 성공 아이콘 (pop 애니메이션) -->
+    <div class="w-20 h-20 bg-nv-50 rounded-full ic mx-auto mb-5 pop">
+      <svg width="36" height="36" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+
+    <h2 class="text-[20px] font-extrabold text-g-900 mb-1">예약 완료!</h2>
+    <p class="text-[14px] text-g-400">카카오톡으로 예약 확인 메시지를<br>보내드렸습니다</p>
+
+    <!-- 요약 -->
+    <div class="card p-5 text-left mt-6 space-y-2.5">
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">멘토</span>
+        <span class="font-bold">{{ teacher_name }} 멘토</span>
+      </div>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">예약</span>
+        <span class="font-bold">{{ booking_count }}회</span>
+      </div>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">잔여 수업</span>
+        <span class="font-bold text-nv-600">{{ remaining }}회</span>
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="flex gap-2 mt-6">
+      <a href="/booking/my-bookings" class="flex-1 h-12 bg-g-100 rounded-xl font-bold text-g-600 text-[13px] flex items-center justify-center active:bg-g-200">내 예약</a>
+      <a href="/booking/" class="flex-1 h-12 bg-nv-600 text-white rounded-xl font-bold text-[13px] flex items-center justify-center active:bg-nv-700">홈으로</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

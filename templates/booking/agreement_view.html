@@ -1,0 +1,156 @@
+<!-- templates/booking/agreement_view.html -->
+<!-- 화면: 계약서 열람 + 전자서명 -->
+{% extends "base.html" %}
+
+{% block title %}계약서 서명 - 케빈샘AI코딩학원{% endblock %}
+
+{% block tabbar %}{% endblock %}
+
+{% block head %}
+<style>
+  .agreement-body h1 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; color: #424242; }
+  .agreement-body h2 { font-size: 15px; font-weight: 700; margin: 14px 0 6px; color: #424242; }
+  .agreement-body h3 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #616161; }
+  .agreement-body p { margin: 6px 0; }
+  .agreement-body ol, .agreement-body ul { padding-left: 20px; margin: 6px 0; }
+  .agreement-body li { margin: 3px 0; }
+  .agreement-body hr { border: none; border-top: 1px solid #E0E0E0; margin: 12px 0; }
+  .agreement-body table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px; }
+  .agreement-body th, .agreement-body td { border: 1px solid #E0E0E0; padding: 6px 8px; text-align: left; }
+  .agreement-body th { background: #F5F5F5; font-weight: 600; }
+  .agreement-body strong { font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-6">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 border-b border-g-200 sticky top-0 z-30">
+    <h1 class="text-[16px] font-bold text-g-800 text-center">교육 서비스 이용 계약서</h1>
+    <p class="text-[12px] text-g-400 text-center mt-1">{{ template.version }} · {{ template.course_type }}</p>
+  </div>
+
+  <div class="px-4 pt-4">
+
+    <!-- 계약서 본문 (스크롤 영역) -->
+    <div id="agreement-content"
+         class="bg-white border border-g-200 rounded-xl p-4 mb-3
+                overflow-y-auto text-[13px] leading-relaxed text-g-700
+                agreement-body"
+         style="max-height: 50vh;"
+         onscroll="checkScroll(this)">
+      {{ content_html | safe }}
+    </div>
+
+    <!-- 스크롤 안내 -->
+    <p id="scroll-notice" class="text-center text-[12px] text-orange-500 mb-4">
+      ↓ 계약서 전문을 끝까지 읽어주세요
+    </p>
+
+    <!-- 서명 폼 -->
+    <form id="sign-form" method="POST" action="/booking/agreement/sign">
+
+      <input type="hidden" name="template_id" value="{{ template.id }}">
+      <input type="hidden" name="document_hash" value="{{ document_hash }}">
+      <input type="hidden" name="signature_data" id="signature-data">
+
+      <!-- 동의 체크박스 -->
+      <label class="flex items-start gap-3 mb-4 p-3 bg-white rounded-xl border border-g-200">
+        <input type="checkbox" id="agree-check" disabled
+               class="mt-1 w-5 h-5 rounded border-g-300
+                      text-nv-600 focus:ring-nv-500
+                      disabled:opacity-40 accent-[#43A047]">
+        <span class="text-[13px] text-g-700 leading-relaxed">
+          위 계약서의 모든 내용을 확인하였으며, 이에 동의합니다.
+        </span>
+      </label>
+
+      <!-- 서명 패드 -->
+      <div id="signature-section" class="mb-4 opacity-40 pointer-events-none transition-opacity">
+        <p class="text-[13px] font-medium text-g-700 mb-2">서명</p>
+        <div class="relative border-2 border-dashed border-g-300 rounded-xl bg-white">
+          <canvas id="signature-canvas" class="w-full" style="height: 150px; touch-action: none;"></canvas>
+          <button type="button" onclick="clearSignature()"
+                  class="absolute top-2 right-2 text-[11px] text-g-400
+                         active:text-red-500 transition-colors px-2 py-1">
+            지우기
+          </button>
+        </div>
+        <p class="text-[11px] text-g-400 mt-1">위 영역에 서명해 주세요</p>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <button type="submit" id="submit-btn" disabled
+              class="w-full py-3.5 rounded-xl font-medium text-white text-[15px]
+                     bg-nv-600 active:bg-nv-700
+                     disabled:bg-g-300 disabled:cursor-not-allowed
+                     transition-colors">
+        동의 및 서명 제출
+      </button>
+
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/signature-pad.js?v=2"></script>
+<script>
+  // hasSignature는 signature-pad.js에서 var로 선언됨 (전역 공유)
+  let hasScrolledToBottom = false;
+  let isAgreed = false;
+
+  // 동의 체크박스 활성화
+  function enableAgreeCheck() {
+    hasScrolledToBottom = true;
+    document.getElementById('scroll-notice').classList.add('hidden');
+    document.getElementById('agree-check').disabled = false;
+    document.getElementById('agree-check').classList.remove('opacity-40');
+  }
+
+  // 스크롤 완료 감지
+  function checkScroll(el) {
+    const threshold = 30;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - threshold) {
+      enableAgreeCheck();
+    }
+  }
+
+  // 스크롤 불필요하면 바로 체크박스 활성화 (즉시 실행)
+  (function() {
+    const el = document.getElementById('agreement-content');
+    if (el && el.scrollHeight <= el.clientHeight + 30) {
+      enableAgreeCheck();
+    }
+  })();
+
+  // 동의 체크박스
+  document.getElementById('agree-check').addEventListener('change', function() {
+    isAgreed = this.checked;
+    const sigSection = document.getElementById('signature-section');
+    if (isAgreed) {
+      sigSection.classList.remove('opacity-40', 'pointer-events-none');
+    } else {
+      sigSection.classList.add('opacity-40', 'pointer-events-none');
+    }
+    updateSubmitButton();
+  });
+
+  function updateSubmitButton() {
+    document.getElementById('submit-btn').disabled = !(isAgreed && hasSignature);
+  }
+
+  // 제출 전 서명 데이터 삽입
+  document.getElementById('sign-form').addEventListener('submit', function(e) {
+    const dataUrl = getSignatureDataUrl();
+    if (!dataUrl) {
+      e.preventDefault();
+      alert('서명을 해주세요.');
+      return;
+    }
+    document.getElementById('signature-data').value = dataUrl;
+  });
+</script>
+{% endblock %}

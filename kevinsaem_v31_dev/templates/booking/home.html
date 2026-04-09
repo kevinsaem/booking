@@ -1,0 +1,136 @@
+<!-- templates/booking/home.html -->
+<!-- 화면: 홈 (메인 허브) -->
+<!-- 잔여수업, 퀵메뉴, 다가오는 수업, 공지사항 -->
+{% extends "base.html" %}
+
+{% block title %}홈 - 케빈샘 AI코딩{% endblock %}
+{% block tab_home %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+
+    <!-- 그린 헤더 -->
+    <div class="bg-green-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <p class="text-green-200 text-[12px]">안녕하세요</p>
+                <h2 class="text-[20px] font-bold mt-0.5">{{ user.name }}님</h2>
+            </div>
+            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">
+                {{ user.name[0] }}
+            </div>
+        </div>
+
+        <!-- 잔여 수업 카드 -->
+        <div class="bg-white/15 rounded-2xl p-4 backdrop-blur-sm">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-green-100 text-[12px]">남은 수업</span>
+                <span class="text-white/70 text-[12px]">{{ user.campus_name }}</span>
+            </div>
+            <div class="flex items-end gap-2">
+                <span class="text-[42px] font-extrabold leading-none">{{ remaining }}</span>
+                <span class="text-[14px] text-green-100 pb-1.5">회</span>
+                <div class="flex-1"></div>
+                <a href="/booking/calendar"
+                   class="h-10 px-5 bg-white text-green-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97] transition-transform">
+                    예약하기
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-4 -mt-3 space-y-4">
+
+        <!-- 퀵 메뉴 -->
+        <div class="card p-4 grid grid-cols-4 gap-1 fade-up s1">
+            <a href="/booking/calendar" class="flex flex-col items-center gap-1.5 py-2">
+                <div class="w-11 h-11 bg-green-50 rounded-xl flex items-center justify-center text-lg">📅</div>
+                <span class="text-[11px] text-gray-600">수업예약</span>
+            </a>
+            <a href="/booking/dashboard" class="flex flex-col items-center gap-1.5 py-2">
+                <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center text-lg">📊</div>
+                <span class="text-[11px] text-gray-600">학습현황</span>
+            </a>
+            <a href="/booking/messages" class="flex flex-col items-center gap-1.5 py-2 relative">
+                <div class="w-11 h-11 bg-yellow-50 rounded-xl flex items-center justify-center text-lg">💬</div>
+                {% if unread_count %}
+                <span class="absolute top-1 right-3 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">{{ unread_count }}</span>
+                {% endif %}
+                <span class="text-[11px] text-gray-600">메시지</span>
+            </a>
+            <a href="/booking/payment" class="flex flex-col items-center gap-1.5 py-2">
+                <div class="w-11 h-11 bg-purple-50 rounded-xl flex items-center justify-center text-lg">💳</div>
+                <span class="text-[11px] text-gray-600">수강/결제</span>
+            </a>
+        </div>
+
+        <!-- 다가오는 수업 -->
+        <div class="fade-up s2">
+            <div class="flex justify-between items-center mb-2 px-1">
+                <h3 class="text-[14px] font-bold text-gray-800">다가오는 수업</h3>
+                <a href="/booking/my-bookings" class="text-[12px] text-green-600 font-medium">전체 &rsaquo;</a>
+            </div>
+
+            {% if next_booking %}
+            <div class="card p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex flex-col items-center justify-center">
+                        <span class="text-[10px] text-green-500">{{ next_booking.month }}월</span>
+                        <span class="text-[16px] font-extrabold text-green-700 -mt-0.5">{{ next_booking.day }}</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[14px] font-bold text-gray-800">{{ next_booking.teacher_name }} 선생님</p>
+                        <p class="text-[12px] text-gray-400">{{ next_booking.time }} · {{ next_booking.day_name }}요일</p>
+                    </div>
+                    <span class="text-[11px] font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        {{ next_booking.dday }}
+                    </span>
+                </div>
+            </div>
+            {% else %}
+            <div class="card p-4 text-center text-gray-400 text-sm py-8">
+                예약된 수업이 없습니다
+                <br>
+                <a href="/booking/calendar" class="mt-2 inline-block text-green-600 font-medium text-[13px]">
+                    수업 예약하기 &rsaquo;
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 공지사항 배너 -->
+        {% if latest_notice %}
+        <a href="/booking/notice" class="block fade-up s3">
+            <div class="bg-yellow-50 rounded-2xl p-4 flex items-center gap-3">
+                <span class="text-2xl">📢</span>
+                <div class="flex-1">
+                    <p class="text-[13px] font-bold text-gray-800">{{ latest_notice.title }}</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">{{ latest_notice.summary }}</p>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </div>
+        </a>
+        {% endif %}
+
+        <!-- 내 예약 요약 -->
+        <div class="fade-up s4">
+            <div class="flex justify-between items-center mb-2 px-1">
+                <h3 class="text-[14px] font-bold text-gray-800">내 예약</h3>
+                <a href="/booking/my-bookings" class="text-[12px] text-green-600 font-medium">전체 &rsaquo;</a>
+            </div>
+
+            <!-- HTMX로 예약 목록 로드 -->
+            <div hx-get="/booking/partials/my-bookings-summary"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
+                <!-- 로딩 스켈레톤 -->
+                <div class="card p-4 animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

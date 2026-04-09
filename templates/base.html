@@ -1,0 +1,72 @@
+<!-- templates/base.html -->
+<!-- 공통 레이아웃: 모든 페이지가 이 파일을 extends 합니다 -->
+<!-- 기술: Jinja2 + HTMX + Alpine.js + Tailwind CSS CDN -->
+<!-- 디자인: 프로토타입 v3 완전 동일, 모바일 최적화 (max-width 430px) -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#43A047">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/static/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<title>케빈샘AI코딩</title>
+
+<!-- Tailwind CSS CDN + 커스텀 컬러 설정 (프로토타입 v3 동일) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Noto Sans KR','sans-serif']},colors:{
+nv:{50:'#E8F5E9',100:'#C8E6C9',200:'#A5D6A7',300:'#81C784',400:'#66BB6A',500:'#4CAF50',600:'#43A047',700:'#388E3C',800:'#2E7D32'},
+g:{50:'#FAFAFA',100:'#F5F5F5',200:'#EEEEEE',300:'#E0E0E0',400:'#BDBDBD',500:'#9E9E9E',600:'#757575',700:'#616161',800:'#424242',900:'#212121'}
+}}}}
+</script>
+
+<!-- HTMX: 페이지 리로드 없이 서버 렌더링 부분 업데이트 -->
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+<!-- Alpine.js: 클라이언트 인터랙션 -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<!-- 한국어 웹폰트 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- 커스텀 CSS -->
+<link href="/static/css/style.css" rel="stylesheet">
+
+{% block head %}{% endblock %}
+</head>
+<body class="font-sans bg-gray-100">
+
+<!-- 모바일 컨테이너: 최대 430px, 가운데 정렬 -->
+<div id="app" class="max-w-[430px] mx-auto min-h-screen bg-gray-100 relative" {% block app_attrs %}{% endblock %}>
+
+    {% block content %}{% endblock %}
+
+    <!-- 하단 탭바 -->
+    {% block tabbar %}
+    {% include "components/tab_nav.html" %}
+    {% endblock %}
+
+    <!-- 토스트 메시지 -->
+    <div id="toast"
+         x-data="{ show: false, msg: '' }"
+         @toast.window="msg = $event.detail.message; show = true; setTimeout(() => show = false, 2200)"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-g-800 text-white px-5 py-2.5 rounded-xl text-[13px] font-medium shadow-lg z-[999] whitespace-nowrap"
+         x-text="msg">
+    </div>
+</div>
+
+<!-- 공통 JavaScript -->
+<script src="/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

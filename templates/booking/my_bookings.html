@@ -1,0 +1,145 @@
+<!-- templates/booking/my_bookings.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-24 fade" x-data="bookingSlider({{ upcoming | length }})">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">내 예약</h1>
+  </div>
+
+  <div class="px-4 pt-4 space-y-4">
+
+    <!-- 수업 현황 요약 -->
+    <div class="bg-nv-50 rounded-xl p-3 flex items-center justify-between">
+      {% if monthly %}
+      <div class="flex items-center gap-3">
+        <span class="text-[20px] font-extrabold text-nv-700">무제한</span>
+        <p class="text-[12px] text-nv-500">평일 수업 가능</p>
+      </div>
+      {% else %}
+      <div class="flex items-center gap-3">
+        <span class="text-[24px] font-extrabold text-nv-700">{{ remaining }}</span>
+        <div>
+          <p class="text-[11px] text-nv-500 font-medium">남은 수업</p>
+          <p class="text-[12px] text-nv-600">{{ remaining }} / {{ total_classes }}회</p>
+        </div>
+      </div>
+      {% endif %}
+      <a href="/booking/calendar" class="text-[12px] font-bold text-nv-600 bg-white px-3 py-1.5 rounded-lg active:bg-g-100">+ 예약</a>
+    </div>
+
+    <!-- 예약 목록 (5개씩 슬라이드) -->
+    {% if upcoming %}
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">예약 {{ upcoming | length }}건</h3>
+        {% set pages = (upcoming|length + 4) // 5 %}
+        {% if pages > 1 %}
+        <div class="flex items-center gap-2">
+          <button @click="prev()" :class="current === 0 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span class="text-[12px] text-g-400" x-text="(current+1)+'/'+totalPages"></span>
+          <button @click="next()" :class="current >= totalPages-1 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="overflow-hidden rounded-2xl"
+           @touchstart="touchStartX = $event.changedTouches[0].screenX"
+           @touchend="handleSwipe($event)">
+        <div class="flex transition-transform duration-300 ease-out"
+             :style="'transform: translateX(-' + (current * 100) + '%)'">
+
+          {% for page_start in range(0, upcoming|length, 5) %}
+          <div class="w-full flex-shrink-0">
+            <div class="space-y-2 px-0.5">
+              {% for b in upcoming[page_start:page_start+5] %}
+              <div class="card p-4" id="mybk-{{ b.idx }}">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+                    <span class="text-[10px] text-nv-500">{{ b.month }}월</span>
+                    <span class="text-[16px] font-extrabold text-nv-700 -mt-0.5">{{ b.day }}</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-[14px] font-bold text-g-800">{{ b.teacher_name }} 멘토</p>
+                    <p class="text-[12px] text-g-400">{{ b.time }} · {{ b.day_name }}요일</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">{{ b.dday }}</span>
+                    {% if b.can_cancel %}
+                    <button hx-post="/booking/cancel/{{ b.idx }}"
+                            hx-target="#mybk-{{ b.idx }}"
+                            hx-swap="outerHTML"
+                            hx-confirm="이 수업을 취소하시겠습니까?"
+                            class="text-[11px] text-g-400 px-2 py-1 rounded-full active:bg-g-100">취소</button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+
+      {% if pages > 1 %}
+      <div class="flex justify-center gap-1.5 mt-3">
+        {% for p in range(pages) %}
+        <div class="w-2 h-2 rounded-full transition-colors cursor-pointer"
+             :class="current === {{ p }} ? 'bg-nv-500' : 'bg-g-300'"
+             @click="current = {{ p }}"></div>
+        {% endfor %}
+      </div>
+      <p class="text-center text-[11px] text-g-400 mt-1" x-show="current === 0 && totalPages > 1">← 밀어서 더 보기</p>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="card p-8 text-center text-g-400">
+      <div class="w-12 h-12 bg-g-100 rounded-full ic mx-auto mb-3">
+        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <p class="text-[14px]">예약된 수업이 없습니다</p>
+      <a href="/booking/calendar" class="inline-block mt-3 text-[13px] text-nv-600 font-medium">수업 예약하기 &rsaquo;</a>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- 새 예약 버튼 -->
+  <div class="fixed bottom-[66px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <a href="/booking/calendar" class="w-full h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[15px] active:bg-nv-700 flex items-center justify-center">새 예약하기</a>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function bookingSlider(totalItems) {
+    var pages = Math.ceil(totalItems / 5);
+    return {
+        current: 0,
+        totalPages: pages || 1,
+        touchStartX: 0,
+
+        prev() { if (this.current > 0) this.current--; },
+        next() { if (this.current < this.totalPages - 1) this.current++; },
+        handleSwipe(e) {
+            var diff = this.touchStartX - e.changedTouches[0].screenX;
+            if (diff > 50) this.next();
+            else if (diff < -50) this.prev();
+        }
+    };
+}
+</script>
+{% endblock %}

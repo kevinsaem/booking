@@ -1,0 +1,81 @@
+<!-- templates/booking/chat.html -->
+<!-- 화면: 1:1 채팅방 (강사와 메시지) -->
+<!-- HTMX로 새 메시지 폴링 또는 WebSocket 연동 -->
+{% extends "base.html" %}
+
+{% block title %}{{ teacher_name }} 선생님 - 메시지{% endblock %}
+{% block tabbar %}<!-- 채팅방에서는 탭바 숨김 -->{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col" x-data="{ newMsg: '' }">
+
+    <!-- 채팅 헤더 -->
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/messages" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <div class="flex-1">
+            <p class="text-[15px] font-bold text-gray-800">{{ teacher_name }} 선생님</p>
+            <p class="text-[11px] text-gray-400">{{ teacher_field }}</p>
+        </div>
+    </div>
+
+    <!-- 메시지 영역 -->
+    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3"
+         id="chat-messages"
+         hx-get="/booking/chat/{{ teacher_id }}/messages"
+         hx-trigger="every 5s"
+         hx-swap="innerHTML">
+
+        {% for msg in messages %}
+        {% if msg.is_mine %}
+        <!-- 내 메시지 (오른쪽) -->
+        <div class="flex justify-end gap-2">
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] text-gray-400 mb-1">{{ msg.time }}</span>
+                <div class="bg-green-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[260px]">
+                    <p class="text-[14px] leading-relaxed">{{ msg.content }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- 상대 메시지 (왼쪽) -->
+        <div class="flex gap-2">
+            {% if msg.show_avatar %}
+            <div class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center text-green-600 font-bold text-xs flex-shrink-0 mt-4">
+                {{ teacher_name[0] }}
+            </div>
+            {% else %}
+            <div class="w-8 flex-shrink-0"></div>
+            {% endif %}
+            <div class="flex flex-col">
+                {% if msg.show_avatar %}
+                <span class="text-[11px] font-medium text-gray-500 mb-1">{{ teacher_name }} 선생님</span>
+                {% endif %}
+                <div class="bg-white rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[260px] shadow-sm">
+                    <p class="text-[14px] text-gray-800 leading-relaxed">{{ msg.content }}</p>
+                </div>
+                <span class="text-[10px] text-gray-400 mt-1">{{ msg.time }}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- 입력 영역 -->
+    <div class="bg-white border-t border-gray-200 px-4 py-3 safe-bottom">
+        <form hx-post="/booking/chat/{{ teacher_id }}/send"
+              hx-target="#chat-messages"
+              hx-swap="innerHTML"
+              @submit="newMsg = ''"
+              class="flex items-center gap-2">
+            <input type="text" name="content" x-model="newMsg"
+                   placeholder="메시지를 입력하세요"
+                   class="flex-1 h-[42px] px-4 bg-gray-100 rounded-full text-[14px] placeholder-gray-400"
+                   autocomplete="off">
+            <button type="submit" :disabled="!newMsg.trim()"
+                    class="w-[42px] h-[42px] bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold active:bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 transition-colors flex-shrink-0">
+                ↑
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

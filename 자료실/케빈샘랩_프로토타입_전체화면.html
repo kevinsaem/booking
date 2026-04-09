@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#43A047">
+<title>케빈샘AI코딩학원 프로토타입 전체화면</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Noto Sans KR','sans-serif']},colors:{
+nv:{50:'#E8F5E9',100:'#C8E6C9',200:'#A5D6A7',300:'#81C784',400:'#66BB6A',500:'#4CAF50',600:'#43A047',700:'#388E3C',800:'#2E7D32'},
+g:{50:'#FAFAFA',100:'#F5F5F5',200:'#EEEEEE',300:'#E0E0E0',400:'#BDBDBD',500:'#9E9E9E',600:'#757575',700:'#616161',800:'#424242',900:'#212121'}
+}}}}
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+[x-cloak]{display:none!important}
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+html{overscroll-behavior:contain}
+input:focus,textarea:focus{outline:none}
+::-webkit-scrollbar{display:none}
+:root{--color-primary:#43A047;--color-primary-light:#E8F5E9;--color-primary-dark:#2E7D32;--color-accent:#FBC02D;--color-accent-light:#FFF9C4;--color-danger:#E53935;--color-danger-light:#FFEBEE;--color-text:#212121;--color-text-sub:#757575;--color-text-hint:#BDBDBD;--color-bg:#F5F5F5;--color-card:#FFFFFF;--color-border:#EEEEEE}
+.fade{animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.pop{animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
+.s1{animation-delay:.05s}.s2{animation-delay:.1s}.s3{animation-delay:.15s}.s4{animation-delay:.2s}
+.card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.03)}
+.tab{color:#BDBDBD}.tab.on{color:#43A047;font-weight:700}
+.ic{display:inline-flex;align-items:center;justify-content:center}
+.ic svg{stroke-linecap:round;stroke-linejoin:round;fill:none}
+.back-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#9E9E9E}
+.divider{height:1px;background:#EEEEEE}
+.divider-thick{height:8px;background:#F5F5F5}
+</style>
+</head>
+<body class="font-sans bg-gray-300">
+
+<div id="app" class="max-w-[430px] mx-auto min-h-screen bg-gray-100 relative"
+     x-data="app()" x-cloak>
+
+<!-- ==================== 1. 로그인 ==================== -->
+<template x-if="page==='login'">
+<div class="min-h-screen bg-white flex flex-col px-6 fade">
+  <div class="flex-1 flex flex-col justify-center">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-nv-600 rounded-2xl mb-4 shadow-lg shadow-nv-600/20">
+        <span class="text-white font-extrabold text-2xl">K</span>
+      </div>
+      <h1 class="text-[22px] font-extrabold text-g-900">케빈샘AI코딩학원</h1>
+      <p class="text-[13px] text-g-500 mt-1">성인 1:1 AI활용 과정</p>
+    </div>
+    <p class="text-center text-[14px] text-g-600 mb-6">카카오 계정으로 간편하게 시작하세요</p>
+    <button @click="go('home')" class="w-full h-[50px] rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 active:scale-[.98] transition-all" style="background-color:#FEE500;color:#191919;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919"><path d="M12 3C6.48 3 2 6.36 2 10.44c0 2.63 1.74 4.94 4.36 6.26l-1.1 4.08c-.1.36.32.65.64.44l4.84-3.2c.42.04.84.06 1.26.06 5.52 0 10-3.36 10-7.64C22 6.36 17.52 3 12 3z"/></svg>
+      카카오로 시작하기
+    </button>
+    <div class="flex items-center gap-3 my-6">
+      <div class="flex-1 h-px bg-g-200"></div>
+      <span class="text-[12px] text-g-400">또는</span>
+      <div class="flex-1 h-px bg-g-200"></div>
+    </div>
+    <div class="space-y-3">
+      <input type="text" placeholder="이름" value="강도열" class="w-full h-[44px] px-4 bg-g-100 rounded-xl text-[14px] placeholder-g-400">
+      <input type="text" placeholder="인증번호 4자리" value="1234" maxlength="4" inputmode="numeric" class="w-full h-[44px] px-4 bg-g-100 rounded-xl text-[14px] placeholder-g-400">
+      <button @click="go('home')" class="w-full h-[44px] bg-g-800 text-white rounded-xl font-bold text-[14px] active:bg-g-900">로그인</button>
+    </div>
+    <div class="flex items-center justify-center gap-4 mt-6 text-[13px] text-g-400">
+      <span class="cursor-pointer" @click="toast('카카오톡 상담으로 연결됩니다')">수강 문의</span>
+    </div>
+  </div>
+  <p class="text-center text-[10px] text-g-300 pb-6">케빈샘AI코딩학원 · 안산선부캠퍼스</p>
+</div>
+</template>
+
+<!-- ==================== 2. 홈 ==================== -->
+<template x-if="page==='home'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-nv-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p class="text-nv-200 text-[12px]">안녕하세요</p>
+        <h2 class="text-[20px] font-bold mt-0.5">강도열님</h2>
+      </div>
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">강</div>
+    </div>
+    <div class="bg-white/15 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-nv-100 text-[12px]">취미반 주1회 12주</span>
+        <span class="text-white/70 text-[12px]">안산선부캠퍼스</span>
+      </div>
+      <div class="flex items-end gap-3">
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">제공</span>
+          <span class="text-[28px] font-extrabold leading-none text-white/70">12</span>
+          <span class="text-[12px] text-nv-100">회</span>
+        </div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">남은</span>
+          <span class="text-[42px] font-extrabold leading-none">8</span>
+          <span class="text-[14px] text-nv-100 pb-1.5">회</span>
+        </div>
+        <div class="flex-1"></div>
+        <button @click="go('reserve')" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97]">예약하기</button>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 -mt-3 space-y-4">
+    <div class="card p-4 grid grid-cols-4 gap-1 fade s1">
+      <button @click="go('reserve')" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div>
+        <span class="text-[11px] text-g-600">수업예약</span>
+      </button>
+      <button @click="go('dashboard')" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div>
+        <span class="text-[11px] text-g-600">학습현황</span>
+      </button>
+      <button @click="go('messages')" class="flex flex-col items-center gap-1.5 py-2 relative">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <div class="absolute top-1 right-3 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">2</div>
+        <span class="text-[11px] text-g-600">메시지</span>
+      </button>
+      <button @click="go('payment')" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+        <span class="text-[11px] text-g-600">수강/결제</span>
+      </button>
+    </div>
+    <div class="fade s2">
+      <div class="flex justify-between items-center mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">다가오는 수업</h3>
+        <span @click="go('mybookings')" class="text-[12px] text-nv-600 cursor-pointer font-medium">전체 &rsaquo;</span>
+      </div>
+      <div class="card p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center">
+            <span class="text-[10px] text-nv-500">3월</span>
+            <span class="text-[16px] font-extrabold text-nv-700 -mt-0.5">26</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-[14px] font-bold text-g-800">Kevin(C) 멘토</p>
+            <p class="text-[12px] text-g-400">14:00~14:50 · 수요일</p>
+          </div>
+          <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">D-2</span>
+        </div>
+      </div>
+    </div>
+    <button @click="go('notices')" class="block w-full fade s3 cursor-pointer text-left">
+      <div class="bg-amber-50 rounded-2xl p-4 flex items-center gap-3">
+        <div class="w-9 h-9 bg-amber-100 rounded-lg ic flex-shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="#92400E" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <div class="flex-1">
+          <p class="text-[13px] font-bold text-g-800">4월 수강 일정 안내</p>
+          <p class="text-[11px] text-g-500 mt-0.5">4월 수업 일정과 휴강일을 확인하세요</p>
+        </div>
+        <span class="text-g-300">&rsaquo;</span>
+      </div>
+    </button>
+    <div class="fade s4">
+      <div class="flex justify-between items-center mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">내 예약</h3>
+        <span @click="go('mybookings')" class="text-[12px] text-nv-600 cursor-pointer font-medium">전체 &rsaquo;</span>
+      </div>
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-nv-50 rounded-lg flex flex-col items-center justify-center">
+            <span class="text-[9px] text-nv-500">3월</span>
+            <span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">26</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-[13px] font-bold text-g-800">Kevin(C) 멘토</p>
+            <p class="text-[11px] text-g-400">14:00~14:50 · 수요일</p>
+          </div>
+          <span class="text-[10px] font-bold bg-nv-50 text-nv-600 px-2.5 py-1 rounded-full">예약확정</span>
+        </div>
+        <div class="h-px bg-g-100"></div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-nv-50 rounded-lg flex flex-col items-center justify-center">
+            <span class="text-[9px] text-nv-500">4월</span>
+            <span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">2</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-[13px] font-bold text-g-800">Kevin(C) 멘토</p>
+            <p class="text-[11px] text-g-400">14:00~14:50 · 수요일</p>
+          </div>
+          <span class="text-[10px] font-bold bg-nv-50 text-nv-600 px-2.5 py-1 rounded-full">예약확정</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 3. 수업예약 (캘린더) ==================== -->
+<template x-if="page==='reserve'">
+<div class="min-h-screen bg-g-100 pb-40 fade" x-data="reserveData()">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1" x-text="stepTitle">날짜 선택</h1>
+    <span class="text-[12px] text-nv-600 font-bold" x-text="stepNum">2/7</span>
+  </div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500 transition-all duration-500" :style="'width:'+progress+'%'"></div></div>
+  <div class="px-4 pt-4 space-y-3">
+    <div class="flex items-center gap-2 px-1">
+      <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-1 rounded-full">남은 수업 8회</span>
+    </div>
+
+    <!-- 캘린더 -->
+    <div class="card overflow-hidden" x-show="step>=1">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-g-100">
+        <button class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span class="font-bold text-g-800">2026년 3월</span>
+        <button class="w-8 h-8 bg-g-100 rounded-lg ic text-g-500 active:bg-g-200"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-7 text-center mb-1">
+          <template x-for="d in ['일','월','화','수','목','금','토']"><span class="text-[11px] font-medium py-1" :class="d==='일'?'text-red-400':d==='토'?'text-blue-400':'text-g-400'" x-text="d"></span></template>
+        </div>
+        <div class="grid grid-cols-7 text-center gap-y-1">
+          <template x-for="i in 6"><div></div></template>
+          <template x-for="day in 31">
+            <button @click="if(calAvail(day)){selDate=day;step=2}" class="w-10 h-10 mx-auto rounded-xl text-[13px] font-medium flex items-center justify-center transition"
+              :class="selDate===day?'bg-nv-500 text-white font-bold':calAvail(day)?'text-g-700 active:bg-nv-50':'text-g-300 cursor-default'"
+              x-text="day"></button>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- 시간 선택 -->
+    <div x-show="step>=2" class="fade">
+      <h3 class="text-[14px] font-bold text-g-800 mb-2 px-1">시간 선택</h3>
+      <div class="grid grid-cols-3 gap-2">
+        <template x-for="t in times">
+          <button @click="selTime=t;step=3" class="card py-3 text-center text-[13px] font-medium transition active:scale-[.97]" :class="selTime===t?'ring-2 ring-nv-500 bg-nv-50 text-nv-700 font-bold':'text-g-600'" x-text="t"></button>
+        </template>
+      </div>
+    </div>
+
+    <!-- 멘토 선택 -->
+    <div x-show="step>=3" class="fade">
+      <h3 class="text-[14px] font-bold text-g-800 mb-2 px-1">멘토 선택</h3>
+      <div class="space-y-2">
+        <template x-for="m in mentors">
+          <button @click="selMentor=m.name;step=4" class="card p-4 w-full flex items-center gap-3 transition active:scale-[.98]" :class="selMentor===m.name?'ring-2 ring-nv-500 bg-nv-50':''">
+            <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg" x-text="m.name[0]"></div>
+            <div class="flex-1 text-left">
+              <p class="text-[14px] font-bold text-g-800" x-text="m.name+' 멘토'"></p>
+              <p class="text-[12px] text-g-400" x-text="m.field"></p>
+            </div>
+          </button>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-5 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <button @click="if(step===4) go('repeat')" class="w-full h-[50px] rounded-xl font-bold text-[15px] transition active:scale-[.98]" :class="step>=4?'bg-nv-600 text-white':'bg-g-200 text-g-400'" :disabled="step<4" x-text="step<4?'멘토를 선택하세요':'다음 단계'"></button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 4. 반복예약 ==================== -->
+<template x-if="page==='repeat'">
+<div class="min-h-screen bg-g-100 pb-40 fade" x-data="repeatData()">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('reserve')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">반복 예약</h1>
+    <span class="text-[12px] text-nv-600 font-bold">5/7</span>
+  </div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500" style="width:71%"></div></div>
+  <div class="px-4 pt-4 space-y-4">
+    <div>
+      <h2 class="text-[18px] font-bold text-g-900">매주 같은 시간에<br>추가 예약하시겠어요?</h2>
+      <p class="text-[13px] text-g-400 mt-1">최대 12주, 잔여 횟수 이내</p>
+    </div>
+    <div class="bg-nv-50 rounded-xl p-3 flex items-center gap-3">
+      <span class="text-[11px] font-bold text-nv-600">남은 수업</span>
+      <span class="text-[14px] font-extrabold text-nv-700">8회</span>
+      <span class="text-[12px] text-g-400 ml-auto">선택: <span x-text="selected.length"></span>회</span>
+    </div>
+    <div class="space-y-1.5">
+      <template x-for="(w,idx) in weeks" :key="idx">
+        <button @click="toggle(idx)" class="w-full flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm transition active:scale-[.98]" :class="{'ring-2 ring-nv-400 bg-nv-50':idx===0,'ring-2 ring-nv-300 bg-nv-50':selected.includes(idx)&&idx!==0,'opacity-30 cursor-default':w.disabled}">
+          <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center text-[10px]" :class="idx===0||selected.includes(idx)?'bg-nv-500 border-nv-500 text-white':'border-g-300'">
+            <span x-show="idx===0||selected.includes(idx)">&#10003;</span>
+          </div>
+          <span class="flex-1 text-left text-[13px] font-medium text-g-700" x-text="w.label"></span>
+          <span class="text-[10px] font-bold" :class="idx===0?'text-nv-600':w.disabled?'text-red-400':selected.includes(idx)?'text-nv-500':'text-g-300'" x-text="idx===0?'기본':w.disabled?'마감':selected.includes(idx)?'선택됨':'선택'"></span>
+        </button>
+      </template>
+    </div>
+    <p class="text-center text-[13px] text-g-400">총 <strong class="text-nv-600" x-text="selected.length+'회'"></strong> 예약 · 잔여 <strong class="text-nv-600" x-text="(8-selected.length)+'회'"></strong></p>
+  </div>
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-5 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <div class="flex gap-2">
+      <button @click="go('confirm')" class="flex-1 h-[50px] bg-g-200 rounded-xl font-bold text-[14px] text-g-500 active:bg-g-300">1회만 예약</button>
+      <button @click="go('confirm')" class="flex-1 h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[14px] active:bg-nv-700">선택 완료</button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 5. 예약확인 ==================== -->
+<template x-if="page==='confirm'">
+<div class="min-h-screen bg-g-100 pb-24 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200">
+    <button @click="go('repeat')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">예약 확인</h1>
+    <span class="text-[12px] text-nv-600 font-bold">6/7</span>
+  </div>
+  <div class="h-1 bg-g-200"><div class="h-full bg-nv-500" style="width:85%"></div></div>
+  <div class="px-4 pt-4">
+    <div class="card overflow-hidden">
+      <div class="bg-nv-600 p-5 text-center text-white">
+        <div class="w-10 h-10 mx-auto mb-2 bg-white/20 rounded-full ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" stroke="white" stroke-width="1.5" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+        </div>
+        <h2 class="font-bold">예약 내역을 확인하세요</h2>
+      </div>
+      <div class="divide-y divide-g-200">
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">수강생</span><span class="text-[13px] font-bold">강도열</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">멘토</span><span class="text-[13px] font-bold">Kevin(C) 멘토</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">수업일</span><span class="text-[13px] font-bold text-right">3/26(수), 4/2(수)</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">시간</span><span class="text-[13px] font-bold">14:00~14:50</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">예약 횟수</span><span class="text-[13px] font-bold">2회</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">캠퍼스</span><span class="text-[13px] font-bold">안산선부캠퍼스</span></div>
+        <div class="flex justify-between px-5 py-3.5"><span class="text-[13px] text-g-500">예약 후 잔여</span><span class="text-[13px] font-extrabold text-nv-600">6회</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-5 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <button @click="go('complete')" class="w-full h-[50px] bg-red-500 text-white rounded-xl font-bold text-[15px] active:bg-red-600">예약 확정하기</button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 6. 예약완료 ==================== -->
+<template x-if="page==='complete'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 border-b border-g-200 text-center"><h1 class="text-[16px] font-bold text-g-800">예약 완료</h1></div>
+  <div class="h-1 bg-nv-500"></div>
+  <div class="px-4 pt-10 text-center">
+    <div class="w-20 h-20 bg-nv-50 rounded-full ic mx-auto mb-5 pop">
+      <svg width="36" height="36" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <h2 class="text-[20px] font-extrabold text-g-900 mb-1">예약 완료!</h2>
+    <p class="text-[14px] text-g-400">카카오톡으로 예약 확인 메시지를<br>보내드렸습니다</p>
+    <div class="card p-5 text-left mt-6 space-y-2.5">
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">멘토</span><span class="font-bold">Kevin(C) 멘토</span></div>
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">예약</span><span class="font-bold">2회</span></div>
+      <div class="flex justify-between text-[14px]"><span class="text-g-500">잔여 수업</span><span class="font-bold text-nv-600">6회</span></div>
+    </div>
+    <div class="flex gap-2 mt-6">
+      <button @click="go('mybookings')" class="flex-1 h-12 bg-g-100 rounded-xl font-bold text-g-600 text-[13px] flex items-center justify-center active:bg-g-200">내 예약</button>
+      <button @click="go('home')" class="flex-1 h-12 bg-nv-600 text-white rounded-xl font-bold text-[13px] flex items-center justify-center active:bg-nv-700">홈으로</button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 7. 내 예약 ==================== -->
+<template x-if="page==='mybookings'">
+<div class="min-h-screen bg-g-100 pb-24 fade" x-data="{bookings:[{date:'3/26(수)',time:'14:00~14:50',mentor:'Kevin(C)',st:1},{date:'4/2(수)',time:'14:00~14:50',mentor:'Kevin(C)',st:1}]}">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">내 예약</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-3">
+    <div class="bg-nv-50 rounded-xl p-3 flex items-center gap-3">
+      <span class="text-[24px] font-extrabold text-nv-700">8</span>
+      <div><p class="text-[11px] text-nv-500 font-medium">남은 수업</p><p class="text-[13px] font-bold text-nv-700">8회</p></div>
+    </div>
+    <template x-for="(b,i) in bookings" :key="i">
+      <div class="card p-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-[15px] font-bold text-g-800" x-text="b.date"></span>
+          <span x-show="b.st===1" class="text-[10px] font-bold bg-nv-50 text-nv-600 px-2.5 py-1 rounded-full">예약확정</span>
+          <span x-show="b.st===0" class="text-[10px] font-bold bg-red-50 text-red-500 px-2.5 py-1 rounded-full">취소됨</span>
+        </div>
+        <p class="text-[12px] text-g-400" x-text="b.time+' · '+b.mentor+' 멘토'"></p>
+        <div x-show="b.st===1" class="flex gap-2 mt-3 pt-3 border-t border-g-100">
+          <button @click="b.st=0;toast('예약이 취소되었습니다')" class="flex-1 py-2 rounded-lg text-[12px] font-bold border border-red-400 text-red-500 active:bg-red-50">예약 취소</button>
+          <button @click="toast('취소 후 재예약해주세요')" class="flex-1 py-2 rounded-lg text-[12px] font-bold border border-g-200 text-g-400 active:bg-g-50">변경</button>
+        </div>
+      </div>
+    </template>
+  </div>
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-5 pt-3 bg-gradient-to-t from-g-100 via-g-100 z-20">
+    <button @click="go('reserve')" class="w-full h-[50px] bg-nv-600 text-white rounded-xl font-bold text-[15px] active:bg-nv-700 flex items-center justify-center">새 예약하기</button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 8. 학습현황 (슬라이드 카드) ==================== -->
+<template x-if="page==='dashboard'">
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="dashData()">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">학습 현황</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 fade">
+      <p class="text-[12px] text-g-400 mb-3">취미반 주1회 12주</p>
+      <div class="grid grid-cols-2 gap-4 text-center">
+        <div><p class="text-[32px] font-extrabold text-g-900">4</p><p class="text-[11px] text-g-400 mt-1">완료 수업</p></div>
+        <div><p class="text-[32px] font-extrabold text-nv-600">8</p><p class="text-[11px] text-g-400 mt-1">남은 수업 / 12회</p></div>
+      </div>
+    </div>
+    <div class="fade s1">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">수업 기록</h3>
+        <div class="flex items-center gap-2">
+          <button @click="if(cur>0)cur--" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200" :class="cur===0?'text-g-300':'text-g-600'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="text-[12px] text-g-400" x-text="(cur+1)+'/'+lessons.length"></span>
+          <button @click="if(cur<lessons.length-1)cur++" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200" :class="cur===lessons.length-1?'text-g-300':'text-g-600'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="overflow-hidden rounded-2xl" @touchstart="tsx=$event.changedTouches[0].screenX" @touchend="let d=tsx-$event.changedTouches[0].screenX;if(d>50&&cur<lessons.length-1)cur++;if(d<-50&&cur>0)cur--">
+        <div class="flex transition-transform duration-300 ease-out" :style="'transform:translateX(-'+(cur*100)+'%)'">
+          <template x-for="(ls,li) in lessons" :key="li">
+            <div class="w-full flex-shrink-0">
+              <div class="card overflow-hidden mx-0.5">
+                <div class="bg-nv-600 text-white p-4">
+                  <div class="flex items-center justify-between">
+                    <div><p class="text-[20px] font-extrabold" x-text="ls.date"></p><p class="text-nv-200 text-[13px] mt-0.5" x-text="ls.time"></p></div>
+                    <div class="text-right">
+                      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">K</div>
+                      <p class="text-[11px] text-nv-200 mt-1">Kevin(C) 멘토</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-4 border-b border-g-100">
+                  <div class="flex items-center gap-2 mb-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="#43A047" stroke-width="2" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                    <p class="text-[12px] font-bold text-nv-600">멘토 피드백</p>
+                  </div>
+                  <p class="text-[14px] text-g-700 leading-relaxed" x-text="ls.feedback"></p>
+                </div>
+                <div class="p-4 border-b border-g-100">
+                  <div class="flex items-center gap-2 mb-3">
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="#1565C0" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                    <p class="text-[12px] font-bold text-nv-600">수업 내용</p>
+                  </div>
+                  <div class="bg-g-50 rounded-xl p-3">
+                    <p class="text-[13px] font-semibold text-g-800 mb-1" x-text="ls.level"></p>
+                    <div class="mt-2"><p class="text-[11px] text-g-400 mb-0.5">수강생 소감</p><p class="text-[13px] text-g-600 leading-relaxed" x-text="ls.report"></p></div>
+                    <div class="mt-2"><p class="text-[11px] text-g-400 mb-0.5">멘토 조언</p><p class="text-[13px] text-g-600 leading-relaxed" x-text="ls.advice"></p></div>
+                  </div>
+                </div>
+                <div class="p-4 bg-g-50">
+                  <p class="text-[12px] font-bold text-g-500 mb-3">멘토 평가</p>
+                  <div class="flex items-center gap-1.5 justify-center" x-data="{r:ls.rating}">
+                    <template x-for="i in 5">
+                      <button @click="r=i;ls.rating=i" class="text-[32px] transition active:scale-125" :class="i<=r?'text-amber-400':'text-g-300'">&#9733;</button>
+                    </template>
+                  </div>
+                  <p class="text-[11px] text-g-400 text-center mt-2" x-text="ls.rating>0?ls.rating+'점을 평가했습니다':'별을 터치해 평가해주세요'"></p>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+      <div class="flex justify-center gap-1.5 mt-3">
+        <template x-for="(ls,li) in lessons" :key="'d'+li">
+          <div class="w-2 h-2 rounded-full transition-colors cursor-pointer" :class="cur===li?'bg-nv-500':'bg-g-300'" @click="cur=li"></div>
+        </template>
+      </div>
+      <p class="text-center text-[11px] text-g-400 mt-2" x-show="cur===0">&#8592; 밀어서 이전 수업 기록 보기</p>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 9. 메시지 목록 ==================== -->
+<template x-if="page==='messages'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">메시지</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-2">
+    <button @click="go('chat')" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer w-full text-left">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">K</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">Kevin(C) 멘토</p><span class="text-[10px] text-g-400">오늘</span></div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">다음 수업 때 복습 자료 준비해둘게요!</p>
+      </div>
+      <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold flex-shrink-0">2</div>
+    </button>
+    <button @click="go('notices')" class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer w-full text-left">
+      <div class="w-12 h-12 bg-g-100 rounded-full ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">케빈샘AI코딩학원</p><span class="text-[10px] text-g-400">3/20</span></div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">4월 수강 일정 안내</p>
+      </div>
+    </button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 10. 채팅 ==================== -->
+<template x-if="page==='chat'">
+<div class="min-h-screen bg-g-100 flex flex-col fade" x-data="{nm:'',msgs:[{mine:false,t:'09:30',c:'안녕하세요 강도열님! 지난 수업 때 배운 AI 프롬프트 작성법 복습해보셨나요?',av:true},{mine:true,t:'09:35',c:'네, 연습해봤는데 생각보다 어렵더라구요.'},{mine:false,t:'09:36',c:'처음엔 다 그래요! 다음 수업 때 복습 자료 준비해둘게요!',av:true},{mine:true,t:'10:00',c:'감사합니다 멘토님!'}]}">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('messages')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="flex-1"><p class="text-[15px] font-bold text-g-800">Kevin(C) 멘토</p><p class="text-[11px] text-g-400">AI활용 과정</p></div>
+  </div>
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+    <template x-for="(m,i) in msgs" :key="i">
+      <div>
+        <div x-show="m.mine" class="flex justify-end">
+          <div class="flex flex-col items-end"><span class="text-[10px] text-g-400 mb-1" x-text="m.t"></span><div class="bg-nv-500 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[260px] text-[14px]" x-text="m.c"></div></div>
+        </div>
+        <div x-show="!m.mine" class="flex gap-2">
+          <div x-show="m.av" class="w-8 h-8 bg-g-100 rounded-full flex items-center justify-center text-g-600 font-bold text-xs flex-shrink-0 mt-4">K</div>
+          <div x-show="!m.av" class="w-8 flex-shrink-0"></div>
+          <div class="flex flex-col">
+            <span x-show="m.av" class="text-[11px] font-medium text-g-500 mb-1">Kevin(C) 멘토</span>
+            <span class="text-[10px] text-g-400 mb-1" x-text="m.t"></span>
+            <div class="bg-white rounded-2xl rounded-tl-sm shadow-sm text-g-800 px-4 py-2.5 max-w-[260px] text-[14px]" x-text="m.c"></div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+  <div class="bg-white border-t border-g-200 px-4 py-3">
+    <div class="flex items-center gap-2">
+      <input type="text" x-model="nm" placeholder="메시지를 입력하세요" class="flex-1 h-[42px] px-4 bg-g-100 rounded-full text-[14px] placeholder-g-400" @keydown.enter="if(nm.trim()){msgs.push({mine:true,t:'지금',c:nm});nm=''}">
+      <button @click="if(nm.trim()){msgs.push({mine:true,t:'지금',c:nm});nm=''}" class="w-[42px] h-[42px] rounded-full ic transition" :class="nm.trim()?'bg-nv-500 text-white':'bg-g-200 text-g-400'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 11. 수강/결제 ==================== -->
+<template x-if="page==='payment'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">수강 / 결제</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 fade">
+      <p class="text-[12px] font-bold text-nv-600 mb-3">현재 수강중</p>
+      <p class="text-[16px] font-bold text-g-800">취미반 주1회 12주</p>
+      <p class="text-[12px] text-g-400 mt-1">1:1 AI활용 과정 (50분/회)</p>
+      <div class="h-px bg-g-200 my-4"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><p class="text-[11px] text-g-400">결제일</p><p class="text-[13px] font-medium">2026.03.01</p></div>
+        <div><p class="text-[11px] text-g-400">결제금액</p><p class="text-[13px] font-medium">660,000원</p></div>
+        <div><p class="text-[11px] text-g-400">수강기간</p><p class="text-[13px] font-medium">3/1 ~ 5/24</p></div>
+        <div><p class="text-[11px] text-g-400">남은 수업</p><p class="text-[13px] font-extrabold text-nv-600">8회</p></div>
+      </div>
+    </div>
+    <div class="fade s1">
+      <h3 class="text-[14px] font-bold text-g-800 mb-3 px-1">수강신청</h3>
+      <div class="space-y-2">
+        <div class="card p-4 active:bg-g-50 cursor-pointer relative overflow-hidden">
+          <div class="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-bold px-3 py-0.5 rounded-bl-lg">BEST</div>
+          <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">취미반 주2회 12주</p><p class="text-[14px] font-extrabold text-nv-600">1,200,000원</p></div>
+          <p class="text-[11px] text-g-400 mt-1">주2회 · 24회 · 50분/회</p>
+        </div>
+        <div class="card p-4 active:bg-g-50 cursor-pointer">
+          <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">취미반 주1회 12주</p><p class="text-[14px] font-extrabold text-nv-600">660,000원</p></div>
+          <p class="text-[11px] text-g-400 mt-1">주1회 · 12회 · 50분/회</p>
+        </div>
+        <div class="card p-4 active:bg-g-50 cursor-pointer">
+          <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">월수강권 (무제한)</p><p class="text-[14px] font-extrabold text-nv-600">220,000원/월</p></div>
+          <p class="text-[11px] text-g-400 mt-1">평일 무제한 · 50분/회</p>
+        </div>
+      </div>
+    </div>
+    <div class="fade s2">
+      <h3 class="text-[14px] font-bold text-g-800 mb-3 px-1">결제 내역</h3>
+      <div class="card divide-y divide-g-100">
+        <div class="p-4 flex justify-between items-center"><div><p class="text-[13px] font-medium text-g-800">취미반 주1회 12주</p><p class="text-[11px] text-g-400">2026.03.01</p></div><p class="text-[13px] font-bold text-g-700">660,000원</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 12. 공지사항 ==================== -->
+<template x-if="page==='notices'">
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="{nTab:'all'}">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">공지사항</h1>
+  </div>
+  <div class="bg-white px-4 py-2 border-b border-g-200 flex gap-2">
+    <button @click="nTab='all'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='all'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">전체</button>
+    <button @click="nTab='notice'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='notice'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">공지</button>
+    <button @click="nTab='event'" class="px-4 py-1.5 rounded-full text-[12px] font-bold transition" :class="nTab==='event'?'bg-nv-500 text-white':'bg-g-100 text-g-500'">이벤트</button>
+  </div>
+  <div class="px-4 pt-4 space-y-2">
+    <div class="card p-4 cursor-pointer active:bg-g-50" x-show="nTab==='all'||nTab==='notice'">
+      <div class="flex items-center gap-2 mb-2"><span class="text-[9px] font-bold px-2 py-0.5 rounded-md text-nv-600 bg-nv-50">NEW</span><span class="text-[11px] text-g-400">2026.03.20</span></div>
+      <p class="text-[14px] font-bold text-g-800">4월 수강 일정 안내</p>
+      <p class="text-[12px] text-g-400 mt-1">4월 수업 일정과 휴강일을 확인하세요</p>
+    </div>
+    <div class="card p-4 cursor-pointer active:bg-g-50" x-show="nTab==='all'||nTab==='event'">
+      <div class="flex items-center gap-2 mb-2"><span class="text-[9px] font-bold px-2 py-0.5 rounded-md text-orange-600 bg-orange-50">이벤트</span><span class="text-[11px] text-g-400">2026.03.15</span></div>
+      <p class="text-[14px] font-bold text-g-800">친구 추천 이벤트</p>
+      <p class="text-[12px] text-g-400 mt-1">친구를 추천하면 1회 무료 수업 제공!</p>
+    </div>
+    <div class="card p-4 cursor-pointer active:bg-g-50" x-show="nTab==='all'||nTab==='notice'">
+      <div class="flex items-center gap-2 mb-2"><span class="text-[9px] font-bold px-2 py-0.5 rounded-md text-g-500 bg-g-100">공지</span><span class="text-[11px] text-g-400">2026.03.10</span></div>
+      <p class="text-[14px] font-bold text-g-800">캠퍼스 운영시간 변경 안내</p>
+      <p class="text-[12px] text-g-400 mt-1">3월 25일부터 운영시간이 변경됩니다</p>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 13. MY페이지 ==================== -->
+<template x-if="page==='mypage'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('home')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">MY</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-4">
+    <div class="card p-5 text-center fade">
+      <div class="w-16 h-16 bg-nv-500 rounded-full flex items-center justify-center mx-auto text-white font-bold text-xl">강</div>
+      <h3 class="text-[18px] font-bold text-g-800 mt-3">강도열</h3>
+      <p class="text-[12px] text-g-400 mt-0.5">안산선부캠퍼스 · AI활용 과정</p>
+      <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-g-100">
+        <div><p class="text-[18px] font-extrabold text-nv-600">8</p><p class="text-[10px] text-g-400">남은 수업</p></div>
+        <div><p class="text-[18px] font-extrabold text-g-800">4</p><p class="text-[10px] text-g-400">완료</p></div>
+        <div><p class="text-[18px] font-extrabold text-blue-600">100%</p><p class="text-[10px] text-g-400">출석률</p></div>
+      </div>
+    </div>
+    <div class="card overflow-hidden fade s1">
+      <button @click="go('mybookings')" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span class="text-[14px] text-g-700">내 예약</span></div><span class="text-g-300">&rsaquo;</span></button>
+      <button @click="go('dashboard')" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></div><span class="text-[14px] text-g-700">학습 현황</span></div><span class="text-g-300">&rsaquo;</span></button>
+      <button @click="go('payment')" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="text-[14px] text-g-700">수강 / 결제</span></div><span class="text-g-300">&rsaquo;</span></button>
+      <button @click="go('notices')" class="w-full flex items-center justify-between px-5 py-4 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div><span class="text-[14px] text-g-700">공지사항</span></div><span class="text-g-300">&rsaquo;</span></button>
+    </div>
+    <div class="card overflow-hidden fade s2">
+      <button @click="toast('카카오톡 상담으로 연결됩니다')" class="w-full flex items-center justify-between px-5 py-4 border-b border-g-100 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><span class="text-[14px] text-g-700">카카오톡 상담</span></div><span class="text-g-300">&rsaquo;</span></button>
+      <div class="w-full flex items-center justify-between px-5 py-4 active:bg-g-50"><div class="flex items-center gap-3"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#757575" stroke-width="1.5" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.88.37 1.73.7 2.55a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.82.33 1.67.57 2.55.7A2 2 0 0122 16.92z"/></svg></div><span class="text-[14px] text-g-700">전화 문의</span></div><span class="text-[12px] text-g-400">0507-1307-9398</span></div>
+    </div>
+    <button @click="go('login')" class="w-full card px-5 py-4 text-left text-red-500 text-[14px] font-medium active:bg-g-50 fade s3">로그아웃</button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 14. 멘토 홈 ==================== -->
+<template x-if="page==='thome'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-nv-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+    <div class="flex items-center justify-between mb-5">
+      <div><p class="text-nv-200 text-[12px]">안녕하세요</p><h2 class="text-[20px] font-bold mt-0.5">Kevin(C) 멘토</h2></div>
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">K</div>
+    </div>
+    <div class="bg-white/15 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3"><span class="text-nv-100 text-[12px]">오늘 수업</span><span class="text-white/70 text-[12px]">2026.03.24 (월)</span></div>
+      <div class="flex items-end gap-2">
+        <span class="text-[42px] font-extrabold leading-none">3</span><span class="text-[14px] text-nv-100 pb-1.5">건</span>
+        <div class="flex-1"></div>
+        <button @click="go('tschedule')" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97]">스케줄</button>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 -mt-3 space-y-3">
+    <div class="fade s1">
+      <div class="flex justify-between items-center mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">오늘 수업</h3><span class="text-[12px] text-g-400">총 3건</span></div>
+      <div class="card p-4 mb-2 fade s1">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0"><span class="text-[10px] text-nv-500">10시</span><span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">00</span></div>
+          <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">강도열</p><p class="text-[12px] text-g-400">10:00~10:50</p></div>
+          <span class="text-[11px] font-bold text-g-500 bg-g-100 px-3 py-1 rounded-full">완료</span>
+        </div>
+      </div>
+      <div class="card p-4 mb-2 fade s2">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0"><span class="text-[10px] text-nv-500">14시</span><span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">00</span></div>
+          <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">이수진</p><p class="text-[12px] text-g-400">14:00~14:50</p></div>
+          <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">예정</span>
+        </div>
+      </div>
+      <div class="card p-4 mb-2 fade s3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0"><span class="text-[10px] text-nv-500">16시</span><span class="text-[14px] font-extrabold text-nv-700 -mt-0.5">00</span></div>
+          <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">박민수</p><p class="text-[12px] text-g-400">16:00~16:50</p></div>
+          <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">예정</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 15. 멘토 스케줄 ==================== -->
+<template x-if="page==='tschedule'">
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="{showAdd:false}">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('thome')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">주간 스케줄</h1>
+    <button @click="showAdd=!showAdd" class="text-[12px] font-bold text-white bg-nv-600 px-3 py-1.5 rounded-lg active:bg-nv-700">+ 시간 추가</button>
+  </div>
+  <div x-show="showAdd" x-transition class="bg-white border-b border-g-200 px-4 py-4">
+    <div class="space-y-3">
+      <h3 class="text-[14px] font-bold text-g-800">수업 가능 시간 추가</h3>
+      <div><label class="text-[12px] text-g-500 mb-1 block">날짜</label><input type="date" class="w-full h-[42px] px-3 bg-g-100 rounded-lg text-[14px] border-none"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="text-[12px] text-g-500 mb-1 block">시작 시간</label><select class="w-full h-[42px] px-3 bg-g-100 rounded-lg text-[14px]"><option>10:00</option><option>11:00</option><option>14:00</option><option>15:00</option><option>16:00</option></select></div>
+        <div><label class="text-[12px] text-g-500 mb-1 block">종료 시간</label><select class="w-full h-[42px] px-3 bg-g-100 rounded-lg text-[14px]"><option>10:50</option><option>11:50</option><option>14:50</option><option>15:50</option><option>16:50</option></select></div>
+      </div>
+      <div><label class="text-[12px] text-g-500 mb-1 block">반복</label><select class="w-full h-[42px] px-3 bg-g-100 rounded-lg text-[14px]"><option>이 날짜만</option><option>2주 반복</option><option selected>4주 반복</option><option>8주 반복</option><option>12주 반복</option></select></div>
+      <div class="flex gap-2">
+        <button @click="showAdd=false" class="flex-1 h-[42px] bg-g-200 rounded-lg text-[13px] font-bold text-g-500">취소</button>
+        <button @click="showAdd=false;toast('시간이 추가되었습니다')" class="flex-1 h-[42px] bg-nv-600 text-white rounded-lg text-[13px] font-bold active:bg-nv-700">추가하기</button>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white px-4 py-3 flex items-center justify-between border-b border-g-100">
+    <span class="text-[13px] text-g-300">&lsaquo; 이전 주</span>
+    <span class="text-[14px] font-bold text-g-800">3/24(월) ~ 3/28(금)</span>
+    <span class="text-[13px] text-nv-600 font-medium cursor-pointer">다음 주 &rsaquo;</span>
+  </div>
+  <div class="px-4 pt-4 space-y-3">
+    <div class="fade s1">
+      <div class="flex items-center gap-2 mb-2 px-1"><h3 class="text-[14px] font-bold text-nv-600">3/24(월)</h3><span class="text-[10px] font-bold text-white bg-nv-500 px-2 py-0.5 rounded-full">오늘</span><span class="text-[11px] text-g-400 ml-auto">3개 슬롯</span></div>
+      <div class="card overflow-hidden mb-1">
+        <div class="px-4 py-3 flex items-center gap-3"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">10:00~10:50</div><div class="flex-1 flex items-center gap-2"><div class="w-7 h-7 bg-nv-50 rounded-full flex items-center justify-center text-[11px] font-bold text-nv-600">강</div><span class="text-[13px] font-medium text-g-800">강도열</span></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-0.5 rounded-full">예약</span></div>
+        <div class="px-4 py-3 flex items-center gap-3 border-t border-g-100"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">14:00~14:50</div><div class="flex-1 flex items-center gap-2"><div class="w-7 h-7 bg-nv-50 rounded-full flex items-center justify-center text-[11px] font-bold text-nv-600">이</div><span class="text-[13px] font-medium text-g-800">이수진</span></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-0.5 rounded-full">예약</span></div>
+        <div class="px-4 py-3 flex items-center gap-3 border-t border-g-100"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">16:00~16:50</div><div class="flex-1 flex items-center gap-2"><div class="w-7 h-7 bg-nv-50 rounded-full flex items-center justify-center text-[11px] font-bold text-nv-600">박</div><span class="text-[13px] font-medium text-g-800">박민수</span></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-0.5 rounded-full">예약</span></div>
+      </div>
+    </div>
+    <div class="fade s2">
+      <div class="flex items-center gap-2 mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">3/25(화)</h3><span class="text-[11px] text-g-400 ml-auto">2개 슬롯</span></div>
+      <div class="card overflow-hidden mb-1">
+        <div class="px-4 py-3 flex items-center gap-3"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">10:00~10:50</div><div class="flex-1"><span class="text-[13px] text-g-400">예약 가능</span></div><button @click="toast('슬롯이 삭제되었습니다')" class="text-[11px] text-red-400 bg-red-50 px-2.5 py-0.5 rounded-full active:bg-red-100">삭제</button></div>
+        <div class="px-4 py-3 flex items-center gap-3 border-t border-g-100"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">15:00~15:50</div><div class="flex-1 flex items-center gap-2"><div class="w-7 h-7 bg-nv-50 rounded-full flex items-center justify-center text-[11px] font-bold text-nv-600">김</div><span class="text-[13px] font-medium text-g-800">김영희</span></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-0.5 rounded-full">예약</span></div>
+      </div>
+    </div>
+    <div class="fade s3">
+      <div class="flex items-center gap-2 mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">3/26(수)</h3><span class="text-[11px] text-g-400 ml-auto">1개 슬롯</span></div>
+      <div class="card overflow-hidden mb-1">
+        <div class="px-4 py-3 flex items-center gap-3"><div class="text-[13px] font-medium text-g-600 w-[100px] flex-shrink-0">14:00~14:50</div><div class="flex-1 flex items-center gap-2"><div class="w-7 h-7 bg-nv-50 rounded-full flex items-center justify-center text-[11px] font-bold text-nv-600">강</div><span class="text-[13px] font-medium text-g-800">강도열</span></div><span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-2.5 py-0.5 rounded-full">예약</span></div>
+      </div>
+    </div>
+    <div class="fade s4">
+      <div class="flex items-center gap-2 mb-2 px-1"><h3 class="text-[14px] font-bold text-g-800">3/27(목)</h3><span class="text-[11px] text-g-400 ml-auto">0개 슬롯</span></div>
+      <div class="card p-4 text-center text-[13px] text-g-400 mb-1">등록된 수업이 없습니다</div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 16. 멘토 수강생 목록 ==================== -->
+<template x-if="page==='tstudents'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('thome')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">내 수강생</h1>
+    <span class="text-[12px] text-g-400">4명</span>
+  </div>
+  <div class="px-4 pt-4 space-y-2">
+    <div class="card p-4 fade s1">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg flex-shrink-0">강</div>
+        <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">강도열</p><p class="text-[12px] text-g-400 mt-0.5">취미반 주1회 12주</p></div>
+        <div class="text-right flex-shrink-0"><p class="text-[13px] font-bold text-nv-600">잔여 8회</p><p class="text-[10px] text-g-400 mt-0.5">최근 3/19</p></div>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-g-100">
+        <button @click="go('tmessages')" class="flex-1 h-9 bg-g-100 rounded-lg text-[12px] font-medium text-g-600 flex items-center justify-center active:bg-g-200">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" class="mr-1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>메시지
+        </button>
+      </div>
+    </div>
+    <div class="card p-4 fade s2">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg flex-shrink-0">이</div>
+        <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">이수진</p><p class="text-[12px] text-g-400 mt-0.5">취미반 주2회 12주</p></div>
+        <div class="text-right flex-shrink-0"><p class="text-[13px] font-bold text-nv-600">잔여 18회</p><p class="text-[10px] text-g-400 mt-0.5">최근 3/21</p></div>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-g-100"><button class="flex-1 h-9 bg-g-100 rounded-lg text-[12px] font-medium text-g-600 flex items-center justify-center active:bg-g-200"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" class="mr-1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>메시지</button></div>
+    </div>
+    <div class="card p-4 fade s3">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg flex-shrink-0">박</div>
+        <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">박민수</p><p class="text-[12px] text-g-400 mt-0.5">전문반 주2회 24주</p></div>
+        <div class="text-right flex-shrink-0"><p class="text-[13px] font-bold text-nv-600">잔여 40회</p><p class="text-[10px] text-g-400 mt-0.5">최근 3/22</p></div>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-g-100"><button class="flex-1 h-9 bg-g-100 rounded-lg text-[12px] font-medium text-g-600 flex items-center justify-center active:bg-g-200"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" class="mr-1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>메시지</button></div>
+    </div>
+    <div class="card p-4 fade s4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg flex-shrink-0">김</div>
+        <div class="flex-1 min-w-0"><p class="text-[14px] font-bold text-g-800">김영희</p><p class="text-[12px] text-g-400 mt-0.5">취미반 주1회 12주</p></div>
+        <div class="text-right flex-shrink-0"><p class="text-[13px] font-bold text-nv-600">잔여 5회</p><p class="text-[10px] text-g-400 mt-0.5">최근 3/20</p></div>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-g-100"><button class="flex-1 h-9 bg-g-100 rounded-lg text-[12px] font-medium text-g-600 flex items-center justify-center active:bg-g-200"><svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" class="mr-1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>메시지</button></div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 17. 멘토 메시지 ==================== -->
+<template x-if="page==='tmessages'">
+<div class="min-h-screen bg-g-100 pb-20 fade">
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <button @click="go('thome')" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 class="text-[16px] font-bold text-g-800">메시지</h1>
+  </div>
+  <div class="px-4 pt-4 space-y-2">
+    <div class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">강</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">강도열</p><span class="text-[10px] text-g-400">오늘</span></div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">감사합니다 멘토님!</p>
+      </div>
+      <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold flex-shrink-0">1</div>
+    </div>
+    <div class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">이</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">이수진</p><span class="text-[10px] text-g-400">어제</span></div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">다음 주 수업 시간 변경 가능할까요?</p>
+      </div>
+    </div>
+    <div class="card p-4 flex items-center gap-3 active:bg-g-50 cursor-pointer">
+      <div class="w-12 h-12 bg-g-100 rounded-full flex items-center justify-center font-extrabold text-g-600 text-lg">박</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between"><p class="text-[14px] font-bold text-g-800">박민수</p><span class="text-[10px] text-g-400">3/20</span></div>
+        <p class="text-[12px] text-g-400 truncate mt-0.5">과제 제출했습니다!</p>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 탭바 (수강생) ==================== -->
+<template x-if="!['login','chat','thome','tschedule','tstudents','tmessages'].includes(page)">
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-g-200 z-50 safe-bottom">
+  <div class="flex justify-around py-2">
+    <button @click="go('home')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='home'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px]">홈</span>
+    </button>
+    <button @click="go('reserve')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='reserve'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="text-[10px]">예약</span>
+    </button>
+    <button @click="go('dashboard')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='dashboard'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+      <span class="text-[10px]">학습</span>
+    </button>
+    <button @click="go('messages')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab relative" :class="page==='messages'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      <div class="absolute top-0 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">2</div>
+      <span class="text-[10px]">메시지</span>
+    </button>
+    <button @click="go('mypage')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='mypage'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="text-[10px]">MY</span>
+    </button>
+  </div>
+</div>
+</template>
+
+<!-- ==================== 멘토 탭바 ==================== -->
+<template x-if="['thome','tschedule','tstudents','tmessages'].includes(page)">
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-g-200 z-50 safe-bottom">
+  <div class="flex justify-around py-2">
+    <button @click="go('thome')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='thome'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span class="text-[10px]">홈</span>
+    </button>
+    <button @click="go('tschedule')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='tschedule'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span class="text-[10px]">스케줄</span>
+    </button>
+    <button @click="go('tstudents')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab" :class="page==='tstudents'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span class="text-[10px]">수강생</span>
+    </button>
+    <button @click="go('tmessages')" class="flex flex-col items-center gap-0.5 py-1 px-3 tab relative" :class="page==='tmessages'?'on':''">
+      <svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      <div class="absolute top-0 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">1</div>
+      <span class="text-[10px]">메시지</span>
+    </button>
+  </div>
+</div>
+</template>
+
+<!-- 토스트 -->
+<div x-show="toastShow" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-4" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-g-800 text-white px-5 py-2.5 rounded-xl text-[13px] font-medium shadow-lg z-[999] whitespace-nowrap" x-text="toastMsg"></div>
+
+<!-- 화면 전환 안내 (상단 고정) -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-nv-800 text-white text-[11px] text-center py-1.5 z-[200] flex items-center justify-center gap-3">
+  <span class="opacity-70">화면 전환:</span>
+  <button @click="go('login')" class="px-2 py-0.5 rounded bg-white/20 active:bg-white/30" :class="page==='login'?'bg-white/40 font-bold':''">로그인</button>
+  <button @click="go('home')" class="px-2 py-0.5 rounded bg-white/20 active:bg-white/30" :class="page==='home'?'bg-white/40 font-bold':''">수강생</button>
+  <button @click="go('thome')" class="px-2 py-0.5 rounded bg-white/20 active:bg-white/30" :class="['thome','tschedule','tstudents','tmessages'].includes(page)?'bg-white/40 font-bold':''">멘토</button>
+</div>
+
+</div>
+
+<script>
+function app(){return{
+  page:'login',toastShow:false,toastMsg:'',
+  go(p){this.page=p;window.scrollTo(0,0)},
+  toast(m){this.toastMsg=m;this.toastShow=true;setTimeout(()=>this.toastShow=false,2200)}
+}}
+
+function reserveData(){return{
+  step:1,selDate:null,selTime:null,selMentor:null,tsx:0,
+  times:['10:00~10:50','11:00~11:50','14:00~14:50','15:00~15:50','16:00~16:50','17:00~17:50'],
+  mentors:[{name:'Kevin(C)',field:'AI활용 과정 · 경력 8년'},{name:'Sarah(L)',field:'비즈니스 영어 · 경력 5년'}],
+  get stepTitle(){return this.step<=1?'날짜 선택':this.step===2?'시간 선택':this.step===3?'멘토 선택':'선택 완료'},
+  get stepNum(){return this.step<=1?'2/7':this.step===2?'3/7':this.step===3?'4/7':'4/7'},
+  get progress(){return this.step<=1?28:this.step===2?42:this.step===3?57:57},
+  calAvail(d){return[2,3,4,5,9,10,11,12,16,17,18,19,23,24,25,26,30,31].includes(d)}
+}}
+
+function repeatData(){return{
+  selected:[0],
+  weeks:[
+    {label:'3/26(수) 14:00 - 1주차',disabled:false},
+    {label:'4/2(수) 14:00 - 2주차',disabled:false},
+    {label:'4/9(수) 14:00 - 3주차',disabled:false},
+    {label:'4/16(수) 14:00 - 4주차',disabled:false},
+    {label:'4/23(수) 14:00 - 5주차',disabled:true},
+    {label:'4/30(수) 14:00 - 6주차',disabled:false},
+    {label:'5/7(수) 14:00 - 7주차',disabled:false},
+    {label:'5/14(수) 14:00 - 8주차',disabled:false}
+  ],
+  toggle(i){if(i===0||this.weeks[i].disabled)return;let p=this.selected.indexOf(i);if(p>-1)this.selected.splice(p,1);else{if(this.selected.length>=8)return;this.selected.push(i)}}
+}}
+
+function dashData(){return{
+  cur:0,tsx:0,
+  lessons:[
+    {date:'3/19(수)',time:'14:00~14:50',feedback:'프롬프트 구조를 잘 이해하고 있어요. 특히 역할 지정과 맥락 제공 부분이 정확합니다. 다음 시간에는 체이닝 기법을 연습해봐요.',level:'AI 프롬프트 작성법 Level 3',report:'프롬프트 작성이 처음에는 어려웠는데 구조를 알고 나니 재밌어요.',advice:'매일 ChatGPT로 5분씩 프롬프트 연습하면 빠르게 늘어요.',rating:5},
+    {date:'3/12(수)',time:'14:00~14:50',feedback:'이미지 생성 AI 도구 사용법을 빠르게 습득했어요. 스타일 키워드 활용이 좋습니다.',level:'AI 이미지 생성 기초 Level 2',report:'이미지 만드는 게 이렇게 쉬울 줄 몰랐어요!',advice:'키워드 순서에 따라 결과가 달라지니 다양하게 실험해보세요.',rating:4},
+    {date:'3/5(수)',time:'14:00~14:50',feedback:'ChatGPT 기본 사용법을 잘 따라왔습니다. 대화형 AI의 특성을 이해하는 것이 중요해요.',level:'ChatGPT 활용 기초 Level 1',report:'AI가 이렇게 다양하게 활용될 수 있다니 놀랍습니다.',advice:'일상에서 궁금한 것을 ChatGPT에 물어보는 습관을 들이세요.',rating:5},
+    {date:'2/26(수)',time:'14:00~14:50',feedback:'오리엔테이션을 잘 마쳤습니다. AI 도구들의 전체적인 그림을 이해하는 것이 첫걸음이에요.',level:'AI 입문 오리엔테이션',report:'처음이라 긴장했는데 멘토님이 잘 알려주셔서 재밌었어요.',advice:'수업 전에 관련 유튜브 영상 하나만 보고 오면 이해가 빨라요.',rating:4}
+  ]
+}}
+</script>
+</body>
+</html>

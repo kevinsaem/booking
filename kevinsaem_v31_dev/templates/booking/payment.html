@@ -1,0 +1,82 @@
+<!-- templates/booking/payment.html -->
+<!-- 화면: 수강/결제 (현재 수강 정보 + 수강신청 목록) -->
+{% extends "base.html" %}
+
+{% block title %}수강/결제 - 케빈샘 AI코딩{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <h1 class="text-[16px] font-bold text-gray-800">수강 / 결제</h1>
+    </div>
+
+    <div class="px-4 pt-4 space-y-4">
+        <!-- 현재 수강 정보 -->
+        {% if current_plan %}
+        <div class="card p-5 fade-up">
+            <h3 class="text-[12px] font-bold text-green-600 mb-3 tracking-wider uppercase">현재 수강중</h3>
+            <p class="text-[16px] font-bold text-gray-800">{{ current_plan.package_name }}</p>
+            <p class="text-[12px] text-gray-400 mt-1">{{ current_plan.description }}</p>
+
+            <div class="divider my-4"></div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <p class="text-[11px] text-gray-400">결제일</p>
+                    <p class="text-[13px] font-medium text-gray-800">{{ current_plan.settle_date }}</p>
+                </div>
+                <div>
+                    <p class="text-[11px] text-gray-400">결제금액</p>
+                    <p class="text-[13px] font-medium text-gray-800">{{ current_plan.amount }}원</p>
+                </div>
+                <div>
+                    <p class="text-[11px] text-gray-400">수강기간</p>
+                    <p class="text-[13px] font-medium text-gray-800">{{ current_plan.period }}</p>
+                </div>
+                <div>
+                    <p class="text-[11px] text-gray-400">남은 수업</p>
+                    <p class="text-[13px] font-extrabold text-green-600">{{ current_plan.remaining }}회</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 수강신청 -->
+        <div class="fade-up s1">
+            <h3 class="text-[14px] font-bold text-gray-800 mb-3 px-1">수강신청</h3>
+            <div class="space-y-2">
+                {% for pkg in packages %}
+                <div class="card p-4 active:bg-gray-50 transition-colors relative overflow-hidden cursor-pointer"
+                     onclick="showToast('수강신청 기능은 개발 진행 중입니다')">
+                    {% if pkg.is_best %}
+                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[9px] font-bold px-3 py-0.5 rounded-bl-lg">BEST</div>
+                    {% endif %}
+                    <div class="flex justify-between items-center">
+                        <p class="text-[14px] font-bold text-gray-800">{{ pkg.name }}</p>
+                        <p class="text-[14px] font-extrabold text-green-600">{{ pkg.price }}원</p>
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1">{{ pkg.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 결제 내역 -->
+        <div class="fade-up s2">
+            <h3 class="text-[14px] font-bold text-gray-800 mb-3 px-1">결제 내역</h3>
+            <div class="card divide-y divide-gray-100">
+                {% for payment in payment_history %}
+                <div class="p-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[13px] font-medium text-gray-800">{{ payment.package_name }}</p>
+                        <p class="text-[11px] text-gray-400">{{ payment.date }}</p>
+                    </div>
+                    <p class="text-[13px] font-bold text-gray-700">{{ payment.amount }}원</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

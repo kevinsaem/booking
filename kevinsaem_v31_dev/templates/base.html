@@ -1,0 +1,86 @@
+<!-- templates/base.html -->
+<!-- 공통 레이아웃: 모든 페이지가 이 파일을 extends 합니다 -->
+<!-- 기술: Jinja2 + HTMX + Alpine.js + Tailwind CSS -->
+<!-- 디자인: 네이버/카카오 스타일, 모바일 최적화 (max-width 430px) -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#43A047">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>{% block title %}케빈샘 AI코딩{% endblock %}</title>
+
+    <!-- HTMX: 페이지 리로드 없이 서버 렌더링 부분 업데이트 -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+    <!-- Alpine.js: 클라이언트 인터랙션 (모달, 토글, 폼 검증) -->
+    <script defer src="https://unpkg.com/alpinejs@3.14.3/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <link href="/static/css/style.css" rel="stylesheet">
+
+    <!-- 한국어 웹폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    {% block head %}{% endblock %}
+</head>
+<body class="font-sans bg-gray-100 text-gray-900 antialiased">
+
+    <!-- 모바일 컨테이너: 최대 430px, 가운데 정렬 -->
+    <div id="app" class="max-w-[430px] mx-auto min-h-screen bg-gray-100 relative">
+
+        {% block content %}{% endblock %}
+
+        <!-- 하단 탭바 (로그인 페이지에서는 숨김) -->
+        {% block tabbar %}
+        <nav id="tab-bar" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-gray-200 z-50 safe-bottom">
+            <div class="flex py-1.5 px-2">
+                <a href="/booking/" class="tab-item flex-1 flex flex-col items-center gap-0.5 py-1.5 {% block tab_home %}{% endblock %}">
+                    <span class="text-[18px]">🏠</span>
+                    <span class="text-[10px]">홈</span>
+                </a>
+                <a href="/booking/calendar" class="tab-item flex-1 flex flex-col items-center gap-0.5 py-1.5 {% block tab_booking %}{% endblock %}">
+                    <span class="text-[18px]">📅</span>
+                    <span class="text-[10px]">예약</span>
+                </a>
+                <a href="/booking/dashboard" class="tab-item flex-1 flex flex-col items-center gap-0.5 py-1.5 {% block tab_dashboard %}{% endblock %}">
+                    <span class="text-[18px]">📊</span>
+                    <span class="text-[10px]">학습</span>
+                </a>
+                <a href="/booking/messages" class="tab-item flex-1 flex flex-col items-center gap-0.5 py-1.5 {% block tab_messages %}{% endblock %} relative">
+                    <span class="text-[18px]">💬</span>
+                    {% if unread_count %}
+                    <span class="absolute top-0.5 right-1/4 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">{{ unread_count }}</span>
+                    {% endif %}
+                    <span class="text-[10px]">메시지</span>
+                </a>
+                <a href="/booking/mypage" class="tab-item flex-1 flex flex-col items-center gap-0.5 py-1.5 {% block tab_mypage %}{% endblock %}">
+                    <span class="text-[18px]">👤</span>
+                    <span class="text-[10px]">MY</span>
+                </a>
+            </div>
+        </nav>
+        {% endblock %}
+
+        <!-- 토스트 메시지 -->
+        <div id="toast"
+             x-data="{ show: false, msg: '' }"
+             @toast.window="msg = $event.detail.message; show = true; setTimeout(() => show = false, 2200)"
+             x-show="show"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0 translate-y-4"
+             class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-xl text-[13px] font-medium shadow-lg z-[999] whitespace-nowrap"
+             x-text="msg">
+        </div>
+    </div>
+
+    <!-- 공통 JavaScript -->
+    <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!-- templates/booking/login.html -->
+<!-- 화면: 로그인 (이름 + 인증번호 4자리) -->
+<!-- 탭바 숨김, 전체 화면 사용 -->
+{% extends "base.html" %}
+
+{% block title %}로그인 - 케빈샘 AI코딩{% endblock %}
+
+{% block tabbar %}<!-- 로그인 페이지에서는 탭바 숨김 -->{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white flex flex-col px-6" x-data="{ name: '', code: '', error: '' }">
+
+    <div class="flex-1 flex flex-col justify-center">
+        <!-- 로고 -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-600 rounded-2xl mb-4 shadow-lg shadow-green-600/20">
+                <span class="text-white font-extrabold text-2xl">K</span>
+            </div>
+            <h1 class="text-[22px] font-extrabold text-gray-900">케빈샘 AI코딩</h1>
+            <p class="text-[13px] text-gray-500 mt-1">성인 1:1 AI활용 과정</p>
+        </div>
+
+        <!-- 로그인 폼 -->
+        <form method="POST" action="/booking/login" class="space-y-3"
+              @submit.prevent="
+                if (!name.trim() || !code.trim()) { error = '이름과 인증번호를 입력해주세요'; return; }
+                if (code.length !== 4) { error = '인증번호는 4자리 숫자입니다'; return; }
+                $el.submit();
+              ">
+            <div>
+                <input type="text" name="name" x-model="name"
+                       placeholder="이름"
+                       class="input-field"
+                       autocomplete="name">
+            </div>
+            <div>
+                <input type="text" name="code" x-model="code"
+                       placeholder="인증번호 4자리"
+                       maxlength="4" inputmode="numeric"
+                       class="input-field"
+                       autocomplete="off">
+            </div>
+
+            <!-- 에러 메시지 (서버에서 전달 또는 클라이언트 검증) -->
+            {% if error %}
+            <p class="text-xs text-red-500 text-center">{{ error }}</p>
+            {% endif %}
+            <p x-show="error" x-text="error" class="text-xs text-red-500 text-center"></p>
+
+            <button type="submit" class="btn-primary mt-2">로그인</button>
+        </form>
+
+        <!-- 인증번호 찾기 / 수강 문의 -->
+        <div class="flex items-center justify-center gap-4 mt-5 text-[13px] text-gray-400">
+            <a hx-post="/booking/send-auth-code"
+               hx-trigger="click"
+               hx-swap="none"
+               class="cursor-pointer hover:text-green-600 transition-colors"
+               @htmx:after-request="showToast('카카오 알림톡으로 인증번호를 발송했습니다')">
+                인증번호 찾기
+            </a>
+            <span class="text-gray-300">|</span>
+            <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank"
+               class="cursor-pointer hover:text-green-600 transition-colors">
+                수강 문의
+            </a>
+        </div>
+    </div>
+
+    <!-- 하단 안내 -->
+    <p class="text-center text-[10px] text-gray-300 pb-6">
+        케빈샘AI코딩 &middot; 안산선부캠퍼스 &middot; 0507-1307-9398
+    </p>
+</div>
+{% endblock %}

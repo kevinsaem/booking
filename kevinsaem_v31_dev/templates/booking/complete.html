@@ -1,0 +1,49 @@
+<!-- templates/booking/complete.html -->
+<!-- 화면: 예약 완료 (성공 애니메이션 + 알림톡 안내) -->
+{% extends "base.html" %}
+
+{% block title %}예약 완료 - 케빈샘 AI코딩{% endblock %}
+{% block tab_booking %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200">
+        <span class="w-9"></span>
+        <h1 class="text-[16px] font-bold text-gray-800 flex-1 text-center">예약 완료</h1>
+        <span class="text-[12px] text-green-600 font-bold">7/7</span>
+    </div>
+    <div class="h-1 bg-gray-200"><div class="h-full bg-green-500" style="width:100%"></div></div>
+
+    <div class="px-4 pt-10 text-center">
+        <!-- 성공 아이콘 -->
+        <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5 pop-in">
+            <span class="text-4xl text-green-500">✓</span>
+        </div>
+
+        <h2 class="text-[20px] font-extrabold text-gray-900 mb-1">예약 완료!</h2>
+        <p class="text-[14px] text-gray-400">카카오톡으로 예약 확인 메시지를<br>보내드렸습니다</p>
+
+        <!-- 요약 -->
+        <div class="card p-5 text-left mt-6 space-y-2.5">
+            <div class="flex justify-between text-[14px]">
+                <span class="text-gray-500">강사</span>
+                <span class="font-bold">{{ teacher_name }} 선생님</span>
+            </div>
+            <div class="flex justify-between text-[14px]">
+                <span class="text-gray-500">예약</span>
+                <span class="font-bold">{{ booking_count }}회</span>
+            </div>
+            <div class="flex justify-between text-[14px]">
+                <span class="text-gray-500">잔여 수업</span>
+                <span class="font-bold text-green-600">{{ remaining }}회 남음</span>
+            </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="flex gap-2 mt-6">
+            <a href="/booking/my-bookings" class="btn-secondary flex-1 flex items-center justify-center">내 예약 보기</a>
+            <a href="/booking/" class="btn-primary flex-1 flex items-center justify-center">홈으로</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

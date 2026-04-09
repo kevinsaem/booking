@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}안산코딩학원 케빈샘AI코딩{% endblock %}</title>
+  <meta name="description" content="{% block description %}안산 선부동·초지동 코딩전문학원. 8년간 1,439명이 참가한 성인1:1AI활용 & 프로젝트 기반 AI코딩교육.{% endblock %}">
+  <link rel="icon" href="/static/site/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/site/images/favicon-192.png">
+  <link rel="canonical" href="https://kevinsaem.com/">
+  <meta property="og:title" content="케빈샘AI코딩학원 | 안산 AI코딩 전문학원">
+  <meta property="og:description" content="AI가 세상을 바꾸고 있습니다. 8년간 1,439명과 함께한 안산 유일의 AI코딩 전문학원. 초중고 진로코딩, 성인 1:1 AI활용, 기업 AI교육.">
+  <meta property="og:image" content="https://kevinsaem.com/static/site/images/favicon-192.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="naver-site-verification" content="159870831e3b636b681068cd760ad30a022cc9b9">
+  <meta name="google-site-verification" content="GOOGLE_VERIFICATION_CODE_HERE">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/static/site/css/style.css">
+  {% block head_extra %}{% endblock %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "케빈샘AI코딩학원",
+    "alternateName": "KevinSaem AI Coding Academy",
+    "url": "https://booking.kevinsaem.com",
+    "logo": "https://booking.kevinsaem.com/static/site/images/favicon-192.png",
+    "description": "AI가 세상을 바꾸고 있습니다. 8년간 1,439명과 함께한 안산 유일의 AI코딩 전문학원.",
+    "telephone": "0507-1307-9398",
+    "email": "kevin@kevinsaem.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "선부로 183 화성프라자 8층",
+      "addressLocality": "안산시",
+      "addressRegion": "경기도",
+      "postalCode": "15384",
+      "addressCountry": "KR"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "37.3419998",
+      "longitude": "126.8154246"
+    },
+    "openingHours": "Mo-Sa 10:50-22:00",
+    "foundingDate": "2018",
+    "sameAs": [
+      "https://blog.naver.com/lgwanh1",
+      "https://www.youtube.com/@kevinsaem",
+      "https://pf.kakao.com/_xgnxoUj"
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  {% include "site/components/nav.html" %}
+
+  {% block content %}{% endblock %}
+
+  {% include "site/components/footer.html" %}
+  {% include "site/components/kakao.html" %}
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 80);
+    });
+    // Reveal animation
+    const rvEls = document.querySelectorAll('.rv');
+    const rvOb = new IntersectionObserver(entries => {
+      entries.forEach((en, i) => {
+        if (en.isIntersecting) {
+          setTimeout(() => en.target.classList.add('vis'), i * 40);
+          rvOb.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    rvEls.forEach(el => rvOb.observe(el));
+  </script>
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>

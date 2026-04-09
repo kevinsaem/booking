@@ -1,0 +1,375 @@
+<!-- templates/booking/home.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 그린 헤더 -->
+  <div class="bg-nv-600 text-white px-5 pt-5 pb-8 rounded-b-[28px]">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p class="text-nv-200 text-[12px]">안녕하세요</p>
+        <h2 class="text-[20px] font-bold mt-0.5">{{ user.name }}님</h2>
+      </div>
+      <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">{{ user.name[0] }}</div>
+    </div>
+
+    <!-- 수업 현황 카드 -->
+    <div class="bg-white/15 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-nv-100 text-[12px]">{{ settle_period.package_name if settle_period else '수업 현황' }}</span>
+        <span class="text-white/70 text-[12px]">{{ user.campus_name | default('안산선부캠퍼스') }}</span>
+      </div>
+
+      {% if monthly %}
+      <div class="flex items-end gap-3">
+        <div>
+          <span class="text-white/50 text-[11px] block mb-1">수강 기간</span>
+          <span class="text-[16px] font-bold leading-none text-white">{{ settle_period.sdate[5:] }} ~ {{ settle_period.edate[5:] }}</span>
+        </div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">평일</span>
+          <span class="text-[28px] font-extrabold leading-none">무제한</span>
+        </div>
+        <div class="flex-1"></div>
+        <a href="/booking/calendar" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97]">예약하기</a>
+      </div>
+      {% else %}
+      <div class="flex items-end gap-3">
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">제공</span>
+          <span class="text-[22px] font-extrabold leading-none text-white/70">{{ total_classes }}</span>
+          <span class="text-[11px] text-nv-100">회</span>
+        </div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">예약</span>
+          <span class="text-[22px] font-extrabold leading-none text-nv-200">{{ booked_upcoming }}</span>
+          <span class="text-[11px] text-nv-100">회</span>
+        </div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center">
+          <span class="text-white/50 text-[11px] block mb-1">남은</span>
+          <span class="text-[32px] font-extrabold leading-none">{{ remaining }}</span>
+          <span class="text-[12px] text-nv-100">회</span>
+        </div>
+        <div class="flex-1"></div>
+        <a href="/booking/calendar" class="h-10 px-5 bg-white text-nv-700 rounded-xl font-bold text-[13px] flex items-center active:scale-[.97]">예약하기</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="px-4 -mt-3 space-y-4">
+
+    <!-- 퀵 메뉴 4개 그리드 -->
+    <div class="card p-4 grid grid-cols-4 gap-1 fade s1">
+      <a href="/booking/calendar" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+        </div>
+        <span class="text-[11px] text-g-600">수업예약</span>
+      </a>
+      <a href="/booking/dashboard" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        </div>
+        <span class="text-[11px] text-g-600">학습현황</span>
+      </a>
+      <a href="/message/" class="flex flex-col items-center gap-1.5 py-2 relative">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </div>
+        {% if unread_count is defined and unread_count and unread_count > 0 %}
+        <div class="absolute top-1 right-3 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-bold flex items-center justify-center">{{ unread_count }}</div>
+        {% endif %}
+        <span class="text-[11px] text-g-600">메시지</span>
+      </a>
+      <a href="/booking/payment" class="flex flex-col items-center gap-1.5 py-2">
+        <div class="w-11 h-11 bg-g-50 rounded-xl ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" stroke="#616161" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div>
+        <span class="text-[11px] text-g-600">결제이력</span>
+      </a>
+    </div>
+
+    <!-- 내 수업 (다가오는 수업 + 취소) -->
+    <div class="fade s2">
+      <div class="flex justify-between items-center mb-2 px-1">
+        <h3 class="text-[14px] font-bold text-g-800">내 수업</h3>
+        <a href="/booking/my-bookings" class="text-[12px] text-nv-600 cursor-pointer font-medium">전체 &rsaquo;</a>
+      </div>
+
+      {% if upcoming_bookings %}
+      <div class="space-y-2">
+        {% for b in upcoming_bookings %}
+        <div class="card p-4" id="home-booking-{{ b.idx }}">
+          <div class="flex items-center gap-3">
+            <!-- 날짜 -->
+            <div class="w-12 h-12 bg-nv-50 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+              <span class="text-[10px] text-nv-500">{{ b.month }}월</span>
+              <span class="text-[16px] font-extrabold text-nv-700 -mt-0.5">{{ b.day }}</span>
+            </div>
+            <!-- 멘토 + 시간 -->
+            <div class="flex-1">
+              <p class="text-[14px] font-bold text-g-800">{{ b.teacher_name }} 멘토</p>
+              <p class="text-[12px] text-g-400">{{ b.time }} · {{ b.day_name }}요일</p>
+            </div>
+            <!-- D-day + 취소 -->
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold text-nv-600 bg-nv-50 px-3 py-1 rounded-full">{{ b.dday }}</span>
+              {% if b.can_cancel %}
+              <button hx-post="/booking/cancel/{{ b.idx }}"
+                      hx-target="#home-booking-{{ b.idx }}"
+                      hx-swap="outerHTML"
+                      hx-confirm="이 수업을 취소하시겠습니까?"
+                      class="text-[11px] text-g-400 px-2 py-1 rounded-full active:bg-g-100">취소</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="card p-4 text-center text-g-400 text-sm py-8">
+        예약된 수업이 없습니다<br>
+        <a href="/booking/calendar" class="mt-2 inline-block text-nv-600 font-medium text-[13px] cursor-pointer">수업 예약하기 &rsaquo;</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- 공지사항 배너 -->
+    {% if latest_notice %}
+    <a href="/booking/notices" class="block fade s3 cursor-pointer">
+      <div class="bg-amber-50 rounded-2xl p-4 flex items-center gap-3">
+        <div class="w-9 h-9 bg-amber-100 rounded-lg ic flex-shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" stroke="#92400E" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[13px] font-bold text-g-800 truncate">{{ latest_notice.title }}</p>
+          <p class="text-[11px] text-g-500 mt-0.5 whitespace-pre-line line-clamp-2">{{ latest_notice.summary }}</p>
+        </div>
+        <span class="text-g-300">&rsaquo;</span>
+      </div>
+    </a>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- 연구노트 작성 팝업 -->
+{% if pending_note %}
+<div x-data="noteWizard()" x-show="open" x-transition
+     class="fixed inset-0 z-[100] flex items-end justify-center" style="background: rgba(0,0,0,0.5);">
+  <div class="bg-white w-full max-w-[430px] rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col"
+       @click.outside="open = false">
+
+    <!-- 헤더 -->
+    <div class="bg-nv-600 text-white px-5 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-[13px] text-nv-200">{{ pending_note.kst_start[:10] }} 수업</p>
+          <h2 class="text-[18px] font-bold mt-0.5">연구노트를 작성해주세요</h2>
+        </div>
+        <button @click="open = false" class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <!-- 멘토 피드백 미리보기 -->
+      <div class="bg-white/10 rounded-xl p-3 mt-3">
+        <p class="text-[11px] text-nv-200 mb-1">{{ pending_note.teacher_name }} 멘토의 피드백</p>
+        <p class="text-[13px] text-white/90 leading-relaxed">{{ pending_note.advice[:80] }}{% if pending_note.advice|length > 80 %}...{% endif %}</p>
+      </div>
+    </div>
+
+    <!-- 스텝 컨텐츠 -->
+    <div class="flex-1 overflow-y-auto px-5 py-5">
+      <form method="POST" action="/booking/dashboard/save-note" id="note-form">
+        <input type="hidden" name="lecturede_idx" value="{{ pending_note.lecturede_idx }}">
+
+        <!-- Step 1: 난이도 -->
+        <div x-show="step === 1" x-transition>
+          <p class="text-[16px] font-bold text-g-800 mb-1">오늘 수업 난이도는 어땠나요?</p>
+          <p class="text-[13px] text-g-400 mb-5">하나를 선택해주세요</p>
+          <div class="space-y-2">
+            <template x-for="opt in ['쉬웠어요 😊', '적당했어요 👍', '조금 어려웠어요 🤔', '많이 어려웠어요 😅']">
+              <button type="button" @click="answers.difficulty = opt; step = 2"
+                      class="w-full text-left px-4 py-3.5 rounded-xl border-2 transition active:scale-[.98]"
+                      :class="answers.difficulty === opt ? 'border-nv-500 bg-nv-50 text-nv-700 font-bold' : 'border-g-200 text-g-700 hover:border-nv-300'"
+                      x-text="opt"></button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Step 2: 만족도 -->
+        <div x-show="step === 2" x-transition>
+          <p class="text-[16px] font-bold text-g-800 mb-1">수업에 만족하셨나요?</p>
+          <p class="text-[13px] text-g-400 mb-5">하나를 선택해주세요</p>
+          <div class="space-y-2">
+            <template x-for="opt in ['매우 만족 ⭐', '만족 😄', '보통 😐', '아쉬웠어요 😟']">
+              <button type="button" @click="answers.satisfaction = opt; step = 3"
+                      class="w-full text-left px-4 py-3.5 rounded-xl border-2 transition active:scale-[.98]"
+                      :class="answers.satisfaction === opt ? 'border-nv-500 bg-nv-50 text-nv-700 font-bold' : 'border-g-200 text-g-700 hover:border-nv-300'"
+                      x-text="opt"></button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Step 3: 다음에 배우고 싶은 것 -->
+        <div x-show="step === 3" x-transition>
+          <p class="text-[16px] font-bold text-g-800 mb-1">다음에 배우고 싶은 것은?</p>
+          <p class="text-[13px] text-g-400 mb-5">하나를 선택해주세요</p>
+          <div class="space-y-2">
+            <template x-for="opt in ['오늘 내용 더 연습 🔄', '새로운 내용으로 넘어가기 ➡️', '프로젝트 만들어보기 🛠️', '멘토와 상의하고 싶어요 💬']">
+              <button type="button" @click="answers.next_topic = opt; step = 4"
+                      class="w-full text-left px-4 py-3.5 rounded-xl border-2 transition active:scale-[.98]"
+                      :class="answers.next_topic === opt ? 'border-nv-500 bg-nv-50 text-nv-700 font-bold' : 'border-g-200 text-g-700 hover:border-nv-300'"
+                      x-text="opt"></button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Step 4: 자유 기록 (음성 입력) -->
+        <div x-show="step === 4" x-transition>
+          <p class="text-[16px] font-bold text-g-800 mb-2">오늘 수업에 대해 기록해주세요</p>
+
+          <!-- 선택 요약 -->
+          <div class="bg-g-50 rounded-xl p-3 mb-4 space-y-1">
+            <p class="text-[12px] text-g-500"><span class="font-bold">난이도:</span> <span x-text="answers.difficulty"></span></p>
+            <p class="text-[12px] text-g-500"><span class="font-bold">만족도:</span> <span x-text="answers.satisfaction"></span></p>
+            <p class="text-[12px] text-g-500"><span class="font-bold">다음 수업:</span> <span x-text="answers.next_topic"></span></p>
+          </div>
+
+          <!-- 음성 녹음 안내 -->
+          <div class="bg-nv-50 rounded-xl p-4 mb-4 text-center">
+            <p class="text-[14px] font-bold text-nv-700 mb-2">오늘 배운 내용, 느낀 점, 기억하고 싶은 것</p>
+            <p class="text-[13px] text-g-600 mb-4">아래 <span class="text-nv-600 font-bold">녹음 버튼</span>을 누르고<br>편하게 말씀해주세요</p>
+
+            <!-- 녹음 버튼 (크게) -->
+            <button type="button" @click="toggleVoice()"
+                    class="w-16 h-16 rounded-full flex items-center justify-center mx-auto transition shadow-lg"
+                    :class="isRecording ? 'bg-red-500 text-white animate-pulse shadow-red-200' : 'bg-nv-600 text-white shadow-nv-200 active:scale-95'">
+              <svg x-show="!isRecording" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+              </svg>
+              <svg x-show="isRecording" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2"/>
+              </svg>
+            </button>
+            <p x-show="!isRecording && !answers.note" class="text-[12px] text-g-400 mt-2">탭하여 녹음 시작</p>
+            <p x-show="isRecording" class="text-[12px] text-red-500 mt-2 animate-pulse">🎙️ 듣고 있어요... 다 말씀하시면 버튼을 눌러주세요</p>
+          </div>
+
+          <!-- 텍스트 입력 (음성 결과 표시 + 직접 편집 가능) -->
+          <div>
+            <p class="text-[12px] text-g-500 mb-1">또는 직접 입력</p>
+            <textarea name="note" x-model="answers.note" rows="4"
+                      placeholder="여기에 직접 타이핑할 수도 있어요..."
+                      class="w-full px-4 py-3 bg-g-100 rounded-xl text-[14px] placeholder-g-400 resize-none"></textarea>
+          </div>
+          <p x-show="voiceError" x-text="voiceError" class="text-[12px] text-red-400 mt-1 text-center"></p>
+
+          <!-- hidden fields -->
+          <input type="hidden" name="difficulty" :value="answers.difficulty">
+          <input type="hidden" name="satisfaction" :value="answers.satisfaction">
+          <input type="hidden" name="next_topic" :value="answers.next_topic">
+        </div>
+      </form>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="px-5 pb-5 pt-2 border-t border-g-100">
+      <div class="flex gap-2">
+        <button x-show="step > 1" @click="step--" class="h-[46px] px-5 bg-g-100 rounded-xl text-[14px] font-bold text-g-500 active:bg-g-200">이전</button>
+        <button x-show="step < 4" @click="open = false" class="flex-1 h-[46px] bg-g-200 rounded-xl text-[14px] font-bold text-g-500">나중에</button>
+        <button x-show="step === 4" type="button" @click="document.getElementById('note-form').submit()"
+                class="flex-1 h-[46px] bg-nv-600 text-white rounded-xl text-[14px] font-bold active:bg-nv-700">저장하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% if pending_note %}
+{% block scripts %}
+<script>
+function noteWizard() {
+    return {
+        open: true,
+        step: 1,
+        isRecording: false,
+        voiceError: '',
+        recognition: null,
+        answers: {
+            difficulty: '',
+            satisfaction: '',
+            next_topic: '',
+            note: ''
+        },
+
+        toggleVoice() {
+            if (this.isRecording) {
+                this.stopVoice();
+            } else {
+                this.startVoice();
+            }
+        },
+
+        startVoice() {
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                this.voiceError = '이 브라우저에서는 음성 입력을 지원하지 않습니다';
+                return;
+            }
+
+            this.recognition = new SpeechRecognition();
+            this.recognition.lang = 'ko-KR';
+            this.recognition.continuous = true;
+            this.recognition.interimResults = true;
+
+            var self = this;
+            var finalTranscript = this.answers.note;
+
+            this.recognition.onresult = function(event) {
+                var interim = '';
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    } else {
+                        interim += event.results[i][0].transcript;
+                    }
+                }
+                self.answers.note = finalTranscript + interim;
+            };
+
+            this.recognition.onerror = function(event) {
+                self.isRecording = false;
+                if (event.error === 'not-allowed') {
+                    self.voiceError = '마이크 사용 권한을 허용해주세요';
+                }
+            };
+
+            this.recognition.onend = function() {
+                self.isRecording = false;
+                self.answers.note = finalTranscript;
+            };
+
+            this.recognition.start();
+            this.isRecording = true;
+            this.voiceError = '';
+        },
+
+        stopVoice() {
+            if (this.recognition) {
+                this.recognition.stop();
+            }
+            this.isRecording = false;
+        }
+    };
+}
+</script>
+{% endblock %}
+{% endif %}

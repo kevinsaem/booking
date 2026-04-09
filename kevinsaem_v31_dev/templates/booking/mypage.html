@@ -1,0 +1,119 @@
+<!-- templates/booking/mypage.html -->
+<!-- 화면: MY 페이지 (프로필, 메뉴, 설정, 로그아웃) -->
+{% extends "base.html" %}
+
+{% block title %}MY - 케빈샘 AI코딩{% endblock %}
+{% block tab_mypage %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <h1 class="text-[16px] font-bold text-gray-800">MY</h1>
+    </div>
+
+    <div class="px-4 pt-4 space-y-4">
+        <!-- 프로필 카드 -->
+        <div class="card p-5 text-center fade-up">
+            {% if user.img %}
+            <img src="/n_images/te_img/{{ user.img }}" class="w-16 h-16 rounded-full mx-auto object-cover">
+            {% else %}
+            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto text-white font-bold text-xl">
+                {{ user.name[0] }}
+            </div>
+            {% endif %}
+            <h3 class="text-[18px] font-bold text-gray-800 mt-3">{{ user.name }}</h3>
+            <p class="text-[12px] text-gray-400 mt-0.5">{{ user.campus_name }} · {{ user.package_name }}</p>
+
+            <!-- 요약 카드 -->
+            <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-gray-100">
+                <div>
+                    <p class="text-[18px] font-extrabold text-green-600">{{ remaining }}</p>
+                    <p class="text-[10px] text-gray-400">남은 수업</p>
+                </div>
+                <div>
+                    <p class="text-[18px] font-extrabold text-gray-800">{{ stats.completed }}</p>
+                    <p class="text-[10px] text-gray-400">완료 수업</p>
+                </div>
+                <div>
+                    <p class="text-[18px] font-extrabold text-blue-600">{{ stats.attendance_rate }}%</p>
+                    <p class="text-[10px] text-gray-400">출석률</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메뉴 리스트 -->
+        <div class="card overflow-hidden fade-up s1">
+            <a href="/booking/my-bookings" class="flex items-center justify-between px-5 py-4 border-b border-gray-100 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📅</span>
+                    <span class="text-[14px] text-gray-700">내 예약</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+            <a href="/booking/dashboard" class="flex items-center justify-between px-5 py-4 border-b border-gray-100 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📊</span>
+                    <span class="text-[14px] text-gray-700">학습 현황</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+            <a href="/booking/payment" class="flex items-center justify-between px-5 py-4 border-b border-gray-100 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">💳</span>
+                    <span class="text-[14px] text-gray-700">수강 / 결제</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+            <a href="/booking/notice" class="flex items-center justify-between px-5 py-4 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📢</span>
+                    <span class="text-[14px] text-gray-700">공지사항</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+        </div>
+
+        <!-- 기타 메뉴 -->
+        <div class="card overflow-hidden fade-up s2">
+            <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank"
+               class="flex items-center justify-between px-5 py-4 border-b border-gray-100 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">💬</span>
+                    <span class="text-[14px] text-gray-700">카카오톡 상담</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+            <a href="tel:0507-1307-9398"
+               class="flex items-center justify-between px-5 py-4 border-b border-gray-100 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📞</span>
+                    <span class="text-[14px] text-gray-700">전화 문의</span>
+                </div>
+                <span class="text-[12px] text-gray-400">0507-1307-9398</span>
+            </a>
+            <a href="https://kevinsaem.com" target="_blank"
+               class="flex items-center justify-between px-5 py-4 active:bg-gray-50">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">🌐</span>
+                    <span class="text-[14px] text-gray-700">케빈샘 홈페이지</span>
+                </div>
+                <span class="text-gray-300">&rsaquo;</span>
+            </a>
+        </div>
+
+        <!-- 로그아웃 -->
+        <div class="fade-up s3">
+            <form method="POST" action="/booking/logout">
+                <button type="submit"
+                        class="w-full card px-5 py-4 text-left text-red-500 text-[14px] font-medium active:bg-gray-50">
+                    로그아웃
+                </button>
+            </form>
+            <p class="text-center text-[10px] text-gray-300 mt-4">
+                케빈샘AI코딩 v3.1 · 안산선부캠퍼스
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

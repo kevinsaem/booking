@@ -1,0 +1,50 @@
+{
+  "hero_youth.jpg": {
+    "photographer": "cottonbro studio",
+    "pexels_url": "https://www.pexels.com/photo/person-in-white-shirt-using-computer-4709289/",
+    "alt": "A teenager focused on coding software on a desktop monitor in a home office setting.",
+    "query_used": "asian teenager coding computer",
+    "size_kb": 119,
+    "dimensions": "3500x2333"
+  },
+  "hero_adult.jpg": {
+    "photographer": "Mikhail Nilov",
+    "pexels_url": "https://www.pexels.com/photo/man-in-black-long-sleeve-shirt-looking-at-the-screen-of-a-laptop-8101754/",
+    "alt": "Asian male professional working at a desk in a modern office with a laptop and notepad.",
+    "query_used": "asian man laptop modern office",
+    "size_kb": 120,
+    "dimensions": "6000x4000"
+  },
+  "hero_group.jpg": {
+    "photographer": "Ngọc Bích Kiều",
+    "pexels_url": "https://www.pexels.com/photo/smiling-student-in-classroom-making-peace-sign-35557147/",
+    "alt": "Happy student making peace sign in a classroom setting.",
+    "query_used": "asian students classroom happy",
+    "size_kb": 189,
+    "dimensions": "5184x3456"
+  },
+  "story_youth.jpg": {
+    "photographer": "cottonbro studio",
+    "pexels_url": "https://www.pexels.com/photo/boy-in-white-shirt-sitting-on-chair-4709290/",
+    "alt": "A young boy intensely focused on coding on a computer in a cozy, dimly-lit room.",
+    "query_used": "asian child coding happy",
+    "size_kb": 142,
+    "dimensions": "3500x2333"
+  },
+  "story_adult.jpg": {
+    "photographer": "Sommart Sopon",
+    "pexels_url": "https://www.pexels.com/photo/young-professional-woman-in-urban-bangkok-setting-35764295/",
+    "alt": "Confident young Asian business woman working with a laptop in downtown Bangkok, Thailand.",
+    "query_used": "asian professional laptop success",
+    "size_kb": 122,
+    "dimensions": "6000x4000"
+  },
+  "story_corp.jpg": {
+    "photographer": "www.kaboompics.com",
+    "pexels_url": "https://www.pexels.com/photo/woman-standing-beside-a-whiteboard-8547669/",
+    "alt": "Asian businesswoman presenting a strategic plan on a whiteboard during a workplace meeting.",
+    "query_used": "asian business training presentation",
+    "size_kb": 96,
+    "dimensions": "6544x4363"
+  }
+}

@@ -1,0 +1,65 @@
+<!-- templates/booking/messages.html -->
+<!-- 화면: 메시지 목록 (강사별 대화 리스트) -->
+{% extends "base.html" %}
+
+{% block title %}메시지 - 케빈샘 AI코딩{% endblock %}
+{% block tab_messages %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <h1 class="text-[16px] font-bold text-gray-800">메시지</h1>
+    </div>
+
+    <div class="px-4 pt-4 space-y-2">
+        {% for conv in conversations %}
+        <a href="/booking/chat/{{ conv.teacher_id }}" class="card p-4 flex items-center gap-3 active:bg-gray-50 transition-colors block">
+            <!-- 프로필 -->
+            {% if conv.teacher_img %}
+            <img src="/n_images/te_img/{{ conv.teacher_img }}" class="w-12 h-12 rounded-full object-cover">
+            {% else %}
+            <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center font-extrabold text-green-600 text-lg">
+                {{ conv.teacher_name[0] }}
+            </div>
+            {% endif %}
+
+            <!-- 대화 정보 -->
+            <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center">
+                    <p class="text-[14px] font-bold text-gray-800">{{ conv.teacher_name }} 선생님</p>
+                    <span class="text-[10px] text-gray-400">{{ conv.last_time }}</span>
+                </div>
+                <p class="text-[12px] text-gray-400 truncate mt-0.5">{{ conv.last_message }}</p>
+            </div>
+
+            <!-- 안읽은 메시지 뱃지 -->
+            {% if conv.unread > 0 %}
+            <div class="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold flex-shrink-0">
+                {{ conv.unread }}
+            </div>
+            {% endif %}
+        </a>
+        {% endfor %}
+
+        <!-- 케빈샘 공식 채널 -->
+        <a href="/booking/notice" class="card p-4 flex items-center gap-3 active:bg-gray-50 transition-colors block">
+            <div class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center text-2xl">📢</div>
+            <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center">
+                    <p class="text-[14px] font-bold text-gray-800">케빈샘 AI코딩</p>
+                    <span class="text-[10px] text-gray-400">{{ latest_notice_date }}</span>
+                </div>
+                <p class="text-[12px] text-gray-400 truncate mt-0.5">{{ latest_notice_title }}</p>
+            </div>
+        </a>
+
+        {% if not conversations %}
+        <div class="text-center py-16 text-gray-400">
+            <p class="text-3xl mb-3">💬</p>
+            <p class="text-[14px]">메시지가 없습니다</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

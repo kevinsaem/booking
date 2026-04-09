@@ -1,0 +1,73 @@
+{% extends "site/base.html" %}
+
+{% block title %}교습비 반환기준 | 케빈샘AI코딩{% endblock %}
+
+{% block content %}
+<div style="height: 80px;"></div>
+<section class="sec" style="background: var(--dark);">
+  <div class="sec-inner" style="max-width: 800px;">
+    <h1 class="sec-h" style="font-family: 'Pretendard', sans-serif; font-size: 28px;">교습비 반환기준</h1>
+    <p style="font-size: 13px; color: var(--ink3); margin-bottom: 32px;">학원의 설립·운영 및 과외교습에 관한 법률 시행령 제18조 제3항 관련</p>
+
+    <div style="font-size: 14px; color: var(--ink2); line-height: 2;">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--ink); margin: 28px 0 12px;">1. 교습기간이 1개월 이내인 경우</h3>
+      <table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--line);">
+            <th style="text-align: left; padding: 10px; font-size: 13px; font-weight: 600;">구분</th>
+            <th style="text-align: left; padding: 10px; font-size: 13px; font-weight: 600;">반환 금액</th>
+          </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">교습 시작 전</td>
+            <td style="padding: 10px; font-weight: 600;">이미 납부한 교습비 전액</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">총 교습시간의 1/3 경과 전</td>
+            <td style="padding: 10px; font-weight: 600;">이미 납부한 교습비의 2/3 해당액</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">총 교습시간의 1/2 경과 전</td>
+            <td style="padding: 10px; font-weight: 600;">이미 납부한 교습비의 1/2 해당액</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">총 교습시간의 1/2 경과 후</td>
+            <td style="padding: 10px; font-weight: 600;">반환하지 않음</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--ink); margin: 28px 0 12px;">2. 교습기간이 1개월을 초과하는 경우</h3>
+      <table style="width: 100%; border-collapse: collapse; margin: 12px 0;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--line);">
+            <th style="text-align: left; padding: 10px; font-size: 13px; font-weight: 600;">구분</th>
+            <th style="text-align: left; padding: 10px; font-size: 13px; font-weight: 600;">반환 금액</th>
+          </tr>
+        </thead>
+        <tbody style="font-size: 13px;">
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">교습 시작 전</td>
+            <td style="padding: 10px; font-weight: 600;">이미 납부한 교습비 전액</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--line);">
+            <td style="padding: 10px;">교습 시작 후</td>
+            <td style="padding: 10px; font-weight: 600;">반환사유가 발생한 해당 월의 반환 대상 교습비(1개월 이내 기준 적용) + 나머지 월의 교습비 전액</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--ink); margin: 28px 0 12px;">3. 기타</h3>
+      <ul style="padding-left: 20px; margin: 8px 0;">
+        <li>반환 사유 발생 시 5영업일 이내에 환불 처리합니다.</li>
+        <li>교습비 반환에 관한 문의: 0507-1307-9398</li>
+        <li>해당 지역 교육청 학원 환불 기준을 따릅니다.</li>
+      </ul>
+
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--ink); margin: 28px 0 12px;">문의</h3>
+      <p>케빈샘AI코딩학원<br>대표: 이관희<br>전화: 0507-1307-9398<br>이메일: kevin@kevinsaem.com</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

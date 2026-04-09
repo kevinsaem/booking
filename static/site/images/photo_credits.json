@@ -1,0 +1,67 @@
+{
+  "youth_hero.jpg": {
+    "photographer": "Yan Krukau",
+    "pexels_url": "https://www.pexels.com/photo/a-man-using-a-laptop-8197549/",
+    "alt": "Mature teacher interacting with diverse students using laptops in a spacious lecture hall setting."
+  },
+  "youth_class1.jpg": {
+    "photographer": "cottonbro studio",
+    "pexels_url": "https://www.pexels.com/photo/person-in-white-shirt-using-computer-4709289/",
+    "alt": "A teenager focused on coding software on a desktop monitor in a home office setting."
+  },
+  "youth_class2.jpg": {
+    "photographer": "Yan Krukau",
+    "pexels_url": "https://www.pexels.com/photo/teacher-teaching-inside-the-classroom-8617759/",
+    "alt": "Teacher instructing a diverse group of elementary students in a modern classroom setting."
+  },
+  "youth_class3.jpg": {
+    "photographer": "RDNE Stock project",
+    "pexels_url": "https://www.pexels.com/photo/a-boy-reading-a-book-on-white-table-7683899/",
+    "alt": "Teenage boy focuses on homework using a laptop and textbook indoors."
+  },
+  "youth_project.jpg": {
+    "photographer": "Pavel Danilyuk",
+    "pexels_url": "https://www.pexels.com/photo/boy-showing-his-drawing-8423043/",
+    "alt": "Child showcasing drawing in a classroom setting, focusing on education."
+  },
+  "youth_mentor.jpg": {
+    "photographer": "Thirdman",
+    "pexels_url": "https://www.pexels.com/photo/a-teacher-helping-her-student-8926900/",
+    "alt": "A teacher assists a student working on a computer in a bright, modern classroom setting."
+  },
+  "adult_hero.jpg": {
+    "photographer": "cottonbro studio",
+    "pexels_url": "https://www.pexels.com/photo/white-and-brown-disposable-cup-on-white-table-4064823/",
+    "alt": "A minimalist home office setup with a laptop, smartphone, and coffee cup, emphasizing remote work."
+  },
+  "adult_worker.jpg": {
+    "photographer": "cottonbro studio",
+    "pexels_url": "https://www.pexels.com/photo/men-sitting-at-the-desks-in-an-office-and-using-computers-6803551/",
+    "alt": "Close-up of office workers engaged in a tech project at a modern workplace."
+  },
+  "adult_startup.jpg": {
+    "photographer": "Sommart Sopon",
+    "pexels_url": "https://www.pexels.com/photo/young-professional-woman-working-in-modern-office-35764275/",
+    "alt": "Asian woman working on a laptop in a modern office setting, focused and productive."
+  },
+  "adult_learning.jpg": {
+    "photographer": "Ben Khatry",
+    "pexels_url": "https://www.pexels.com/photo/man-scrolling-a-tablet-21710598/",
+    "alt": "A young man with glasses intently scrolling on a tablet against a gray background."
+  },
+  "corp_hero.jpg": {
+    "photographer": "ICSA",
+    "pexels_url": "https://www.pexels.com/photo/man-standing-in-front-of-people-1709003/",
+    "alt": "Professional setting of a business conference with attendees and a presenter in an auditorium."
+  },
+  "corp_training.jpg": {
+    "photographer": "MART  PRODUCTION",
+    "pexels_url": "https://www.pexels.com/photo/businesspeople-in-a-meeting-room-7643758/",
+    "alt": "Professional business team engaged in a meeting around a conference table in a modern office setting."
+  },
+  "main_hero.jpg": {
+    "photographer": "Tuấn Nguyễn Văn",
+    "pexels_url": "https://www.pexels.com/photo/computer-classroom-with-focused-students-35571660/",
+    "alt": "Students learning in a computer lab with multiple monitors and a teacher instructing."
+  }
+}

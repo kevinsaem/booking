@@ -1,0 +1,94 @@
+<!-- templates/booking/booking.html -->
+<!-- 화면: 수업 예약 (날짜 → 시간 → 강사 선택) -->
+<!-- HTMX로 단계별 부분 렌더링: 같은 페이지에서 시간/강사가 로드됨 -->
+{% extends "base.html" %}
+
+{% block title %}수업 예약 - 케빈샘 AI코딩{% endblock %}
+{% block tab_booking %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24">
+
+    <!-- 헤더 -->
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <h1 class="text-[16px] font-bold text-gray-800 flex-1" id="step-title">날짜 선택</h1>
+        <span class="text-[12px] text-green-600 font-bold" id="step-num">2/7</span>
+    </div>
+
+    <!-- 프로그레스 바 -->
+    <div class="h-1 bg-gray-200">
+        <div id="progress-bar" class="h-full bg-green-500 transition-all duration-500" style="width:28%"></div>
+    </div>
+
+    <div class="px-4 pt-4 space-y-3">
+
+        <!-- 잔여 횟수 미니 뱃지 -->
+        <div class="flex items-center gap-2 px-1">
+            <span class="text-[11px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+                남은 수업 {{ remaining }}회
+            </span>
+        </div>
+
+        <!-- ===== 캘린더 ===== -->
+        <div class="card overflow-hidden" id="calendar-section">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                <button hx-get="/booking/partials/calendar-grid?year={{ prev_year }}&month={{ prev_month }}"
+                        hx-target="#calendar-grid"
+                        hx-swap="innerHTML"
+                        class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 active:bg-gray-200">
+                    &lsaquo;
+                </button>
+                <span class="font-bold text-gray-800">{{ year }}년 {{ month }}월</span>
+                <button hx-get="/booking/partials/calendar-grid?year={{ next_year }}&month={{ next_month }}"
+                        hx-target="#calendar-grid"
+                        hx-swap="innerHTML"
+                        class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 active:bg-gray-200">
+                    &rsaquo;
+                </button>
+            </div>
+            <div class="p-3">
+                <div class="grid grid-cols-7 text-center mb-1">
+                    {% for d in ['일','월','화','수','목','금','토'] %}
+                    <span class="text-[11px] font-medium py-1 {% if d == '일' %}text-red-400{% elif d == '토' %}text-blue-400{% else %}text-gray-400{% endif %}">{{ d }}</span>
+                    {% endfor %}
+                </div>
+                <div id="calendar-grid">
+                    {% include "partials/calendar_grid.html" %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 시간 슬롯 (HTMX로 로드) ===== -->
+        <!-- 날짜 클릭 시 hx-get="/booking/partials/time-slots?date=..." -->
+        <div id="time-slots-area">
+            <!-- HTMX로 partials/time_slots.html 이 여기에 로드됨 -->
+        </div>
+
+        <!-- ===== 강사 목록 (HTMX로 로드) ===== -->
+        <!-- 시간 클릭 시 hx-get="/booking/partials/teacher-list?date=...&time=..." -->
+        <div id="teacher-list-area">
+            <!-- HTMX로 partials/teacher_list.html 이 여기에 로드됨 -->
+        </div>
+
+    </div>
+
+    <!-- 다음 단계 버튼 -->
+    <div class="fixed bottom-[70px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-gray-100 via-gray-100 z-20">
+        <form method="POST" action="/booking/repeat" id="next-form">
+            <input type="hidden" name="date" id="selected-date" value="">
+            <input type="hidden" name="time" id="selected-time" value="">
+            <input type="hidden" name="room_idx" id="selected-room-idx" value="">
+            <input type="hidden" name="teacher_id" id="selected-teacher-id" value="">
+            <button type="submit" id="next-btn" disabled
+                    class="btn-primary disabled:bg-gray-200 disabled:text-gray-400">
+                강사를 선택하세요
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/booking.js"></script>
+{% endblock %}

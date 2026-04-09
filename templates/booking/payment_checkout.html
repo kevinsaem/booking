@@ -1,0 +1,97 @@
+<!-- templates/booking/payment_checkout.html -->
+<!-- 화면: 결제 체크아웃 (토스 페이먼츠 위젯) -->
+{% extends "base.html" %}
+
+{% block title %}결제하기 - 케빈샘AI코딩학원{% endblock %}
+
+{% block tabbar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-10 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/payment" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">결제하기</h1>
+  </div>
+
+  <div class="px-4 pt-4 space-y-4">
+
+    <!-- 주문 요약 -->
+    <div class="card p-5 fade">
+      <p class="text-[12px] font-bold text-nv-600 mb-3">주문 정보</p>
+      <div class="space-y-2.5">
+        <div class="flex justify-between text-[14px]">
+          <span class="text-g-500">수강 과정</span>
+          <span class="font-bold text-g-800">{{ package.package_name }}</span>
+        </div>
+        <div class="flex justify-between text-[14px]">
+          <span class="text-g-500">수업 횟수</span>
+          <span class="font-bold text-g-800">{{ package.class_cnt }}회</span>
+        </div>
+        <div class="flex justify-between text-[14px]">
+          <span class="text-g-500">수업 시간</span>
+          <span class="font-bold text-g-800">{{ package.lec_time }}분/회</span>
+        </div>
+        <div class="h-px bg-g-200 my-2"></div>
+        <div class="flex justify-between text-[16px]">
+          <span class="text-g-500 font-medium">결제 금액</span>
+          <span class="font-extrabold text-nv-600">{{ "{:,}".format(package.price) }}원</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주문자 정보 -->
+    <div class="card p-5 fade s1">
+      <p class="text-[12px] font-bold text-nv-600 mb-3">주문자</p>
+      <div class="flex justify-between text-[14px]">
+        <span class="text-g-500">이름</span>
+        <span class="font-bold text-g-800">{{ user.name }}</span>
+      </div>
+    </div>
+
+    <!-- 결제 버튼 -->
+    <button id="payment-button"
+            class="w-full h-14 bg-nv-600 text-white rounded-2xl font-bold text-[15px] active:bg-nv-700 shadow-lg shadow-nv-600/20 flex items-center justify-center gap-2 fade s2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+        <line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
+      {{ "{:,}".format(package.price) }}원 결제하기
+    </button>
+
+    <p class="text-[11px] text-g-400 text-center">
+      결제는 토스페이먼츠를 통해 안전하게 처리됩니다
+    </p>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js.tosspayments.com/v1/payment"></script>
+<script>
+  const clientKey = "{{ client_key }}";
+  const tossPayments = TossPayments(clientKey);
+
+  const button = document.getElementById("payment-button");
+  button.addEventListener("click", function () {
+    tossPayments.requestPayment("카드", {
+      amount: {{ package.price }},
+      orderId: "{{ order_id }}",
+      orderName: "{{ package.package_name }}",
+      customerName: "{{ user.name }}",
+      successUrl: "{{ success_url }}",
+      failUrl: "{{ fail_url }}",
+    }).catch(function (error) {
+      if (error.code === "USER_CANCEL") {
+        // 사용자가 결제 취소
+      } else {
+        alert(error.message);
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>케빈샘AI코딩 | 수강 전 설문</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #dbeafe;
+    --accent: #f59e0b; --accent-light: #fef3c7;
+    --dark: #0f172a; --text: #334155; --text-light: #64748b; --text-lighter: #94a3b8;
+    --bg: #ffffff; --bg-soft: #f8fafc; --border: #e2e8f0;
+    --success: #10b981; --error: #ef4444;
+    --radius: 14px; --radius-sm: 10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;font-family:'Noto Sans KR',-apple-system,sans-serif;background:#1a2744;color:var(--text);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+
+  .app{height:100%;display:flex;flex-direction:column}
+
+  /* 상단 바 */
+  .top-bar{padding:12px 20px 10px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
+  .top-bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .top-logo{font-size:13px;font-weight:700;color:var(--dark);letter-spacing:-0.3px}
+  .top-logo span{color:var(--primary)}
+  .top-counter{font-size:13px;font-weight:600;color:var(--text-lighter)}
+  .top-counter em{font-style:normal;color:var(--primary);font-weight:800}
+  .progress-track{height:5px;background:var(--border);border-radius:5px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#818cf8,var(--accent));background-size:200% 100%;border-radius:5px;transition:width 0.5s cubic-bezier(.4,0,.2,1);width:0%;animation:shimmer 2s ease infinite}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* 슬라이드 */
+  .slides-viewport{flex:1;overflow:hidden;position:relative}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:24px 24px 100px;opacity:0;transform:translateX(60px);transition:all .45s cubic-bezier(.4,0,.2,1);pointer-events:none;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg-soft)}
+  .slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+  .slide.exit-left{opacity:0;transform:translateX(-60px);pointer-events:none}
+
+  /* 인트로 */
+  .intro-slide{text-align:center;background:linear-gradient(160deg,var(--dark) 0%,#1a2744 100%);position:relative;overflow:hidden;padding:24px 24px 24px}
+  .intro-slide::before{content:'';position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(37,99,235,.12) 0%,transparent 70%);border-radius:50%}
+  .intro-slide::after{content:'';position:absolute;bottom:-20%;left:-15%;width:250px;height:250px;background:radial-gradient(circle,rgba(245,158,11,.08) 0%,transparent 70%);border-radius:50%}
+  .intro-badge{font-size:12px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;animation:fadeUp .6s .2s both;position:relative;z-index:1}
+  .intro-title{font-size:28px;font-weight:800;color:#fff;line-height:1.4;margin-bottom:12px;animation:fadeUp .6s .35s both;position:relative;z-index:1}
+  .intro-title span{color:var(--accent)}
+  .intro-desc{font-size:15px;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:28px;animation:fadeUp .6s .5s both;position:relative;z-index:1}
+  .intro-time{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:rgba(255,255,255,.07);border-radius:100px;font-size:14px;color:rgba(255,255,255,.6);font-weight:500;margin-bottom:36px;animation:fadeUp .6s .6s both;position:relative;z-index:1}
+  .intro-start{display:inline-block;padding:16px 48px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;animation:fadeUp .6s .75s both;position:relative;z-index:1}
+  .intro-start:active{transform:scale(.96)}
+
+  /* 질문 */
+  .q-section-label{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:.5px;margin-bottom:6px}
+  .q-title{font-size:20px;font-weight:700;color:var(--dark);line-height:1.45;margin-bottom:6px}
+  .q-num-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;font-size:13px;font-weight:800;margin-right:8px;vertical-align:middle}
+  .q-hint{font-size:13px;color:var(--text-light);margin-bottom:20px}
+
+  .slide.active .q-section-label{animation:fadeUp .4s .05s both}
+  .slide.active .q-title{animation:fadeUp .4s .12s both}
+  .slide.active .q-hint{animation:fadeUp .4s .18s both}
+  .slide.active .q-options{animation:fadeUp .4s .22s both}
+  .slide.active .q-textarea{animation:fadeUp .4s .22s both}
+  .slide.active .q-text-input{animation:fadeUp .4s .22s both}
+  .q-section-label,.q-title,.q-hint,.q-options,.q-textarea,.q-text-input{opacity:0}
+  .slide.active .q-section-label,.slide.active .q-title,.slide.active .q-hint,.slide.active .q-options,.slide.active .q-textarea,.slide.active .q-text-input{opacity:1}
+
+  /* 텍스트 입력 */
+  .q-text-input{width:100%;padding:16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:17px;font-family:inherit;color:var(--text);background:var(--bg)}
+  .q-text-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+  .q-text-input::placeholder{color:var(--text-lighter)}
+
+  /* 옵션 */
+  .q-options{display:flex;flex-direction:column;gap:8px}
+  .opt-item{position:relative}
+  .opt-item input{position:absolute;opacity:0;width:0;height:0}
+  .opt-label{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);cursor:pointer;transition:all .18s;font-size:15px;color:var(--text);line-height:1.45;background:var(--bg)}
+  .opt-label:active{transform:scale(.98)}
+  .opt-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s}
+  input[type="checkbox"]+.opt-label .opt-dot{border-radius:6px}
+  input:checked+.opt-label{border-color:var(--primary);background:var(--primary-light)}
+  input:checked+.opt-label .opt-dot{border-color:var(--primary);background:var(--primary)}
+  input:checked+.opt-label .opt-dot::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+  input[type="checkbox"]:checked+.opt-label .opt-dot::after{width:10px;height:6px;border-radius:0;background:transparent;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg);margin-bottom:3px}
+
+  .other-field{margin-top:8px;overflow:hidden;max-height:0;transition:max-height .3s ease}
+  .other-field.show{max-height:60px}
+  .other-field input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-family:inherit;color:var(--text);background:var(--bg)}
+  .other-field input:focus{outline:none;border-color:var(--primary)}
+
+  .q-textarea{width:100%;min-height:120px;padding:16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-family:inherit;color:var(--text);background:var(--bg);resize:none}
+  .q-textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+  .q-textarea::placeholder{color:var(--text-lighter)}
+
+  /* 하단 네비 */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;padding:12px 20px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--border);display:flex;gap:10px;z-index:10}
+  .btn-prev,.btn-next{flex:1;padding:15px 0;border-radius:var(--radius-sm);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-prev{background:var(--bg-soft);color:var(--text-light);border:1px solid var(--border);flex:0 0 auto;width:56px}
+  .btn-prev:active,.btn-next:active{transform:scale(.97)}
+  .btn-next{background:var(--primary);color:#fff}
+  .btn-next.submit{background:linear-gradient(135deg,var(--success),#059669)}
+
+  /* 완료 */
+  .done-slide{text-align:center;background:var(--bg)}
+  .done-icon{width:80px;height:80px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:36px;animation:popIn .5s .2s both}
+  .done-title{font-size:24px;font-weight:800;color:var(--dark);margin-bottom:12px;animation:fadeUp .5s .4s both}
+  .done-desc{font-size:15px;color:var(--text-light);line-height:1.7;margin-bottom:32px;animation:fadeUp .5s .5s both}
+  .done-cta{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;background:#FAE100;color:#3C1E1E;border-radius:var(--radius-sm);text-decoration:none;font-size:16px;font-weight:700;animation:fadeUp .5s .65s both;transition:all .2s}
+  .done-cta:active{transform:scale(.97)}
+  .done-footer{margin-top:24px;font-size:12px;color:var(--text-lighter);animation:fadeUp .5s .8s both}
+
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .shake{animation:shake .4s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes popIn{0%{opacity:0;transform:scale(.5)}70%{transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+
+  @media(min-width:768px){
+    .slide{padding:40px 40px 100px;max-width:600px;margin:0 auto;left:0;right:0}
+    .intro-slide{max-width:none;padding:40px 40px 40px}
+    .intro-title{font-size:36px}
+    .q-title{font-size:22px}
+    .bottom-nav{max-width:600px;margin:0 auto;left:0;right:0}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar" id="topBar" style="display:none">
+    <div class="top-bar-row">
+      <div class="top-logo">케빈샘<span>AI코딩</span></div>
+      <div class="top-counter"><em id="currentNum">1</em> / <span id="totalNum"></span></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <div class="slides-viewport" id="viewport"></div>
+</div>
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <button class="btn-prev" id="btnPrev" onclick="goPrev()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="btn-next" id="btnNext" onclick="goNext()">다음 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+
+<script>
+const questions=[
+  {section:'기본 정보',title:'이름을 알려주세요',type:'text',name:'name',required:true,placeholder:'홍길동',inputType:'text'},
+  {section:'기본 정보',title:'연락처를 알려주세요',hint:'상담 및 수업 안내에 사용됩니다',type:'text',name:'phone',required:true,placeholder:'010-0000-0000',inputType:'tel'},
+  {section:'기본 정보',title:'연령대를 선택해주세요',type:'radio',name:'age',required:true,options:['20대','30대','40대','50대','60대 이상']},
+  {section:'기본 정보',title:'현재 직업 상태를\n선택해주세요',type:'radio',name:'job',required:true,options:['직장인 (사무직)','직장인 (기술직)','자영업 · 사업자','프리랜서','구직 · 이직 준비 중','은퇴 · 무직','기타']},
+  {section:'수강 목적',title:'수강을 결심하게 된\n가장 큰 이유는?',hint:'최대 2개 선택',type:'checkbox',name:'reason',required:true,max:2,hasOther:true,options:['반복 업무를 자동화하고 싶다','내 아이디어로 웹/앱을 만들고 싶다','AI 시대에 뒤처지지 않기 위해','이직/창업/부업에 활용하고 싶다','자녀 교육을 위해 먼저 배우고 싶다','AI로 책을 출판하고 싶다','기타']},
+  {section:'수강 목적',title:'수업으로 만들고 싶은\n결과물이 있나요?',hint:'최대 3개 선택',type:'checkbox',name:'want',required:true,max:3,options:['엑셀/한글/워드 업무 자동화','회사 홈페이지 · 랜딩페이지','모바일 앱 (안드로이드/iOS)','데이터 자동 수집 (주식, 뉴스 등)','AI 챗봇 또는 AI 도구','간단한 게임','AI로 책 출판','아직 모르지만 배우면서 찾고 싶다']},
+  {section:'수강 목적',title:'수강 후 가장 이루고 싶은\n목표 하나를 골라주세요',type:'radio',name:'goal',required:true,options:['업무에 바로 쓸 수 있는 자동화 기술','내 사업을 위한 웹사이트·앱 제작','AI 도구를 자유롭게 활용하는 능력','포트폴리오로 이직/취업 활용','나만의 책 1권 출판','AI 코딩을 경험해보고 싶다']},
+  {section:'현재 수준',title:'컴퓨터 사용 수준은\n어느 정도인가요?',type:'radio',name:'pc_level',required:true,options:['기본 조작만 가능 (검색, 카카오톡 등)','오피스(엑셀, 워드, 한글) 기본 사용','엑셀을 능숙하게 활용하는 편','코딩이나 프로그래밍 경험이 있다']},
+  {section:'현재 수준',title:'AI 도구(ChatGPT 등)\n사용 경험이 있으신가요?',type:'radio',name:'ai_level',required:true,options:['들어보기만 했고 써본 적 없다','몇 번 써봤지만 잘 활용 못 한다','업무나 일상에서 종종 활용 중','적극 활용 중이며 더 배우고 싶다']},
+  {section:'수업 환경',title:'수업에 사용할\n개인 기기가 있으신가요?',type:'radio',name:'device',required:true,options:['노트북 (Windows) 있음','노트북 (Mac) 있음','데스크톱 PC만 있음','기기 없음 — 학원 기기 희망','기기 구매 상담 희망']},
+  {section:'수업 환경',title:'수업 희망 요일을\n모두 선택해주세요',hint:'가능한 요일을 모두 선택',type:'checkbox',name:'day',required:true,options:['월요일','화요일','수요일','목요일','금요일','토요일','일요일']},
+  {section:'수업 환경',title:'선호하는 시간대를\n모두 선택해주세요',hint:'가능한 시간대를 모두 선택',type:'checkbox',name:'time',required:true,options:['오전 (09~12시)','오후 (13~18시)','저녁 (18시 이후)','상관없이 유연하게 조정 가능']},
+  {section:'추가 요청',title:'선생님께 미리 전하고 싶은\n말이 있으시면 적어주세요',hint:'선택사항이에요. 편하게 적어주세요!',type:'textarea',name:'message',required:false,placeholder:'예: 엑셀 반복 작업을 자동화하고 싶어요\n카페 예약 앱을 만들어보고 싶어요\n코딩은 전혀 몰라서 걱정됩니다'}
+];
+
+let current=-1;
+const answers={};
+const vp=document.getElementById('viewport');
+
+function build(){
+  document.getElementById('totalNum').textContent=questions.length;
+
+  // 인트로
+  const intro=document.createElement('div');
+  intro.className='slide intro-slide active';
+  intro.dataset.idx='-1';
+  intro.innerHTML=`
+    <div class="intro-badge">KEVIN'S LAB</div>
+    <h1 class="intro-title">수업 전<br><span>사전 설문</span></h1>
+    <p class="intro-desc">수강생님의 목표에 딱 맞는 수업을<br>준비하기 위한 간단한 설문입니다.</p>
+    <div class="intro-time"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>약 3~5분 소요</div><br>
+    <button class="intro-start" onclick="goNext()">시작하기</button>`;
+  vp.appendChild(intro);
+
+  // 질문
+  questions.forEach((q,i)=>{
+    const s=document.createElement('div');
+    s.className='slide';
+    s.dataset.idx=i;
+    let h=`<div class="q-section-label">${q.section}</div>`;
+    h+=`<h2 class="q-title"><span class="q-num-badge">${i+1}</span>${q.title.replace(/\n/g,'<br>')}</h2>`;
+    if(q.hint)h+=`<p class="q-hint">${q.hint}</p>`;
+    if(q.type==='text'){
+      h+=`<input class="q-text-input" type="${q.inputType||'text'}" name="${q.name}" placeholder="${q.placeholder||''}" autocomplete="off">`;
+    }else if(q.type==='radio'||q.type==='checkbox'){
+      h+=`<div class="q-options">`;
+      q.options.forEach(o=>{h+=`<label class="opt-item"><input type="${q.type}" name="${q.name}" value="${o}"><span class="opt-label"><span class="opt-dot"></span>${o}</span></label>`});
+      h+=`</div>`;
+      if(q.hasOther)h+=`<div class="other-field" id="${q.name}_of"><input type="text" placeholder="기타 이유를 적어주세요" id="${q.name}_oi"></div>`;
+    }else{
+      h+=`<textarea class="q-textarea" name="${q.name}" placeholder="${q.placeholder||''}"></textarea>`;
+    }
+    s.innerHTML=h;
+    vp.appendChild(s);
+  });
+
+  // 완료
+  const done=document.createElement('div');
+  done.className='slide done-slide';
+  done.dataset.idx=questions.length;
+  done.innerHTML=`
+    <div class="done-icon">✅</div>
+    <h2 class="done-title">설문 완료!</h2>
+    <p class="done-desc">소중한 응답 감사합니다.<br>답변을 바탕으로 수강생님께 딱 맞는<br>학습 계획과 강사를 준비하겠습니다.</p>
+    <a href="http://pf.kakao.com/_xgnxoUj" class="done-cta" target="_blank"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3C5.582 3 2 5.91 2 9.5c0 2.29 1.52 4.3 3.8 5.47L4.5 18l3.84-2.04c.54.08 1.1.12 1.66.12 4.418 0 8-2.91 8-6.5S14.418 3 10 3z" fill="#3C1E1E"/></svg>카카오톡으로 문의하기</a>
+    <p class="done-footer">© 2026 케빈샘AI코딩학원</p>`;
+  vp.appendChild(done);
+}
+
+function gs(idx){return vp.querySelector(`[data-idx="${idx}"]`)}
+
+function goTo(ni){
+  const ps=gs(current),ns=gs(ni);
+  if(!ns)return;
+  const dir=ni>current?1:-1;
+  if(ps){ps.classList.remove('active');ps.classList.add(dir>0?'exit-left':'enter-right');setTimeout(()=>ps.classList.remove('exit-left','enter-right'),500)}
+  ns.classList.remove('exit-left','enter-right');
+  ns.style.transform=dir>0?'translateX(60px)':'translateX(-60px)';
+  ns.style.opacity='0';
+  requestAnimationFrame(()=>{ns.classList.add('active');ns.style.transform='';ns.style.opacity=''});
+  current=ni;
+  updateUI();
+  // 텍스트 입력 필드 자동 포커스
+  if(ni>=0&&ni<questions.length&&questions[ni].type==='text'){
+    setTimeout(()=>{const inp=ns.querySelector('.q-text-input');if(inp)inp.focus()},400);
+  }
+}
+
+function updateUI(){
+  const tb=document.getElementById('topBar'),bn=document.getElementById('bottomNav'),bp=document.getElementById('btnPrev'),bx=document.getElementById('btnNext');
+  if(current===-1||current>=questions.length){tb.style.display='none';bn.style.display='none';return}
+  tb.style.display='block';bn.style.display='flex';
+  document.getElementById('currentNum').textContent=current+1;
+  document.getElementById('progressFill').style.width=((current+1)/questions.length*100)+'%';
+  bp.style.visibility=current===0?'hidden':'visible';
+  if(current===questions.length-1){bx.innerHTML='제출하기 ✓';bx.classList.add('submit')}
+  else{bx.innerHTML='다음 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';bx.classList.remove('submit')}
+}
+
+function isAns(i){
+  const q=questions[i];
+  if(q.type==='textarea')return true;
+  if(q.type==='text'){const inp=vp.querySelector(`input.q-text-input[name="${q.name}"]`);return inp&&inp.value.trim().length>0}
+  return vp.querySelectorAll(`[name="${q.name}"]:checked`).length>0;
+}
+
+function save(i){
+  const q=questions[i];
+  if(q.type==='textarea'){const t=vp.querySelector(`textarea[name="${q.name}"]`);if(t)answers[q.name]=t.value.trim()}
+  else if(q.type==='text'){const inp=vp.querySelector(`input.q-text-input[name="${q.name}"]`);if(inp)answers[q.name]=inp.value.trim()}
+  else{answers[q.name]=Array.from(vp.querySelectorAll(`[name="${q.name}"]:checked`)).map(e=>e.value);
+  if(q.hasOther){const o=document.getElementById(`${q.name}_oi`);if(o&&o.value.trim())answers[q.name+'_other']=o.value.trim()}}
+}
+
+function goNext(){
+  if(current===-1){goTo(0);return}
+  if(current>=questions.length)return;
+  const q=questions[current];
+  if(q.required&&!isAns(current)){const s=gs(current);s.classList.add('shake');setTimeout(()=>s.classList.remove('shake'),400);return}
+  save(current);
+  if(current===questions.length-1){submitToSheet();return}
+  else goTo(current+1);
+}
+function goPrev(){if(current>0){save(current);goTo(current-1)}}
+
+function submitToSheet(){
+  const btn=document.getElementById('btnNext');
+  btn.disabled=true;btn.innerHTML='제출 중...';
+  const url='https://script.google.com/macros/s/AKfycbxqY0CJpQSIcYGq5PZVKPXt12lEEwnU9k8-3hf_P4DQD4nWLXUMD9aZtqXdEEsGQ1gq/exec';
+  const iframe=document.createElement('iframe');
+  iframe.name='submit_frame';iframe.style.display='none';
+  document.body.appendChild(iframe);
+  const form=document.createElement('form');
+  form.method='POST';form.action=url;form.target='submit_frame';
+  const input=document.createElement('input');
+  input.type='hidden';input.name='data';input.value=JSON.stringify(answers);
+  form.appendChild(input);
+  document.body.appendChild(form);
+  iframe.onload=function(){goTo(questions.length);form.remove();setTimeout(()=>iframe.remove(),1000)};
+  form.submit();
+  setTimeout(()=>{if(btn.disabled)goTo(questions.length)},5000);
+}
+
+document.addEventListener('change',e=>{
+  if(!e.target.matches('input[type="checkbox"],input[type="radio"]'))return;
+  const nm=e.target.name,qi=questions.findIndex(q=>q.name===nm);
+  if(qi===-1)return;const q=questions[qi];
+  if(q.type==='checkbox'&&q.max){const c=vp.querySelectorAll(`[name="${nm}"]:checked`);if(c.length>q.max)e.target.checked=false}
+  if(q.hasOther){const oc=vp.querySelector(`[name="${nm}"][value="기타"]`)?.checked;const f=document.getElementById(`${nm}_of`);if(f)f.classList.toggle('show',!!oc)}
+  if(q.type==='radio'&&current<questions.length-1){save(current);setTimeout(()=>goNext(),350)}
+});
+
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{if(current<0||current>=questions.length)return;const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>60){d>0?goNext():goPrev()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&current>=0&&current<questions.length)goNext()});
+
+build();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<!-- 취소된 예약 행 (HTMX swap용) -->
+{% if booking %}
+<div class="card p-4" id="booking-{{ booking.idx }}">
+  <div class="flex justify-between items-center mb-2">
+    <span class="text-[15px] font-bold text-g-800">{{ booking.date_label }}</span>
+    <span class="text-[10px] font-bold bg-red-50 text-red-500 px-2.5 py-1 rounded-full">취소됨</span>
+  </div>
+  <p class="text-[12px] text-g-400">{{ booking.time }} · {{ booking.teacher_name }} 멘토</p>
+</div>
+{% endif %}

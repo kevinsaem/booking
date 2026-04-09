@@ -1,0 +1,54 @@
+<!-- templates/teacher/students.html -->
+<!-- 화면: 내 수강생 목록 -->
+{% extends "teacher/base_teacher.html" %}
+
+{% block title %}내 수강생 - 케빈샘AI코딩학원{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/teacher/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800 flex-1">내 수강생</h1>
+    <span class="text-[12px] text-g-400">{{ students|length }}명</span>
+  </div>
+
+  <div class="px-4 pt-4 space-y-2">
+
+    {% if students %}
+    {% for stu in students %}
+    <div class="card p-4 fade s{{ loop.index if loop.index <= 4 else 4 }}">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-nv-50 rounded-full flex items-center justify-center font-extrabold text-nv-600 text-lg flex-shrink-0">{{ stu.name[0] }}</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[14px] font-bold text-g-800">{{ stu.name }}</p>
+          <p class="text-[12px] text-g-400 mt-0.5">{{ stu.package }}</p>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="text-[13px] font-bold text-nv-600">잔여 {{ stu.remaining }}회</p>
+          <p class="text-[10px] text-g-400 mt-0.5">최근 {{ stu.last_lesson }}</p>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t border-g-100">
+        <a href="/teacher/chat/{{ stu.id }}" class="flex-1 h-9 bg-g-100 rounded-lg text-[12px] font-medium text-g-600 flex items-center justify-center active:bg-g-200">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" class="mr-1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          메시지
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="card p-4 text-center text-g-400 text-sm py-16">
+      <div class="w-12 h-12 mx-auto mb-3 bg-g-100 rounded-full ic">
+        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <p class="text-[14px]">아직 수강생이 없습니다</p>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

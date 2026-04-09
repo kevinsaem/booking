@@ -1,0 +1,127 @@
+<!-- templates/booking/repeat.html -->
+<!-- 화면: 반복 예약 (매주 같은 요일/시간, 최대 12주) -->
+<!-- Alpine.js로 체크박스 인터랙션 + 잔여횟수 제한 -->
+{% extends "base.html" %}
+
+{% block title %}반복 예약 - 케빈샘 AI코딩{% endblock %}
+{% block tab_booking %}active{% endblock %}
+
+{% block content %}
+<div class="pb-24" x-data="repeatBooking({{ remaining }}, {{ repeat_weeks | tojson }})">
+
+    <!-- 헤더 -->
+    <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-gray-200 sticky top-0 z-30">
+        <a href="/booking/calendar" class="w-9 h-9 flex items-center justify-center text-gray-600 text-xl">&lsaquo;</a>
+        <h1 class="text-[16px] font-bold text-gray-800 flex-1">반복 예약</h1>
+        <span class="text-[12px] text-green-600 font-bold">5/7</span>
+    </div>
+    <div class="h-1 bg-gray-200"><div class="h-full bg-green-500" style="width:71%"></div></div>
+
+    <div class="px-4 pt-4 space-y-4">
+        <div>
+            <h2 class="text-[18px] font-bold text-gray-900">매주 같은 시간에<br>추가 예약하시겠어요?</h2>
+            <p class="text-[13px] text-gray-400 mt-1">같은 요일, 같은 시간으로 최대 12주까지</p>
+        </div>
+
+        <!-- 잔여횟수 -->
+        <div class="bg-green-50 rounded-xl p-3 flex items-center gap-3">
+            <span class="text-[11px] font-bold text-green-600">남은 수업</span>
+            <span class="text-[14px] font-extrabold text-green-700" x-text="remaining + '회'"></span>
+            <span class="text-[12px] text-gray-400 ml-auto" x-text="'선택: ' + selected.length + '회'"></span>
+        </div>
+
+        <!-- 주차 목록 -->
+        <form method="POST" action="/booking/confirm" id="repeat-form">
+            <input type="hidden" name="date" value="{{ base_date }}">
+            <input type="hidden" name="time" value="{{ time }}">
+            <input type="hidden" name="room_idx" value="{{ room_idx }}">
+            <input type="hidden" name="teacher_id" value="{{ teacher_id }}">
+
+            <div class="space-y-1.5">
+                <template x-for="(week, idx) in weeks" :key="idx">
+                    <label @click.prevent="toggleWeek(idx)"
+                           class="flex items-center gap-3 bg-white rounded-xl px-4 py-3 shadow-sm transition-all active:scale-[.98] cursor-pointer"
+                           :class="{
+                               'ring-2 ring-green-400 bg-green-50': idx === 0,
+                               'ring-2 ring-green-300 bg-green-50': selected.includes(idx) && idx !== 0,
+                               'opacity-30 cursor-default': week.disabled
+                           }">
+                        <input type="checkbox"
+                               :name="'dates[]'"
+                               :value="week.date"
+                               :checked="selected.includes(idx)"
+                               :disabled="week.disabled"
+                               class="hidden">
+                        <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center text-[10px] transition-all"
+                             :class="{
+                                 'bg-green-500 border-green-500 text-white': idx === 0 || selected.includes(idx),
+                                 'border-gray-300': !selected.includes(idx) && idx !== 0
+                             }">
+                            <span x-show="idx === 0 || selected.includes(idx)">✓</span>
+                        </div>
+                        <span class="flex-1 text-[13px] font-medium text-gray-700" x-text="week.label"></span>
+                        <span class="text-[10px] font-bold"
+                              :class="{
+                                  'text-green-600': idx === 0,
+                                  'text-green-500': selected.includes(idx) && idx !== 0,
+                                  'text-red-400': week.disabled,
+                                  'text-gray-300': !selected.includes(idx) && !week.disabled && idx !== 0
+                              }"
+                              x-text="idx === 0 ? '기본' : (week.disabled ? '마감' : (selected.includes(idx) ? '선택됨' : '선택'))">
+                        </span>
+                    </label>
+                </template>
+            </div>
+
+            <p class="text-center text-[13px] text-gray-400 mt-4">
+                총 <strong class="text-green-600" x-text="selected.length + '회'"></strong> 예약
+                · 예약 후 잔여 <strong class="text-green-600" x-text="(remaining - selected.length) + '회'"></strong>
+            </p>
+        </form>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="fixed bottom-[70px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-4 pb-3 pt-3 bg-gradient-to-t from-gray-100 via-gray-100 z-20">
+        <div class="flex gap-2">
+            <button @click="skipRepeat()" class="btn-secondary flex-1">1회만 예약</button>
+            <button @click="document.getElementById('repeat-form').submit()" class="btn-primary flex-1">선택 완료</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function repeatBooking(remaining, weeks) {
+    return {
+        remaining: remaining,
+        weeks: weeks,
+        selected: [0], // 기본 날짜는 항상 선택
+
+        toggleWeek(idx) {
+            if (idx === 0) return; // 기본 날짜는 해제 불가
+            if (this.weeks[idx].disabled) return;
+
+            const pos = this.selected.indexOf(idx);
+            if (pos > -1) {
+                this.selected.splice(pos, 1);
+            } else {
+                if (this.selected.length >= this.remaining) {
+                    showToast('남은 수업 횟수를 초과할 수 없습니다');
+                    return;
+                }
+                this.selected.push(idx);
+            }
+        },
+
+        skipRepeat() {
+            this.selected = [0];
+            // 1회만 선택 후 폼 제출
+            this.$nextTick(() => {
+                document.getElementById('repeat-form').submit();
+            });
+        }
+    };
+}
+</script>
+{% endblock %}

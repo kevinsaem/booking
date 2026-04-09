@@ -1,0 +1,103 @@
+<!-- templates/booking/notices.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-g-100 pb-20 fade" x-data="noticeSlider({{ notices | length }})">
+
+  <!-- 헤더 -->
+  <div class="bg-white px-4 pt-4 pb-3 flex items-center gap-3 border-b border-g-200 sticky top-0 z-30">
+    <a href="/booking/" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <h1 class="text-[16px] font-bold text-g-800">공지사항</h1>
+  </div>
+
+  <div class="px-4 pt-4">
+
+    {% if notices %}
+    <div class="flex items-center justify-between mb-2 px-1">
+      <p class="text-[13px] text-g-400">총 {{ notices | length }}건</p>
+      {% set pages = (notices|length + 3) // 4 %}
+      {% if pages > 1 %}
+      <div class="flex items-center gap-2">
+        <button @click="prev()" :class="current === 0 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="text-[12px] text-g-400" x-text="(current+1)+'/'+totalPages"></span>
+        <button @click="next()" :class="current >= totalPages-1 ? 'text-g-300' : 'text-g-600'" class="w-7 h-7 rounded-full bg-g-100 flex items-center justify-center active:bg-g-200">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="overflow-hidden rounded-2xl"
+         @touchstart="touchStartX = $event.changedTouches[0].screenX"
+         @touchend="handleSwipe($event)">
+      <div class="flex transition-transform duration-300 ease-out"
+           :style="'transform: translateX(-' + (current * 100) + '%)'">
+
+        {% for page_start in range(0, notices|length, 4) %}
+        <div class="w-full flex-shrink-0">
+          <div class="space-y-2 px-0.5">
+            {% for n in notices[page_start:page_start+4] %}
+            <a href="/booking/notices/{{ n.notice_id }}" class="card p-4 cursor-pointer active:bg-g-50 block">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-md text-g-500 bg-g-100">공지</span>
+                <span class="text-[11px] text-g-400">{{ n.date }}</span>
+              </div>
+              <p class="text-[14px] font-bold text-g-800">{{ n.title }}</p>
+              <p class="text-[12px] text-g-400 mt-1">{{ n.summary }}</p>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+    {% if pages > 1 %}
+    <div class="flex justify-center gap-1.5 mt-3">
+      {% for p in range(pages) %}
+      <div class="w-2 h-2 rounded-full transition-colors cursor-pointer"
+           :class="current === {{ p }} ? 'bg-nv-500' : 'bg-g-300'"
+           @click="current = {{ p }}"></div>
+      {% endfor %}
+    </div>
+    <p class="text-center text-[11px] text-g-400 mt-1" x-show="current === 0 && totalPages > 1">← 밀어서 이전 공지 보기</p>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-16 text-g-400">
+      <div class="w-12 h-12 mx-auto mb-3 ic">
+        <svg width="28" height="28" viewBox="0 0 24 24" stroke="#BDBDBD" stroke-width="1.5" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </div>
+      <p class="text-[14px]">공지사항이 없습니다</p>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function noticeSlider(totalItems) {
+    var pages = Math.ceil(totalItems / 4);
+    return {
+        current: 0,
+        totalPages: pages || 1,
+        touchStartX: 0,
+        prev() { if (this.current > 0) this.current--; },
+        next() { if (this.current < this.totalPages - 1) this.current++; },
+        handleSwipe(e) {
+            var diff = this.touchStartX - e.changedTouches[0].screenX;
+            if (diff > 50) this.next();
+            else if (diff < -50) this.prev();
+        }
+    };
+}
+</script>
+{% endblock %}

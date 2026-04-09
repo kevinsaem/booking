@@ -1,0 +1,35 @@
+<!-- templates/partials/teacher_list.html -->
+<!-- HTMX partial: 강사 목록 -->
+<!-- hx-get="/booking/partials/teacher-list?date=...&time=...&room_idx=..." 로 호출 -->
+<div class="fade-up space-y-2">
+    <h3 class="text-[14px] font-bold text-gray-800 px-1">강사 선택</h3>
+
+    {% for teacher in teachers %}
+    <button onclick="selectTeacher('{{ teacher.id }}', '{{ teacher.name }}', this)"
+            class="teacher-card w-full bg-white rounded-xl p-4 flex items-center gap-3 shadow-sm active:bg-gray-50 transition">
+        <!-- 강사 프로필 이미지 -->
+        {% if teacher.img %}
+        <img src="/n_images/te_img/{{ teacher.img }}" alt="{{ teacher.name }}"
+             class="w-12 h-12 rounded-full object-cover">
+        {% else %}
+        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center font-extrabold text-green-600 text-lg">
+            {{ teacher.name[0] }}
+        </div>
+        {% endif %}
+
+        <!-- 강사 정보 -->
+        <div class="flex-1 text-left">
+            <p class="text-[14px] font-bold text-gray-800">{{ teacher.name }} 선생님</p>
+            <p class="text-[12px] text-gray-400">{{ teacher.field }}</p>
+            {% if teacher.tag %}
+            <span class="inline-block mt-1 text-[10px] font-bold bg-orange-50 text-orange-600 px-2 py-0.5 rounded">
+                {{ teacher.tag }}
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- 선택 체크 -->
+        <div class="teacher-check w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-[10px] text-white transition-all"></div>
+    </button>
+    {% endfor %}
+</div>

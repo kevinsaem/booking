@@ -1,0 +1,25 @@
+<!-- templates/partials/time_slots.html -->
+<!-- HTMX partial: 시간 슬롯 목록 -->
+<!-- hx-get="/booking/partials/time-slots?date=2026-04-08" 로 호출 -->
+<div class="fade-up space-y-2">
+    <h3 class="text-[14px] font-bold text-gray-800 px-1">
+        {{ selected_date_label }} 시간 선택
+    </h3>
+
+    {% for slot in time_slots %}
+    <button onclick="selectTime('{{ slot.time }}', '{{ slot.room_idx }}', this)"
+            class="time-slot w-full bg-white rounded-xl px-4 py-3.5 flex items-center justify-between shadow-sm active:bg-gray-50 transition {% if slot.available %}cursor-pointer{% else %}opacity-30 cursor-default{% endif %}"
+            {% if not slot.available %}disabled{% endif %}>
+        <div>
+            <p class="text-[15px] font-bold text-gray-800">{{ slot.time }}</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">
+                {% if slot.available %}예약 가능{% else %}마감{% endif %}
+            </p>
+        </div>
+        <span class="text-[11px] font-bold px-3 py-1 rounded-full
+              {% if slot.available %}bg-green-50 text-green-600{% else %}bg-gray-100 text-gray-400{% endif %}">
+            {% if slot.available %}강사 {{ slot.teacher_count }}명{% else %}마감{% endif %}
+        </span>
+    </button>
+    {% endfor %}
+</div>
