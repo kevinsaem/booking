@@ -58,7 +58,7 @@
   }
   .section-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: var(--fs-base);
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -66,14 +66,14 @@
     margin-bottom: 12px;
   }
   .section-title {
-    font-size: 36px;
+    font-size: var(--fs-display);
     font-weight: 800;
     color: var(--dark);
     line-height: 1.35;
     margin-bottom: 16px;
   }
   .section-desc {
-    font-size: 17px;
+    font-size: var(--fs-accent);
     color: var(--text-light);
     max-width: 560px;
     line-height: 1.8;
@@ -117,7 +117,7 @@
   }
   .coding-hero .section-title {
     color: #fff;
-    font-size: 44px;
+    font-size: var(--fs-display-xl);
     max-width: 650px;
   }
   .coding-hero .section-title .highlight {
@@ -125,7 +125,7 @@
   }
   .coding-hero .section-desc {
     color: rgba(255,255,255,0.7);
-    font-size: 18px;
+    font-size: var(--fs-subtitle);
     margin-bottom: 40px;
     max-width: 520px;
   }
@@ -140,12 +140,12 @@
   }
   .hero-stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 32px;
+    font-size: var(--fs-display-sm);
     font-weight: 700;
     color: #fff;
   }
   .hero-stat-label {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: rgba(255,255,255,0.5);
     margin-top: 4px;
   }
@@ -164,7 +164,7 @@
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 100px;
-    font-size: 13px;
+    font-size: var(--fs-base);
     font-weight: 500;
     color: rgba(255,255,255,0.8);
     backdrop-filter: blur(4px);
@@ -211,13 +211,13 @@
     padding: 28px 24px 24px;
   }
   .audience-card h3 {
-    font-size: 18px;
+    font-size: var(--fs-subtitle);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 10px;
   }
   .audience-card p {
-    font-size: 14.5px;
+    font-size: var(--fs-base-lg);
     color: var(--text-light);
     line-height: 1.7;
   }
@@ -227,7 +227,7 @@
     padding: 4px 12px;
     background: var(--accent-light);
     color: #92400e;
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     font-weight: 600;
     border-radius: 6px;
   }
@@ -279,18 +279,18 @@
     flex-shrink: 0;
     justify-content: center;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
+    font-size: var(--fs-body-lg);
     font-weight: 700;
     margin: 0 auto 16px;
   }
   .process-step h4 {
-    font-size: 17px;
+    font-size: var(--fs-accent);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 8px;
   }
   .process-step p {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: var(--text-light);
     line-height: 1.6;
   }
@@ -312,7 +312,7 @@
   }
   .demo-prompt-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: var(--fs-sm);
     color: var(--accent);
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -320,7 +320,7 @@
   }
   .demo-prompt p {
     color: rgba(255,255,255,0.85);
-    font-size: 16px;
+    font-size: var(--fs-body-lg);
     line-height: 1.7;
   }
   .demo-result {
@@ -328,7 +328,7 @@
   }
   .demo-result-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: var(--fs-sm);
     color: var(--success);
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -346,7 +346,7 @@
     border: 1px solid rgba(16,185,129,0.2);
     border-radius: 8px;
     color: #6ee7b7;
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     font-weight: 500;
   }
 
@@ -384,7 +384,7 @@
     padding: 16px;
   }
   .showcase-card h3 {
-    font-size: 15px;
+    font-size: var(--fs-body);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 8px;
@@ -395,7 +395,7 @@
     gap: 5px;
   }
   .showcase-tag {
-    font-size: 11px;
+    font-size: var(--fs-sm);
     padding: 3px 8px;
     background: var(--bg-muted);
     border-radius: 5px;
@@ -431,13 +431,13 @@
     box-shadow: var(--shadow-sm);
   }
   .feature-card h4 {
-    font-size: 16px;
+    font-size: var(--fs-body-lg);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 8px;
   }
   .feature-card p {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: var(--text-light);
     line-height: 1.6;
   }
@@ -458,7 +458,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: var(--dark);
     font-weight: 500;
   }
@@ -505,7 +505,7 @@
   .class-toggle-btn {
     padding: 10px 24px;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     font-weight: 600;
     color: var(--text-light);
     cursor: pointer;
@@ -522,7 +522,7 @@
   }
   .class-toggle-btn .toggle-sub {
     display: block;
-    font-size: 11px;
+    font-size: var(--fs-sm);
     font-weight: 500;
     color: var(--text-lighter);
     margin-top: 1px;
@@ -567,7 +567,7 @@
   }
   .pricing-badge {
     display: inline-block;
-    font-size: 11px;
+    font-size: var(--fs-sm);
     font-weight: 700;
     padding: 3px 14px;
     border-radius: 100px;
@@ -578,7 +578,7 @@
   .pricing-badge--value { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; }
   .pricing-count {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: var(--fs-base);
     font-weight: 600;
     color: var(--text-lighter);
     letter-spacing: 0.5px;
@@ -586,7 +586,7 @@
   }
   .pricing-card--best .pricing-count { color: rgba(255,255,255,0.55); }
   .pricing-title {
-    font-size: 24px;
+    font-size: var(--fs-heading);
     font-weight: 800;
     color: var(--dark);
     margin-bottom: 14px;
@@ -605,14 +605,14 @@
   }
   .pricing-card--best .pricing-dual-item { background: rgba(255,255,255,0.1); }
   .pricing-dual-label {
-    font-size: 11px;
+    font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--text-lighter);
     margin-bottom: 4px;
   }
   .pricing-card--best .pricing-dual-label { color: rgba(255,255,255,0.5); }
   .pricing-dual-original {
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     color: var(--text-lighter);
     text-decoration: line-through;
     display: block;
@@ -621,20 +621,20 @@
   .pricing-card--best .pricing-dual-original { color: rgba(255,255,255,0.35); }
   .pricing-dual-price {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
+    font-size: var(--fs-heading-sm);
     font-weight: 800;
     color: var(--dark);
     line-height: 1.2;
   }
   .pricing-card--best .pricing-dual-price { color: #fff; }
   .pricing-dual-unit {
-    font-size: 13px;
+    font-size: var(--fs-base);
     font-weight: 600;
     color: var(--text-light);
   }
   .pricing-card--best .pricing-dual-unit { color: rgba(255,255,255,0.65); }
   .pricing-per {
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     color: var(--text-lighter);
     margin-top: 8px;
   }
@@ -651,7 +651,7 @@
     background: var(--bg-muted);
     border-radius: 8px;
     margin-bottom: 16px;
-    font-size: 13px;
+    font-size: var(--fs-base);
     color: var(--text);
     font-weight: 600;
   }
@@ -669,7 +669,7 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    font-size: 13.5px;
+    font-size: var(--fs-base);
     color: var(--text);
     line-height: 1.55;
   }
@@ -686,7 +686,7 @@
     padding: 5px 14px;
     background: var(--accent-light);
     border-radius: 6px;
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     font-weight: 700;
     color: #92400e;
   }
@@ -709,7 +709,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13.5px;
+    font-size: var(--fs-base);
     color: var(--text);
     font-weight: 500;
   }
@@ -726,7 +726,7 @@
     margin-right: auto;
   }
   .pricing-policy-title {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 12px;
@@ -741,7 +741,7 @@
     gap: 6px;
   }
   .pricing-policy-list li {
-    font-size: 13px;
+    font-size: var(--fs-base);
     color: var(--text-light);
     line-height: 1.6;
     padding-left: 16px;
@@ -755,7 +755,7 @@
     font-weight: 700;
   }
   .pricing-vat {
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     color: var(--text-lighter);
     margin-top: 16px;
     text-align: center;
@@ -777,13 +777,13 @@
   }
   .pricing-chat-bonus strong {
     display: block;
-    font-size: 15px;
+    font-size: var(--fs-body);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 6px;
   }
   .pricing-chat-bonus p {
-    font-size: 13.5px;
+    font-size: var(--fs-base);
     color: var(--text);
     line-height: 1.65;
     margin: 0;
@@ -799,18 +799,18 @@
   /* ── 모바일 기본 (추가 오버라이드) ── */
   .container { padding: 0 16px; }
   .section { padding: 56px 0; }
-  .section-title { font-size: 24px; }
-  .section-desc { font-size: 15px; }
+  .section-title { font-size: var(--fs-heading); }
+  .section-desc { font-size: var(--fs-body); }
 
   /* 히어로 */
   .coding-hero { padding: 56px 0 64px; }
-  .coding-hero .section-title { font-size: 26px; }
-  .coding-hero .section-desc { font-size: 15px; }
+  .coding-hero .section-title { font-size: var(--fs-heading); }
+  .coding-hero .section-desc { font-size: var(--fs-body); }
   .hero-stats { gap: 20px; flex-wrap: wrap; }
-  .hero-stat-value { font-size: 22px; }
-  .hero-stat-label { font-size: 12px; }
+  .hero-stat-value { font-size: var(--fs-heading-sm); }
+  .hero-stat-label { font-size: var(--fs-base-sm); }
   .tool-badges { gap: 6px; }
-  .tool-badge { padding: 6px 12px; font-size: 12px; }
+  .tool-badge { padding: 6px 12px; font-size: var(--fs-base-sm); }
 
   /* 오디언스 */
   .audience-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -826,21 +826,21 @@
     align-items: flex-start;
   }
   .process-step::after { display: none; }
-  .step-number { margin: 0; flex-shrink: 0; width: 36px; height: 36px; font-size: 14px; }
-  .process-step h4 { font-size: 15px; }
-  .process-step p { font-size: 13px; }
+  .step-number { margin: 0; flex-shrink: 0; width: 36px; height: 36px; font-size: var(--fs-base-lg); }
+  .process-step h4 { font-size: var(--fs-body); }
+  .process-step p { font-size: var(--fs-base); }
 
   .demo-box { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
   .demo-prompt { padding: 20px; }
-  .demo-prompt p { font-size: 14px; }
-  .demo-result-item { font-size: 13px; padding: 8px 14px; }
+  .demo-prompt p { font-size: var(--fs-base-lg); }
+  .demo-result-item { font-size: var(--fs-base); padding: 8px 14px; }
 
   /* 쇼케이스 */
   .showcase-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .showcase-card h3 { font-size: 14px; }
+  .showcase-card h3 { font-size: var(--fs-base-lg); }
   .showcase-img { height: 110px; }
   .showcase-card-body { padding: 12px; }
-  .showcase-tag { font-size: 10px; padding: 2px 6px; }
+  .showcase-tag { font-size: var(--fs-xs); padding: 2px 6px; }
 
   /* 특징 */
   .features-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -854,53 +854,53 @@
     padding: 16px 20px;
   }
   .schedule-divider { display: none; }
-  .schedule-item { font-size: 12px; white-space: nowrap; }
+  .schedule-item { font-size: var(--fs-base-sm); white-space: nowrap; }
 
   /* 교육비 */
   .class-toggle { width: 100%; }
-  .class-toggle-btn { flex: 1; padding: 10px 12px; font-size: 13px; }
+  .class-toggle-btn { flex: 1; padding: 10px 12px; font-size: var(--fs-base); }
   .pricing-grid { grid-template-columns: 1fr; gap: 16px; max-width: 420px; margin-left: auto; margin-right: auto; }
-  .pricing-title { font-size: 21px; }
-  .pricing-dual-price { font-size: 20px; }
-  .pricing-dual-label { font-size: 10px; }
-  .pricing-per { font-size: 11px; }
+  .pricing-title { font-size: var(--fs-subtitle-lg); }
+  .pricing-dual-price { font-size: var(--fs-subtitle-lg); }
+  .pricing-dual-label { font-size: var(--fs-xs); }
+  .pricing-per { font-size: var(--fs-sm); }
   .pricing-card-top { padding: 24px 20px 18px; }
   .pricing-card-bottom { padding: 18px 20px 24px; }
-  .pricing-features li { font-size: 13px; }
+  .pricing-features li { font-size: var(--fs-base); }
   .pricing-value-props { flex-direction: column; align-items: center; gap: 10px; }
   .pricing-chat-bonus { flex-direction: column; gap: 10px; padding: 16px; }
-  .pricing-chat-bonus strong { font-size: 14px; }
-  .pricing-chat-bonus p { font-size: 13px; }
+  .pricing-chat-bonus strong { font-size: var(--fs-base-lg); }
+  .pricing-chat-bonus p { font-size: var(--fs-base); }
   .pricing-policy { padding: 18px 20px; }
 
   /* 교육장 */
   .location-grid { grid-template-columns: 1fr; gap: 20px; }
   .location-map { height: 240px; }
   .location-card { padding: 16px; gap: 12px; }
-  .location-cta { padding: 14px 20px; font-size: 14px; }
+  .location-cta { padding: 14px 20px; font-size: var(--fs-base-lg); }
 
   /* 헤더 */
-  .header-logo-text { font-size: 16px; }
-  .header-login { padding: 6px 12px; font-size: 13px; }
+  .header-logo-text { font-size: var(--fs-body-lg); }
+  .header-login { padding: 6px 12px; font-size: var(--fs-base); }
 
   /* 푸터 */
   .footer-top { flex-direction: column; gap: 24px; }
   .footer-links { flex-wrap: wrap; gap: 16px; }
-  .footer-company-info { font-size: 11px; line-height: 1.9; }
+  .footer-company-info { font-size: var(--fs-sm); line-height: 1.9; }
 
   /* ── 태블릿 (768px+) ── */
   @media (min-width: 768px) {
     .container { padding: 0 24px; }
     .section { padding: 80px 0; }
-    .section-title { font-size: 32px; }
-    .section-desc { font-size: 16px; }
+    .section-title { font-size: var(--fs-display-sm); }
+    .section-desc { font-size: var(--fs-body-lg); }
 
     .coding-hero { padding: 80px 0 90px; }
-    .coding-hero .section-title { font-size: 36px; }
-    .coding-hero .section-desc { font-size: 17px; }
+    .coding-hero .section-title { font-size: var(--fs-display); }
+    .coding-hero .section-desc { font-size: var(--fs-accent); }
     .hero-stats { gap: 32px; }
-    .hero-stat-value { font-size: 28px; }
-    .tool-badge { padding: 8px 16px; font-size: 13px; }
+    .hero-stat-value { font-size: var(--fs-heading-lg); }
+    .tool-badge { padding: 8px 16px; font-size: var(--fs-base); }
 
     .audience-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
     .audience-grid .audience-card:last-child {
@@ -941,12 +941,12 @@
       right: -12px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 20px;
+      font-size: var(--fs-subtitle-lg);
       color: var(--text-lighter);
       z-index: 1;
     }
     .process-step:last-child::after { display: none; }
-    .step-number { margin: 0 auto 12px; width: 40px; height: 40px; font-size: 16px; }
+    .step-number { margin: 0 auto 12px; width: 40px; height: 40px; font-size: var(--fs-body-lg); }
 
     .demo-box { grid-template-columns: 1fr 1fr; padding: 36px; gap: 28px; }
 
@@ -961,13 +961,13 @@
   /* ── 데스크톱 (1024px+) ── */
   @media (min-width: 1024px) {
     .section { padding: 100px 0; }
-    .section-title { font-size: 36px; }
+    .section-title { font-size: var(--fs-display); }
 
     .coding-hero { padding: 100px 0 110px; }
-    .coding-hero .section-title { font-size: 44px; }
-    .coding-hero .section-desc { font-size: 18px; }
+    .coding-hero .section-title { font-size: var(--fs-display-xl); }
+    .coding-hero .section-desc { font-size: var(--fs-subtitle); }
     .hero-stats { gap: 40px; }
-    .hero-stat-value { font-size: 32px; }
+    .hero-stat-value { font-size: var(--fs-display-sm); }
 
     .audience-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
     .audience-grid .audience-card:last-child {
@@ -984,8 +984,8 @@
       max-width: none;
       margin: 0;
     }
-    .pricing-title { font-size: 24px; }
-    .pricing-dual-price { font-size: 22px; }
+    .pricing-title { font-size: var(--fs-heading); }
+    .pricing-dual-price { font-size: var(--fs-heading-sm); }
 
     .location-map { height: 420px; }
 
@@ -1027,7 +1027,7 @@
     height: 36px;
   }
   .header-logo-text {
-    font-size: 18px;
+    font-size: var(--fs-subtitle);
     font-weight: 800;
     color: var(--dark);
     letter-spacing: -0.5px;
@@ -1041,7 +1041,7 @@
     gap: 6px;
     padding: 8px 16px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     font-weight: 600;
     color: var(--text-light);
     text-decoration: none;
@@ -1092,7 +1092,7 @@
     margin-bottom: 16px;
   }
   .footer-brand-text {
-    font-size: 17px;
+    font-size: var(--fs-accent);
     font-weight: 700;
     color: rgba(255,255,255,0.9);
   }
@@ -1100,7 +1100,7 @@
     color: var(--primary);
   }
   .footer-desc {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     line-height: 1.7;
     max-width: 320px;
     color: rgba(255,255,255,0.4);
@@ -1110,7 +1110,7 @@
     gap: 32px;
   }
   .footer-link {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: rgba(255,255,255,0.5);
     text-decoration: none;
     transition: var(--transition);
@@ -1122,7 +1122,7 @@
     padding-top: 28px;
   }
   .footer-company-info {
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     line-height: 2;
     color: rgba(255,255,255,0.35);
   }
@@ -1132,7 +1132,7 @@
   }
   .footer-copyright {
     margin-top: 20px;
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     color: rgba(255,255,255,0.25);
   }
 
@@ -1591,10 +1591,9 @@
         </div>
       </div>
 
-      <!-- 12회권 (베스트 밸류) -->
+      <!-- 12회권 -->
       <div class="pricing-card">
         <div class="pricing-card-top">
-          <div class="pricing-badge pricing-badge--value">베스트 밸류</div>
           <div class="pricing-count">12회 수강권</div>
           <h3 class="pricing-title">마스터</h3>
           <div class="pricing-dual">
@@ -1801,7 +1800,7 @@
     padding: 6px 14px;
     background: rgba(255,255,255,0.95);
     border-radius: 8px;
-    font-size: 12px;
+    font-size: var(--fs-base-sm);
     font-weight: 600;
     color: var(--text);
     text-decoration: none;
@@ -1840,18 +1839,18 @@
     border: 1px solid var(--border);
   }
   .location-card h4 {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     font-weight: 700;
     color: var(--dark);
     margin-bottom: 4px;
   }
   .location-card p {
-    font-size: 14px;
+    font-size: var(--fs-base-lg);
     color: var(--text);
     line-height: 1.6;
   }
   .location-sub {
-    font-size: 13px !important;
+    font-size: var(--fs-base) !important;
     color: var(--text-lighter) !important;
     margin-top: 2px;
   }
@@ -1863,7 +1862,7 @@
     padding: 16px 24px;
     background: #FAE100;
     color: #3C1E1E;
-    font-size: 15px;
+    font-size: var(--fs-body);
     font-weight: 700;
     border-radius: var(--radius-sm);
     text-decoration: none;

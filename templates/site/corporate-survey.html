@@ -63,14 +63,14 @@ body {
 }
 .topbar-title {
   font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
-  font-size: 13px;
+  font-size: var(--fs-base);
   font-weight: 700;
   color: var(--ink-soft);
   letter-spacing: -0.2px;
 }
 .step-indicator {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
+  font-size: var(--fs-base-sm);
   font-weight: 700;
   color: var(--blue);
   background: var(--blue-pale);
@@ -133,7 +133,7 @@ body {
 /* Slide Content */
 .slide-number {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
+  font-size: var(--fs-base-sm);
   font-weight: 700;
   color: var(--blue);
   letter-spacing: 1px;
@@ -151,7 +151,7 @@ body {
   max-width: 40px;
 }
 .slide-question {
-  font-size: 22px;
+  font-size: var(--fs-heading-sm);
   font-weight: 700;
   line-height: 1.45;
   letter-spacing: -0.5px;
@@ -159,7 +159,7 @@ body {
   margin-bottom: 6px;
 }
 .slide-desc {
-  font-size: 14px;
+  font-size: var(--fs-base-lg);
   color: var(--ink-muted);
   line-height: 1.6;
   margin-bottom: 28px;
@@ -177,7 +177,7 @@ textarea {
   border: 1.5px solid var(--line-mid);
   border-radius: var(--radius);
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 15px;
+  font-size: var(--fs-body);
   color: var(--ink);
   background: var(--card);
   outline: none;
@@ -198,7 +198,7 @@ select {
 }
 .field { margin-bottom: 16px; }
 .field-label {
-  font-size: 13px;
+  font-size: var(--fs-base);
   font-weight: 600;
   color: var(--ink-soft);
   margin-bottom: 6px;
@@ -241,8 +241,8 @@ select {
 .opt.selected .opt-check svg { opacity: 1; }
 .opt-check svg { width: 14px; height: 14px; color: white; opacity: 0; transition: opacity 0.15s; }
 .opt-body { flex: 1; }
-.opt-title { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.4; }
-.opt-desc { font-size: 12px; color: var(--ink-muted); margin-top: 2px; line-height: 1.4; }
+.opt-title { font-size: var(--fs-body); font-weight: 500; color: var(--ink); line-height: 1.4; }
+.opt-desc { font-size: var(--fs-base-sm); color: var(--ink-muted); margin-top: 2px; line-height: 1.4; }
 
 /* Rating */
 .rating-row { display: flex; gap: 6px; margin-bottom: 6px; }
@@ -252,7 +252,7 @@ select {
   border-radius: 10px;
   background: var(--card);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px; font-weight: 700;
+  font-size: var(--fs-body-lg); font-weight: 700;
   color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.2s;
@@ -261,7 +261,7 @@ select {
 .rating-btn:hover { border-color: #CBD5E1; }
 .rating-btn.selected { border-color: var(--blue); background: var(--blue); color: white; }
 .rating-labels { display: flex; justify-content: space-between; }
-.rating-labels span { font-size: 11px; color: var(--ink-muted); }
+.rating-labels span { font-size: var(--fs-sm); color: var(--ink-muted); }
 
 /* Bottom Nav */
 .bottombar {
@@ -284,7 +284,7 @@ select {
   flex: 1; padding: 15px 20px;
   border-radius: 12px;
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 15px; font-weight: 600;
+  font-size: var(--fs-body); font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -329,8 +329,8 @@ select {
   animation: popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 .done-circle svg { width: 32px; height: 32px; color: var(--green); }
-.completion-screen h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
-.completion-screen p { font-size: 15px; color: var(--ink-soft); line-height: 1.7; }
+.completion-screen h2 { font-size: var(--fs-heading); font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+.completion-screen p { font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.7; }
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -347,7 +347,7 @@ select {
 }
 
 .max-select-hint {
-  font-size: 12px; color: var(--blue);
+  font-size: var(--fs-base-sm); color: var(--blue);
   background: var(--blue-pale);
   padding: 6px 12px; border-radius: 8px;
   margin-bottom: 12px; display: inline-block;
@@ -360,7 +360,7 @@ select {
   transform: translateX(-50%);
   background: #FEF2F2;
   color: #DC2626;
-  font-size: 13px;
+  font-size: var(--fs-base);
   font-weight: 500;
   padding: 10px 20px;
   border-radius: 10px;
