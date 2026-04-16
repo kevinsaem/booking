@@ -5,6 +5,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from app.database import execute_query
 
 router = APIRouter(tags=["site"])
 templates = Jinja2Templates(directory="templates")
@@ -68,3 +69,22 @@ async def tuition_autobiography(request: Request) -> HTMLResponse:
 @router.get("/corporate-survey", response_class=HTMLResponse)
 async def corporate_survey(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/corporate-survey.html")
+
+
+@router.get("/campus", response_class=HTMLResponse)
+async def campus(request: Request) -> HTMLResponse:
+    """캠퍼스 안내 페이지 (전체 캠퍼스 + 사진)"""
+    campuses = execute_query("""
+        SELECT * FROM ek_EduCenter
+        ORDER BY edc_SortOrder ASC, edc_Idx ASC
+    """)
+
+    # 각 캠퍼스에 사진 목록 추가
+    for c in campuses:
+        photos = execute_query(
+            "SELECT * FROM ek_CampusPhoto WHERE edc_idx = ? ORDER BY sort_order ASC, photo_id ASC",
+            (c["edc_Idx"],)
+        )
+        c["photos"] = photos
+
+    return templates.TemplateResponse(request, "site/campus.html", {"campuses": campuses})

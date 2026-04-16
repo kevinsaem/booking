@@ -1,0 +1,165 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ '캠퍼스 수정' if campus else '캠퍼스 추가' }}{% endblock %}
+{% block page_title %}{{ '캠퍼스 수정' if campus else '캠퍼스 추가' }}{% endblock %}
+
+{% block content %}
+<a href="/admin/campuses" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4">
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  목록으로
+</a>
+
+<div class="bg-white rounded-xl border border-slate-200 p-5">
+  <form method="post" action="{{ '/admin/campuses/update/' ~ campus.edc_Idx if campus else '/admin/campuses/create' }}">
+    <div class="space-y-4">
+      <!-- 캠퍼스명 -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">캠퍼스명 <span class="text-red-500">*</span></label>
+        <input type="text" name="edc_Name" required value="{{ campus.edc_Name if campus else '' }}"
+               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+               placeholder="예: 대치캠퍼스">
+      </div>
+
+      <!-- 상태 + 본원 여부 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">상태</label>
+          <select name="edc_Status" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none bg-white">
+            <option value="active" {% if campus and campus.edc_Status == 'active' %}selected{% endif %}>운영중</option>
+            <option value="inactive" {% if campus and campus.edc_Status == 'inactive' %}selected{% endif %}>준비중</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="edc_IsMain" value="1" {% if campus and campus.edc_IsMain %}checked{% endif %}
+                   class="w-4 h-4 text-green-600 border-slate-300 rounded focus:ring-green-500">
+            <span class="text-sm font-medium text-slate-700">본원 여부</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 주소 -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">주소</label>
+        <input type="text" name="edc_Address" value="{{ campus.edc_Address if campus else '' }}"
+               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+               placeholder="예: 서울시 강남구 대치동 123-45">
+      </div>
+
+      <!-- 전화번호 + 운영시간 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">전화번호</label>
+          <input type="text" name="edc_Phone" value="{{ campus.edc_Phone if campus else '' }}"
+                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                 placeholder="예: 02-1234-5678">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">운영시간</label>
+          <input type="text" name="edc_Hours" value="{{ campus.edc_Hours if campus else '' }}"
+                 class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                 placeholder="월~토 10:50-22:00">
+        </div>
+      </div>
+
+      <!-- 설명 -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">설명</label>
+        <textarea name="edc_Description" rows="3"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                  placeholder="캠퍼스에 대한 간단한 소개">{{ campus.edc_Description if campus else '' }}</textarea>
+      </div>
+
+      <!-- 시설/특징 -->
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">시설/특징</label>
+        <input type="text" name="edc_Facilities" value="{{ campus.edc_Facilities if campus else '' }}"
+               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+               placeholder="개인모니터, 1:1부스, 주차가능">
+      </div>
+
+      <!-- 외부 링크들 -->
+      <div class="border-t border-slate-200 pt-4 mt-4">
+        <p class="text-sm font-medium text-slate-700 mb-3">외부 링크</p>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">카카오톡 상담 링크</label>
+            <input type="url" name="edc_KakaoLink" value="{{ campus.edc_KakaoLink if campus else '' }}"
+                   class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                   placeholder="https://pf.kakao.com/...">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">네이버 예약 링크</label>
+            <input type="url" name="edc_BookingLink" value="{{ campus.edc_BookingLink if campus else '' }}"
+                   class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                   placeholder="https://booking.naver.com/...">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">지도 링크</label>
+            <input type="url" name="edc_MapLink" value="{{ campus.edc_MapLink if campus else '' }}"
+                   class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+                   placeholder="https://map.naver.com/...">
+          </div>
+        </div>
+      </div>
+
+      <!-- 정렬 순서 -->
+      <div class="w-32">
+        <label class="block text-sm font-medium text-slate-700 mb-1">정렬 순서</label>
+        <input type="number" name="edc_SortOrder" value="{{ campus.edc_SortOrder if campus else 0 }}" min="0"
+               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none">
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="mt-6 flex gap-2">
+      <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+        저장
+      </button>
+      <a href="/admin/campuses" class="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">취소</a>
+    </div>
+  </form>
+</div>
+
+{% if campus %}
+<!-- 사진 관리 섹션 (수정 모드에서만 표시) -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 mt-6">
+  <h2 class="text-base font-semibold text-slate-800 mb-4">사진 관리</h2>
+
+  <!-- 현재 사진 목록 -->
+  {% if photos %}
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
+    {% for photo in photos %}
+    <div class="relative group rounded-lg overflow-hidden border border-slate-200">
+      <img src="/{{ photo.file_path }}" alt="{{ photo.alt_text or '캠퍼스 사진' }}" class="w-full h-28 object-cover">
+      <form method="post" action="/admin/campuses/{{ campus.edc_Idx }}/photos/delete/{{ photo.photo_id }}"
+            onsubmit="return confirm('이 사진을 삭제하시겠습니까?');" class="absolute top-1 right-1">
+        <button type="submit" class="w-6 h-6 flex items-center justify-center bg-black/60 text-white rounded-full text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </form>
+      {% if loop.first %}
+      <span class="absolute bottom-1 left-1 px-1.5 py-0.5 bg-green-600 text-white text-[10px] font-medium rounded">대표</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-sm text-slate-400 mb-4">등록된 사진이 없습니다.</p>
+  {% endif %}
+
+  <!-- 사진 업로드 -->
+  <form method="post" action="/admin/campuses/{{ campus.edc_Idx }}/photos" enctype="multipart/form-data">
+    <div class="flex items-end gap-3">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-slate-700 mb-1">사진 추가</label>
+        <input type="file" name="files" multiple accept="image/jpeg,image/png,image/webp"
+               class="w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 file:cursor-pointer">
+      </div>
+      <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors whitespace-nowrap">
+        업로드
+      </button>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}캠퍼스 관리{% endblock %}
+{% block page_title %}캠퍼스 관리{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+  <p class="text-sm text-slate-500">총 {{ campuses|length }}개 캠퍼스</p>
+  <a href="/admin/campuses/new" class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    캠퍼스 추가
+  </a>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">캠퍼스명</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">상태</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">주소</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">전화번호</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">사진</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">본원</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">관리</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for c in campuses %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 font-medium text-slate-800">{{ c.edc_Name or '-' }}</td>
+          <td class="px-4 py-2.5">
+            {% if c.edc_Status == 'active' %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">운영중</span>
+            {% else %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">준비중</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2.5 text-slate-600 max-w-xs truncate">{{ c.edc_Address or '-' }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ c.edc_Phone or '-' }}</td>
+          <td class="px-4 py-2.5 text-slate-600">{{ c.photo_count or 0 }}장</td>
+          <td class="px-4 py-2.5">
+            {% if c.edc_IsMain %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">본원</span>
+            {% else %}
+            <span class="text-slate-400">-</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2.5 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <a href="/admin/campuses/edit/{{ c.edc_Idx }}" class="px-3 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">수정</a>
+              <form method="post" action="/admin/campuses/delete/{{ c.edc_Idx }}" onsubmit="return confirm('정말 이 캠퍼스를 삭제하시겠습니까?');" class="inline">
+                <button type="submit" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">삭제</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">등록된 캠퍼스가 없습니다</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

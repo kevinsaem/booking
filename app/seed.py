@@ -15,7 +15,31 @@ def init_sqlite_tables(conn):
     c.execute("""
         CREATE TABLE IF NOT EXISTS ek_EduCenter (
             edc_Idx INTEGER PRIMARY KEY,
-            edc_Name TEXT NOT NULL
+            edc_Name TEXT NOT NULL,
+            edc_Status TEXT DEFAULT 'active',
+            edc_Address TEXT,
+            edc_Phone TEXT,
+            edc_Hours TEXT,
+            edc_Description TEXT,
+            edc_Facilities TEXT,
+            edc_KakaoLink TEXT,
+            edc_BookingLink TEXT,
+            edc_MapLink TEXT,
+            edc_IsMain INTEGER DEFAULT 0,
+            edc_SortOrder INTEGER DEFAULT 0
+        )
+    """)
+
+    # === ek_CampusPhoto: 캠퍼스 사진 ===
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS ek_CampusPhoto (
+            photo_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            edc_idx INTEGER NOT NULL,
+            file_path TEXT NOT NULL,
+            alt_text TEXT DEFAULT '',
+            sort_order INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now','localtime')),
+            FOREIGN KEY (edc_idx) REFERENCES ek_EduCenter(edc_Idx)
         )
     """)
 
@@ -233,10 +257,54 @@ def seed_if_empty(conn):
     today = now.strftime("%Y-%m-%d")
 
     # ===== 1. 캠퍼스 =====
-    c.executemany("INSERT INTO ek_EduCenter VALUES (?, ?)", [
-        (1, "안산선부캠퍼스"),
-        (2, "안산초지캠퍼스"),
-    ])
+    c.executemany(
+        "INSERT INTO ek_EduCenter (edc_Idx, edc_Name, edc_Status, edc_Address, edc_Phone, edc_Hours, edc_Description, edc_Facilities, edc_KakaoLink, edc_BookingLink, edc_MapLink, edc_IsMain, edc_SortOrder) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+            (1, "안산 선부 캠퍼스 (본원)", "active",
+             "안산시 단원구 선부로 183 화성프라자 8층",
+             "0507-1307-9398", "월~토 10:50-22:00",
+             None, None,
+             "http://pf.kakao.com/_xgnxoUj/chat",
+             "https://booking.naver.com/booking/13/bizes/535076",
+             None, 1, 0),
+            (2, "안산 초지 캠퍼스", "active",
+             "안산시 단원구 초지로 118, 대일타운 4층",
+             "0507-1396-6533", "월~토 10:50-22:00",
+             None, None,
+             "http://pf.kakao.com/_xgnxoUj/chat",
+             "https://booking.naver.com/booking/13/bizes/535076",
+             None, 0, 1),
+        ]
+    )
+
+    # ===== 1-1. 캠퍼스 사진 =====
+    campus_photos = [
+        # 선부 본원
+        (1, "static/site/images/campus/sunbu_01_entrance.jpg", "선부 캠퍼스 입구 외관", 1),
+        (1, "static/site/images/campus/sunbu_02_space_full.jpg", "선부 캠퍼스 전체 공간", 2),
+        (1, "static/site/images/campus/sunbu_03_space_class.jpg", "수업 풍경", 3),
+        (1, "static/site/images/campus/sunbu_04_kevin_sign.jpg", "KEVIN 간판", 4),
+        (1, "static/site/images/campus/sunbu_05_group_class.jpg", "그룹 수업", 5),
+        (1, "static/site/images/campus/sunbu_06_robot_build.jpg", "로봇 제작 수업", 6),
+        (1, "static/site/images/campus/sunbu_07_class_wide.jpg", "수업 전경", 7),
+        (1, "static/site/images/campus/sunbu_08_app_dev.jpg", "앱 개발 1:1 수업", 8),
+        (1, "static/site/images/campus/sunbu_09_robot_award.jpg", "88-Robot Award 대상 수상", 9),
+        (1, "static/site/images/campus/sunbu_10_book_publish.jpg", "학생 책 출판 기념", 10),
+        (1, "static/site/images/campus/sunbu_11_coding_study.jpg", "코딩 수업", 11),
+        (1, "static/site/images/campus/sunbu_12_science_fest.jpg", "안산 사이언스밸리 과학축제", 12),
+        # 초지 캠퍼스
+        (2, "static/site/images/campus/choji_lobby_01.jpg", "초지 캠퍼스 로비", 1),
+        (2, "static/site/images/campus/choji_lobby_02.jpg", "초지 캠퍼스 상담실", 2),
+        (2, "static/site/images/campus/choji_class_01.jpg", "초지 캠퍼스 수업 풍경", 3),
+        (2, "static/site/images/campus/choji_class_02.jpg", "초지 캠퍼스 코딩 수업", 4),
+        (2, "static/site/images/campus/choji_class_03.jpg", "초지 캠퍼스 학생 실습", 5),
+        (2, "static/site/images/campus/choji_class_04.jpg", "초지 캠퍼스 마인크래프트 코딩", 6),
+        (2, "static/site/images/campus/choji_class_05.jpg", "초지 캠퍼스 수업 진행", 7),
+    ]
+    c.executemany(
+        "INSERT INTO ek_CampusPhoto (edc_idx, file_path, alt_text, sort_order) VALUES (?, ?, ?, ?)",
+        campus_photos
+    )
 
     # ===== 2. 수강 과정 (패키지) =====
     # 프로토타입 기준: 취미반 210,000원 / 진로반 290,000원 / 월정기 450,000원

@@ -1,0 +1,424 @@
+{% extends "site/base.html" %}
+
+{% block title %}캠퍼스 안내 | 케빈샘AI코딩{% endblock %}
+{% block description %}케빈샘AI코딩 캠퍼스 안내. 안산 선부·초지, 시흥 능곡, 화성 새솔 등 가까운 캠퍼스에서 AI 코딩 교육을 시작하세요.{% endblock %}
+
+{% block head_extra %}
+<meta name="keywords" content="케빈샘AI코딩 캠퍼스, 안산코딩학원위치, 안산선부코딩학원, 안산초지코딩학원, 시흥코딩학원, 화성코딩학원, 코딩학원캠퍼스, AI코딩학원위치">
+<style>
+  /* Campus Gallery */
+  .campus-gallery {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--dark-surface);
+  }
+  .campus-gallery-main {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  .campus-gallery-thumbs {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    background: var(--white);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .campus-gallery-thumbs img {
+    width: 64px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+  }
+  .campus-gallery-thumbs img.active,
+  .campus-gallery-thumbs img:hover {
+    opacity: 1;
+    border-color: var(--brand);
+  }
+  .campus-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark-surface);
+    color: var(--ink4);
+    font-size: var(--fs-body);
+    border-radius: 14px;
+  }
+
+  /* Campus Detail Card */
+  .campus-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    margin-bottom: 60px;
+  }
+  .campus-info {
+    padding: 8px 0;
+  }
+  .campus-info h3 {
+    font-size: var(--fs-heading);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+    word-break: keep-all;
+  }
+  .campus-badges {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .campus-badge {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+  .campus-badge-main {
+    background: var(--brand);
+    color: white;
+  }
+  .campus-badge-active {
+    color: var(--brand);
+    background: var(--brand-bg);
+  }
+  .campus-meta {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .campus-meta li {
+    font-size: var(--fs-base);
+    color: var(--ink2);
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .campus-meta li .meta-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    color: var(--ink4);
+  }
+  .campus-meta li a {
+    color: var(--ink2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .campus-meta li a:hover {
+    color: var(--brand);
+  }
+  .campus-facilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .campus-facility-tag {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 1000px;
+    background: var(--dark-surface);
+    color: var(--ink3);
+    border: 1px solid var(--line);
+  }
+  .campus-ctas {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .campus-ctas a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: var(--fs-base-sm);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .campus-cta-kakao {
+    background: #FEE500;
+    color: #3C1E1E;
+  }
+  .campus-cta-kakao:hover { opacity: 0.9; transform: translateY(-1px); }
+  .campus-cta-booking {
+    background: var(--brand);
+    color: white;
+  }
+  .campus-cta-booking:hover { background: var(--brand-light); transform: translateY(-1px); }
+  .campus-cta-call {
+    background: var(--dark-surface);
+    color: var(--ink2);
+    border: 1px solid var(--line);
+  }
+  .campus-cta-call:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-1px); }
+
+  /* Preparing campus grid */
+  .campus-preparing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .campus-preparing-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--white);
+    opacity: 0.7;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .campus-preparing-card:hover {
+    opacity: 0.85;
+  }
+  .campus-preparing-card .preparing-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+  }
+  .campus-preparing-card .preparing-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(80%) brightness(1.2) blur(2px);
+  }
+  .campus-preparing-card .preparing-img-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.55);
+  }
+  .campus-preparing-info {
+    padding: 16px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .campus-detail {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .campus-info h3 {
+      font-size: var(--fs-heading-sm);
+    }
+    .campus-gallery-main {
+      aspect-ratio: 16 / 10;
+    }
+    .campus-preparing-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .campus-preparing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero hero-dark hero-short">
+  <div class="hero-video" style="background: url('/static/site/images/campus_sunbu.png') center/cover no-repeat;"></div>
+  <div class="hero-overlay" style="background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(10,30,60,0.75) 100%);"></div>
+  <div class="hero-content">
+    <div class="tag-line" style="color: rgba(0,98,165,0.8);">CAMPUS</div>
+    <h1>캠퍼스 안내</h1>
+    <p class="sub">가까운 캠퍼스에서 AI 시대를 준비하세요</p>
+  </div>
+</section>
+
+<!-- ACTIVE CAMPUSES -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner">
+    <div class="sec-tag rv" style="color: var(--brand);">OUR CAMPUSES</div>
+    <h2 class="sec-h rv center" style="word-break: keep-all;">운영 중인 캠퍼스</h2>
+    <p class="sec-p rv center" style="margin-left: auto; margin-right: auto;">각 캠퍼스에서 동일한 품질의 AI 코딩 교육을 제공합니다</p>
+
+    {% for campus in campuses if campus.edc_Status == 'active' %}
+    {% set campus_idx = loop.index %}
+    <div class="campus-detail rv">
+      <!-- Photo Gallery -->
+      <div class="campus-gallery" data-gallery="gallery-{{ campus_idx }}">
+        {% if campus.photos and campus.photos|length > 0 %}
+        <img class="campus-gallery-main" id="main-{{ campus_idx }}"
+             src="/{{ campus.photos[0].file_path }}" alt="{{ campus.photos[0].alt_text or campus.edc_Name ~ ' 사진' }}"
+             loading="lazy">
+        {% if campus.photos|length > 1 %}
+        <div class="campus-gallery-thumbs">
+          {% for photo in campus.photos %}
+          <img src="/{{ photo.file_path }}" alt="{{ photo.alt_text or campus.edc_Name ~ ' 사진 ' ~ loop.index }}"
+               class="{% if loop.first %}active{% endif %}"
+               onclick="changePhoto('main-{{ campus_idx }}', this, '/{{ photo.file_path }}')"
+               loading="lazy">
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="campus-placeholder">
+          <span>사진 준비 중</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Info -->
+      <div class="campus-info">
+        <div class="campus-badges">
+          {% if campus.edc_IsMain %}
+          <span class="campus-badge campus-badge-main">본원</span>
+          {% endif %}
+          <span class="campus-badge campus-badge-active">● 운영 중</span>
+        </div>
+        <h3>{{ campus.edc_Name }}</h3>
+        <ul class="campus-meta">
+          {% if campus.edc_Address %}
+          <li>
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>{{ campus.edc_Address }}</span>
+          </li>
+          {% endif %}
+          {% if campus.edc_Phone %}
+          <li>
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            <a href="tel:{{ campus.edc_Phone }}" style="font-weight: 600; color: var(--ink);">{{ campus.edc_Phone }}</a>
+          </li>
+          {% endif %}
+          {% if campus.edc_Hours %}
+          <li>
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>{{ campus.edc_Hours }}</span>
+          </li>
+          {% endif %}
+        </ul>
+
+        {% if campus.edc_Facilities %}
+        <div class="campus-facilities">
+          {% for facility in campus.edc_Facilities.split(',') %}
+          <span class="campus-facility-tag">{{ facility.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="campus-ctas">
+          {% if campus.edc_KakaoLink %}
+          <a href="{{ campus.edc_KakaoLink }}" target="_blank" class="campus-cta-kakao">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.58 2 11c0 2.8 1.86 5.27 4.66 6.67l-.9 3.33 3.86-2.56c.77.12 1.56.18 2.38.18 5.5 0 10-3.58 10-8s-4.5-8-10-8z"/></svg>
+            카톡 상담
+          </a>
+          {% endif %}
+          {% if campus.edc_BookingLink %}
+          <a href="{{ campus.edc_BookingLink }}" target="_blank" class="campus-cta-booking">방문 예약</a>
+          {% endif %}
+          {% if campus.edc_Phone %}
+          <a href="tel:{{ campus.edc_Phone }}" class="campus-cta-call">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            전화 걸기
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- PREPARING CAMPUSES -->
+{% set preparing = campuses | selectattr('edc_Status', 'equalto', 'preparing') | list %}
+{% if preparing | length > 0 %}
+<section class="sec" style="background: var(--dark-surface);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--ink4);">COMING SOON</div>
+    <h2 class="sec-h rv" style="font-size: var(--fs-clamp-section);">준비 중인 캠퍼스</h2>
+    <p class="sec-p rv" style="margin-left: auto; margin-right: auto;">더 가까운 곳에서 만날 수 있도록 준비하고 있습니다</p>
+
+    <div class="campus-preparing-grid">
+      {% for campus in preparing %}
+      {% set preparing_images = [
+        '/static/site/images/campus/sunbu_02_space_full.jpg',
+        '/static/site/images/campus/choji_class_05.jpg',
+        '/static/site/images/campus/sunbu_07_class_wide.jpg'
+      ] %}
+      <div class="campus-preparing-card rv">
+        <div class="preparing-img-wrap">
+          <img src="{{ preparing_images[loop.index0 % 3] }}" alt="{{ campus.edc_Name }} 준비중" loading="lazy">
+        </div>
+        <div class="campus-preparing-info">
+          <div style="font-size: var(--fs-xs); font-weight: 700; color: var(--ink4); letter-spacing: 1px; margin-bottom: 6px;">준비중</div>
+          <h4 style="font-size: var(--fs-base-lg); font-weight: 700; color: var(--ink);">{{ campus.edc_Name }}</h4>
+          {% if campus.edc_Description %}
+          <p style="font-size: var(--fs-sm); color: var(--brand); margin-top: 6px; font-weight: 600;">{{ campus.edc_Description }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="cta-end" id="cta" style="background: linear-gradient(135deg, #1e3a5f, #0f1f3a);">
+  <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 1;"></div>
+  <div class="inner">
+    <h2 class="rv" style="font-weight: 700;">궁금한 점이 있으시면<br>편하게 연락주세요</h2>
+    <p class="cd rv">캠퍼스 방문 상담, 수업 문의 등 무엇이든 물어보세요</p>
+    <div class="cbs rv">
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" class="btn btn-brand" target="_blank">카카오톡 상담</a>
+      <a href="tel:0507-1307-9398" class="btn btn-t">전화 상담</a>
+      <a href="https://booking.naver.com/booking/13/bizes/535076" class="btn btn-t" target="_blank">방문 예약</a>
+    </div>
+    <div class="info rv">선부 0507-1307-9398 · 초지 0507-1396-6533 · 월~토 10:50-22:00</div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Gallery photo switcher
+  function changePhoto(mainId, thumbEl, photoUrl) {
+    var mainImg = document.getElementById(mainId);
+    if (!mainImg) return;
+    mainImg.style.opacity = '0.5';
+    setTimeout(function() {
+      mainImg.src = photoUrl;
+      mainImg.style.opacity = '1';
+    }, 150);
+    // Update active thumb
+    var thumbs = thumbEl.parentElement.querySelectorAll('img');
+    thumbs.forEach(function(t) { t.classList.remove('active'); });
+    thumbEl.classList.add('active');
+  }
+</script>
+{% endblock %}

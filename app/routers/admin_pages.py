@@ -3,13 +3,19 @@
 # URL 패턴: /admin/*
 # 인증: 카카오 로그인 JWT (role='admin')
 
+import os
 import re
+import uuid
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Request, Form, Query
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import APIRouter, Request, Form, Query, File, UploadFile
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from app.database import execute_query
 from app.services.auth_service import get_current_user
+
+CAMPUS_PHOTO_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static", "site", "images", "campus")
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 router = APIRouter(prefix="/admin", tags=["관리자 웹"])
 templates = Jinja2Templates(directory="templates")
@@ -36,8 +42,9 @@ def _is_mobile(request: Request) -> bool:
 
 def _flash_redirect(url: str, message: str, flash_type: str = "success"):
     """메시지와 함께 리다이렉트 (쿼리 파라미터 방식)"""
+    from urllib.parse import quote
     sep = "&" if "?" in url else "?"
-    return RedirectResponse(f"{url}{sep}msg={message}&msg_type={flash_type}", status_code=302)
+    return RedirectResponse(f"{url}{sep}msg={quote(message)}&msg_type={flash_type}", status_code=302)
 
 
 def _get_flash(request: Request) -> dict:
@@ -672,3 +679,349 @@ async def mobile_students(request: Request, q: str = Query(default=None)):
     }
     ctx.update(_get_flash(request))
     return templates.TemplateResponse(request, "admin/mobile/students.html", ctx)
+
+
+# ─── 캠퍼스 관리 ──────────────────────────────────────────
+
+@router.get("/campuses")
+async def admin_campuses(request: Request):
+    """캠퍼스 목록 (사진 수 포함)"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    campuses = execute_query("""
+        SELECT e.*,
+               COALESCE(p.photo_count, 0) AS photo_count
+        FROM ek_EduCenter e
+        LEFT JOIN (
+            SELECT edc_idx, COUNT(*) AS photo_count
+            FROM ek_CampusPhoto
+            GROUP BY edc_idx
+        ) p ON e.edc_Idx = p.edc_idx
+        ORDER BY e.edc_SortOrder ASC, e.edc_Idx ASC
+    """)
+
+    ctx = {
+        "active_menu": "campuses",
+        "campuses": campuses,
+        "admin_user": user,
+    }
+    ctx.update(_get_flash(request))
+    return templates.TemplateResponse(request, "admin/campuses.html", ctx)
+
+
+@router.get("/campuses/new")
+async def admin_campus_new(request: Request):
+    """캠퍼스 생성 폼"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    ctx = {
+        "active_menu": "campuses",
+        "campus": None,
+        "photos": [],
+        "admin_user": user,
+    }
+    return templates.TemplateResponse(request, "admin/campus_form.html", ctx)
+
+
+@router.post("/campuses/create")
+async def admin_campus_create(
+    request: Request,
+    edc_Name: str = Form(...),
+    edc_Status: str = Form(default="active"),
+    edc_Address: str = Form(default=""),
+    edc_Phone: str = Form(default=""),
+    edc_Hours: str = Form(default=""),
+    edc_Description: str = Form(default=""),
+    edc_Facilities: str = Form(default=""),
+    edc_KakaoLink: str = Form(default=""),
+    edc_BookingLink: str = Form(default=""),
+    edc_MapLink: str = Form(default=""),
+    edc_IsMain: int = Form(default=0),
+    edc_SortOrder: int = Form(default=0),
+):
+    """캠퍼스 생성"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    try:
+        execute_query("""
+            INSERT INTO ek_EduCenter (
+                edc_Name, edc_Status, edc_Address, edc_Phone, edc_Hours,
+                edc_Description, edc_Facilities, edc_KakaoLink, edc_BookingLink,
+                edc_MapLink, edc_IsMain, edc_SortOrder
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            edc_Name, edc_Status, edc_Address, edc_Phone, edc_Hours,
+            edc_Description, edc_Facilities, edc_KakaoLink, edc_BookingLink,
+            edc_MapLink, edc_IsMain, edc_SortOrder,
+        ), fetch="none")
+        return _flash_redirect("/admin/campuses", "캠퍼스가 등록되었습니다")
+    except Exception as e:
+        print(f"⚠️ 캠퍼스 생성 실패: {e}")
+        return _flash_redirect("/admin/campuses", "캠퍼스 등록에 실패했습니다", "error")
+
+
+@router.get("/campuses/edit/{campus_id}")
+async def admin_campus_edit(request: Request, campus_id: int):
+    """캠퍼스 수정 폼 (기존 데이터 + 사진)"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    campus = execute_query(
+        "SELECT * FROM ek_EduCenter WHERE edc_Idx = ?",
+        (campus_id,), fetch="one"
+    )
+    if not campus:
+        return _flash_redirect("/admin/campuses", "캠퍼스를 찾을 수 없습니다", "error")
+
+    photos = execute_query(
+        "SELECT * FROM ek_CampusPhoto WHERE edc_idx = ? ORDER BY sort_order ASC, photo_id ASC",
+        (campus_id,)
+    )
+
+    ctx = {
+        "active_menu": "campuses",
+        "campus": campus,
+        "photos": photos,
+        "admin_user": user,
+    }
+    ctx.update(_get_flash(request))
+    return templates.TemplateResponse(request, "admin/campus_form.html", ctx)
+
+
+@router.post("/campuses/update/{campus_id}")
+async def admin_campus_update(
+    request: Request,
+    campus_id: int,
+    edc_Name: str = Form(...),
+    edc_Status: str = Form(default="active"),
+    edc_Address: str = Form(default=""),
+    edc_Phone: str = Form(default=""),
+    edc_Hours: str = Form(default=""),
+    edc_Description: str = Form(default=""),
+    edc_Facilities: str = Form(default=""),
+    edc_KakaoLink: str = Form(default=""),
+    edc_BookingLink: str = Form(default=""),
+    edc_MapLink: str = Form(default=""),
+    edc_IsMain: int = Form(default=0),
+    edc_SortOrder: int = Form(default=0),
+):
+    """캠퍼스 정보 수정"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    try:
+        execute_query("""
+            UPDATE ek_EduCenter SET
+                edc_Name = ?, edc_Status = ?, edc_Address = ?, edc_Phone = ?,
+                edc_Hours = ?, edc_Description = ?, edc_Facilities = ?,
+                edc_KakaoLink = ?, edc_BookingLink = ?, edc_MapLink = ?,
+                edc_IsMain = ?, edc_SortOrder = ?
+            WHERE edc_Idx = ?
+        """, (
+            edc_Name, edc_Status, edc_Address, edc_Phone,
+            edc_Hours, edc_Description, edc_Facilities,
+            edc_KakaoLink, edc_BookingLink, edc_MapLink,
+            edc_IsMain, edc_SortOrder, campus_id,
+        ), fetch="none")
+        return _flash_redirect(f"/admin/campuses/edit/{campus_id}", "캠퍼스 정보가 수정되었습니다")
+    except Exception as e:
+        print(f"⚠️ 캠퍼스 수정 실패: {e}")
+        return _flash_redirect(f"/admin/campuses/edit/{campus_id}", "캠퍼스 수정에 실패했습니다", "error")
+
+
+@router.post("/campuses/delete/{campus_id}")
+async def admin_campus_delete(request: Request, campus_id: int):
+    """캠퍼스 삭제 (사진 파일 + DB 레코드 함께 삭제)"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    try:
+        # 연결된 사진 파일 삭제
+        photos = execute_query(
+            "SELECT photo_id, file_path FROM ek_CampusPhoto WHERE edc_idx = ?",
+            (campus_id,)
+        )
+        for photo in photos:
+            file_full_path = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                photo["file_path"].lstrip("/")
+            )
+            if os.path.exists(file_full_path):
+                os.remove(file_full_path)
+
+        # DB에서 사진 레코드 삭제
+        execute_query(
+            "DELETE FROM ek_CampusPhoto WHERE edc_idx = ?",
+            (campus_id,), fetch="none"
+        )
+        # DB에서 캠퍼스 삭제
+        execute_query(
+            "DELETE FROM ek_EduCenter WHERE edc_Idx = ?",
+            (campus_id,), fetch="none"
+        )
+        return _flash_redirect("/admin/campuses", "캠퍼스가 삭제되었습니다")
+    except Exception as e:
+        print(f"⚠️ 캠퍼스 삭제 실패: {e}")
+        return _flash_redirect("/admin/campuses", "캠퍼스 삭제에 실패했습니다", "error")
+
+
+@router.post("/campuses/{campus_id}/photos")
+async def admin_campus_photo_upload(
+    request: Request,
+    campus_id: int,
+    files: list[UploadFile] = File(...),
+):
+    """캠퍼스 사진 업로드 (복수 파일)"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    # 캠퍼스 존재 확인
+    campus = execute_query(
+        "SELECT edc_Idx FROM ek_EduCenter WHERE edc_Idx = ?",
+        (campus_id,), fetch="one"
+    )
+    if not campus:
+        return _flash_redirect("/admin/campuses", "캠퍼스를 찾을 수 없습니다", "error")
+
+    # 업로드 디렉토리 확보
+    os.makedirs(CAMPUS_PHOTO_DIR, exist_ok=True)
+
+    # 현재 최대 sort_order 조회
+    max_order = execute_query(
+        "SELECT COALESCE(MAX(sort_order), 0) AS max_order FROM ek_CampusPhoto WHERE edc_idx = ?",
+        (campus_id,), fetch="one"
+    )
+    current_order = max_order["max_order"] if max_order else 0
+
+    uploaded = 0
+    errors = []
+
+    for f in files:
+        # 파일 타입 검증
+        if f.content_type not in ALLOWED_IMAGE_TYPES:
+            errors.append(f"{f.filename}: 허용되지 않는 파일 형식 ({f.content_type})")
+            continue
+
+        # 파일 읽기 + 크기 검증
+        content = await f.read()
+        if len(content) > MAX_FILE_SIZE:
+            errors.append(f"{f.filename}: 파일 크기 초과 (최대 5MB)")
+            continue
+
+        # 고유 파일명 생성
+        ext = os.path.splitext(f.filename)[1].lower() if f.filename else ".jpg"
+        if ext not in (".jpg", ".jpeg", ".png", ".webp"):
+            ext = ".jpg"
+        unique_name = f"{campus_id}_{uuid.uuid4().hex[:12]}{ext}"
+        save_path = os.path.join(CAMPUS_PHOTO_DIR, unique_name)
+
+        # 파일 저장
+        try:
+            with open(save_path, "wb") as out:
+                out.write(content)
+        except Exception as e:
+            errors.append(f"{f.filename}: 저장 실패 ({e})")
+            continue
+
+        # DB에 레코드 삽입
+        current_order += 1
+        db_path = f"static/site/images/campus/{unique_name}"
+        alt_text = os.path.splitext(f.filename)[0] if f.filename else ""
+
+        try:
+            execute_query("""
+                INSERT INTO ek_CampusPhoto (edc_idx, file_path, alt_text, sort_order, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                campus_id, db_path, alt_text, current_order,
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            ), fetch="none")
+            uploaded += 1
+        except Exception as e:
+            # DB 실패 시 파일도 삭제
+            if os.path.exists(save_path):
+                os.remove(save_path)
+            errors.append(f"{f.filename}: DB 저장 실패 ({e})")
+
+    msg_parts = []
+    if uploaded:
+        msg_parts.append(f"{uploaded}개 사진 업로드 완료")
+    if errors:
+        msg_parts.append(f"실패: {'; '.join(errors)}")
+
+    flash_type = "success" if uploaded and not errors else ("warning" if uploaded else "error")
+    return _flash_redirect(
+        f"/admin/campuses/edit/{campus_id}",
+        " / ".join(msg_parts) if msg_parts else "업로드할 파일이 없습니다",
+        flash_type,
+    )
+
+
+@router.post("/campuses/{campus_id}/photos/delete/{photo_id}")
+async def admin_campus_photo_delete(request: Request, campus_id: int, photo_id: int):
+    """캠퍼스 사진 개별 삭제 (파일 + DB)"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    try:
+        photo = execute_query(
+            "SELECT photo_id, file_path FROM ek_CampusPhoto WHERE photo_id = ? AND edc_idx = ?",
+            (photo_id, campus_id), fetch="one"
+        )
+        if not photo:
+            return _flash_redirect(f"/admin/campuses/edit/{campus_id}", "사진을 찾을 수 없습니다", "error")
+
+        # 파일 삭제
+        file_full_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            photo["file_path"].lstrip("/")
+        )
+        if os.path.exists(file_full_path):
+            os.remove(file_full_path)
+
+        # DB 레코드 삭제
+        execute_query(
+            "DELETE FROM ek_CampusPhoto WHERE photo_id = ?",
+            (photo_id,), fetch="none"
+        )
+        return _flash_redirect(f"/admin/campuses/edit/{campus_id}", "사진이 삭제되었습니다")
+    except Exception as e:
+        print(f"⚠️ 사진 삭제 실패: {e}")
+        return _flash_redirect(f"/admin/campuses/edit/{campus_id}", "사진 삭제에 실패했습니다", "error")
+
+
+@router.post("/campuses/{campus_id}/photos/reorder")
+async def admin_campus_photo_reorder(request: Request, campus_id: int):
+    """캠퍼스 사진 순서 변경 (JSON: {"photo_ids": [3, 1, 2]})"""
+    redirect, user = await _require_admin(request)
+    if redirect:
+        return redirect
+
+    try:
+        body = await request.json()
+        photo_ids = body.get("photo_ids", [])
+
+        if not photo_ids:
+            return JSONResponse({"ok": False, "error": "photo_ids가 비어있습니다"}, status_code=400)
+
+        for order, pid in enumerate(photo_ids, start=1):
+            execute_query(
+                "UPDATE ek_CampusPhoto SET sort_order = ? WHERE photo_id = ? AND edc_idx = ?",
+                (order, int(pid), campus_id), fetch="none"
+            )
+
+        return JSONResponse({"ok": True, "message": "순서가 변경되었습니다"})
+    except Exception as e:
+        print(f"⚠️ 사진 순서 변경 실패: {e}")
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
