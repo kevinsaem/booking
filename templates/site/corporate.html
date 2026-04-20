@@ -331,6 +331,7 @@
   }
   .pricing-header > div {
     padding: 28px;
+    text-align: left;
   }
   .pricing-header > div:first-child {
     border-right: 1px solid var(--line);
@@ -472,7 +473,7 @@
     padding: 20px 24px;
     background: var(--corp-bg);
     border-radius: 10px;
-    border-left: 4px solid var(--corp);
+    border: 1px solid var(--corp);
   }
   .instructor-quote p {
     font-size: var(--fs-body);
@@ -502,6 +503,8 @@
   @media (max-width: 900px) {
     .corp-hero { padding: 120px 20px 60px; }
     .corp-hero-meta { gap: 24px; }
+    .about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .about-circle { width: 220px !important; height: 220px !important; }
     .compare-grid { grid-template-columns: 1fr; }
     .compare-arrow { transform: rotate(90deg); }
     .strength-grid { grid-template-columns: 1fr; }
@@ -558,7 +561,7 @@
 <!-- ===== 2. ABOUT US — 안산 유일 AI·코딩 전문 교육기관 ===== -->
 <section class="sec" style="background: var(--white);">
   <div class="sec-inner">
-    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
+    <div class="about-grid" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
       <div class="rv" style="word-break: keep-all;">
         <div class="sec-tag" style="color: var(--corp);">ABOUT US</div>
         <h2 class="sec-h">안산 유일 AI·코딩<br>전문 교육기관</h2>
@@ -585,7 +588,7 @@
         </div>
       </div>
       <div class="rv" style="text-align: center;">
-        <div style="background: linear-gradient(135deg, #1a1a2e, #2d2b55); border-radius: 50%; width: 280px; height: 280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+        <div class="about-circle" style="background: linear-gradient(135deg, #1a1a2e, #2d2b55); border-radius: 50%; width: 280px; height: 280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
           <div style="font-size: var(--fs-sm); letter-spacing: 2px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 8px;">CUMULATIVE</div>
           <div style="font-size: var(--fs-display-xl); font-weight: 700; color: var(--gold); line-height: 1;">1,439</div>
           <div style="font-size: var(--fs-base-lg); color: rgba(255,255,255,0.7); margin-top: 8px;">누적 교육 참가자</div>
