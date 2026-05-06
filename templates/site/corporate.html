@@ -314,127 +314,6 @@
     font-weight: 700;
   }
 
-  /* 교육비 안내 */
-  .pricing-box {
-    max-width: 900px;
-    margin: 40px auto 0;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--line);
-    background: var(--white);
-  }
-  .pricing-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .pricing-header > div {
-    padding: 28px;
-    text-align: left;
-  }
-  .pricing-header > div:first-child {
-    border-right: 1px solid var(--line);
-  }
-  .pricing-header .ph-label {
-    font-size: var(--fs-sm);
-    font-weight: 700;
-    color: var(--corp);
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
-  .pricing-header .ph-label::before {
-    content: '◆ ';
-  }
-  .pricing-header .ph-label.alt::before {
-    content: '◇ ';
-  }
-  .pricing-info-row {
-    display: flex;
-    gap: 8px;
-    font-size: var(--fs-base-sm);
-    line-height: 2;
-  }
-  .pricing-info-row .pi-key {
-    color: var(--ink3);
-    min-width: 70px;
-    flex-shrink: 0;
-  }
-  .pricing-info-row .pi-val {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .pricing-main {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 32px 28px;
-    background: linear-gradient(135deg, #1a1a2e, #2d2b55);
-    color: white;
-  }
-  .pricing-main .pm-tag {
-    font-size: var(--fs-sm);
-    letter-spacing: 2px;
-    font-weight: 600;
-    color: var(--gold);
-    margin-bottom: 8px;
-  }
-  .pricing-main .pm-title {
-    font-size: var(--fs-body-lg);
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .pricing-main .pm-desc {
-    font-size: var(--fs-base-sm);
-    color: rgba(255,255,255,0.5);
-  }
-  .pricing-main .pm-price {
-    font-family: 'Pretendard', sans-serif;
-    font-size: var(--fs-display);
-    font-weight: 700;
-    color: var(--gold);
-    text-align: right;
-  }
-  .pricing-main .pm-vat {
-    font-size: var(--fs-base-sm);
-    color: rgba(255,255,255,0.4);
-    text-align: right;
-  }
-  .pricing-benefit {
-    padding: 24px 28px;
-    border-top: 1px solid var(--line);
-    background: var(--corp-bg);
-  }
-  .pricing-benefit .pb-title {
-    font-size: var(--fs-base-sm);
-    font-weight: 700;
-    color: var(--corp);
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-  }
-  .pricing-benefit-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .pricing-benefit-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: var(--fs-base-sm);
-  }
-  .pricing-benefit-item .pbi-dot {
-    color: var(--corp);
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-  .pricing-benefit-item .pbi-title {
-    font-weight: 700;
-    color: var(--ink);
-  }
-  .pricing-benefit-item .pbi-desc {
-    color: var(--ink3);
-  }
 
   /* 강사 프로필 */
   .instructor-split {
@@ -510,12 +389,6 @@
     .strength-grid { grid-template-columns: 1fr; }
     .benefit-features { grid-template-columns: 1fr; }
     .outcome-grid { grid-template-columns: 1fr; }
-    .pricing-header { grid-template-columns: 1fr; }
-    .pricing-header > div:first-child { border-right: none; border-bottom: 1px solid var(--line); }
-    .pricing-main { flex-direction: column; gap: 20px; text-align: center; }
-    .pricing-main .pm-price { text-align: center; }
-    .pricing-main .pm-vat { text-align: center; }
-    .pricing-benefit-grid { grid-template-columns: 1fr; }
     .instructor-split { grid-template-columns: 1fr; text-align: center; justify-items: center; }
   }
   @media (max-width: 600px) {
@@ -538,7 +411,7 @@
       AI를 적용해보는 실습 중심 기업 교육입니다.
     </div>
     <div class="hero-ctas rv" style="margin-bottom: 48px;">
-      <a href="#pricing" class="btn btn-corp" style="padding: 16px 36px; font-size: var(--fs-body); border-radius: 8px;">교육비 확인하기</a>
+      <a href="/survey" class="btn btn-corp" style="padding: 16px 36px; font-size: var(--fs-body); border-radius: 8px;" target="_blank">교육 문의하기</a>
       <a href="#cta" class="btn btn-t" style="font-size: var(--fs-body); padding: 16px 36px;">맞춤 교육 상담받기</a>
     </div>
     <div class="corp-hero-meta rv">
@@ -826,66 +699,31 @@
   </div>
 </section>
 
-<!-- ===== 9. PRICING — 교육비 안내 ===== -->
-<section class="sec" id="pricing" style="background: var(--dark-surface);">
+<!-- ===== 9. INQUIRY — 교육 문의 ===== -->
+<section class="sec" id="inquiry" style="background: var(--dark-surface);">
   <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">PRICING · INFO</div>
-    <h2 class="sec-h rv">교육비 안내</h2>
-    <div class="pricing-box rv">
-      <div class="pricing-header">
-        <div>
-          <div class="ph-label">교육 기관</div>
-          <p style="font-size: var(--fs-body); font-weight: 700; color: var(--ink); margin-bottom: 12px;">케빈샘랩 <span style="font-weight: 400; color: var(--ink3);">(케빈샘AI코딩학원)</span></p>
-          <div class="pricing-info-row"><span class="pi-key">대표자</span><span class="pi-val">이관희 (케빈샘)</span></div>
-          <div class="pricing-info-row"><span class="pi-key">사업자번호</span><span class="pi-val">566-95-00791</span></div>
-          <div class="pricing-info-row"><span class="pi-key">소재지</span><span class="pi-val">경기도 안산시 단원구 선부로 183, 화성프라자 803호</span></div>
-          <div class="pricing-info-row"><span class="pi-key">연락처</span><span class="pi-val">0507-1307-9398 · kevin@kevinsaem.com</span></div>
-        </div>
-        <div>
-          <div class="ph-label alt">교육 기본 구성</div>
-          <p style="font-size: var(--fs-body); font-weight: 700; color: var(--ink); margin-bottom: 12px;">기업 임직원 AI 활용 실무 교육</p>
-          <div class="pricing-info-row"><span class="pi-key">교육 방식</span><span class="pi-val">기업 출강 (오프라인)</span></div>
-          <div class="pricing-info-row"><span class="pi-key">교육 시간</span><span class="pi-val">2시간</span></div>
-          <div class="pricing-info-row"><span class="pi-key">교육 인원</span><span class="pi-val">협의</span></div>
-          <div class="pricing-info-row"><span class="pi-key">교육 형태</span><span class="pi-val">AI 에이전트 협업 시연 + 참여형 실습</span></div>
-          <div class="pricing-info-row"><span class="pi-key">비고</span><span class="pi-val">일정·인원·커리큘럼 협의 후 확정</span></div>
-        </div>
+    <div class="sec-tag rv" style="color: var(--corp);">INQUIRY</div>
+    <h2 class="sec-h rv">교육 문의</h2>
+    <p class="sec-p rv">교육 인원 · 시간 · 커리큘럼에 따라 맞춤 제안을 드립니다</p>
+    <div class="rv" style="max-width: 600px; margin: 40px auto 0; padding: 48px 40px; background: var(--white); border-radius: 14px; border: 2px solid var(--corp); box-shadow: 0 4px 20px var(--corp-glow); text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 20px;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
-      <div class="pricing-main">
-        <div>
-          <div class="pm-tag">STANDARD · 기본 교육비</div>
-          <div class="pm-title">기업 임직원 AI 활용 실무 교육 (출강 2시간)</div>
-          <div class="pm-desc">기업 출강 · 교재 포함 · 인원 및 커리큘럼 협의</div>
-        </div>
-        <div>
-          <div class="pm-price">1,000,000원~</div>
-          <div class="pm-vat">VAT 별도 · 세금계산서 발행 가능</div>
-        </div>
-      </div>
-      <div class="pricing-benefit">
-        <div class="pb-title">★ 특별 제공 사항</div>
-        <div class="pricing-benefit-grid">
-          <div class="pricing-benefit-item">
-            <span class="pbi-dot">●</span>
-            <div>
-              <div class="pbi-title">참석 직원 1:1 업무특화 수업 제공 (2명까지)</div>
-              <div class="pbi-desc">스탠다드 과정 1회 · 학원 방문</div>
-            </div>
-          </div>
-          <div class="pricing-benefit-item">
-            <span class="pbi-dot">●</span>
-            <div>
-              <div class="pbi-title">전담 멘토 1:1 맞춤 수업</div>
-              <div class="pbi-desc">학원 방문 · 수업 일정 협의 가능</div>
-            </div>
-          </div>
-        </div>
+      <h3 style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink); margin-bottom: 12px;">간단한 설문으로 시작하세요</h3>
+      <p style="font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.8; margin-bottom: 32px; word-break: keep-all;">
+        귀사의 교육 목적과 환경을 파악하여<br>
+        <strong style="color: var(--ink);">최적의 맞춤 교육안</strong>을 무료로 제안드립니다.
+      </p>
+      <a href="/survey" class="btn btn-corp" style="display: inline-block; padding: 18px 48px; font-size: var(--fs-body); border-radius: 8px; font-weight: 700;" target="_blank">사전 설문 작성하기</a>
+      <div style="margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--line);">
+        <p style="font-size: var(--fs-base-sm); color: var(--ink4); margin-bottom: 8px;">설문 외 문의 방법</p>
+        <p style="font-size: var(--fs-base-lg); color: var(--ink2); line-height: 2;">
+          <strong>전화</strong> 0507-1307-9398<br>
+          <strong>이메일</strong> kevin@kevinsaem.com<br>
+          <strong>카카오톡</strong> <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" style="color: var(--corp); text-decoration: underline;">채널 상담</a>
+        </p>
       </div>
     </div>
-    <p class="rv" style="margin-top: 20px; font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.8; word-break: keep-all;">
-      교육 인원 · 시간 · 커리큘럼에 따라 비용이 달라질 수 있습니다.<br>
-      <strong style="color: var(--ink);">무료 사전 상담</strong>으로 귀사에 맞는 최적의 교육을 제안드립니다.
-    </p>
   </div>
 </section>
 

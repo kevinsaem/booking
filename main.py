@@ -106,7 +106,7 @@ async def shutdown():
 # 설문 페이지
 @app.get("/survey")
 async def survey():
-    return FileResponse("survey.html", media_type="text/html")
+    return FileResponse("education/ai-training-survey.html", media_type="text/html")
 
 
 # 헬스체크

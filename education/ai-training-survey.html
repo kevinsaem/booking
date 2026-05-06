@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 단체교육 사전 설문조사</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #111827;
+  --ink-soft: #4B5563;
+  --ink-muted: #9CA3AF;
+  --bg: #FAFAFA;
+  --card: #FFFFFF;
+  --line: #F3F4F6;
+  --line-mid: #E5E7EB;
+  --blue: #2563EB;
+  --blue-light: #DBEAFE;
+  --blue-pale: #EFF6FF;
+  --blue-glow: rgba(37,99,235,0.08);
+  --green: #059669;
+  --green-bg: #ECFDF5;
+  --red: #DC2626;
+  --radius: 14px;
+  --transition: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250,250,250,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.topbar-title {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: -0.2px;
+}
+.step-indicator {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-pale);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+.progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--line);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 100px;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0%;
+}
+
+/* Slides */
+.slides-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 32px 24px 120px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(80px);
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  position: relative;
+}
+.slide.exit-left {
+  opacity: 0;
+  transform: translateX(-80px);
+  pointer-events: none;
+}
+.slide.exit-right {
+  opacity: 0;
+  transform: translateX(80px);
+  pointer-events: none;
+}
+.slide::-webkit-scrollbar { display: none; }
+.slide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Slide Content */
+.slide-number {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.slide-number::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line-mid);
+  max-width: 40px;
+}
+.slide-question {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.slide-desc {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+/* Form */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line-mid);
+  border-radius: var(--radius);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--card);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+input::placeholder, textarea::placeholder { color: var(--ink-muted); }
+textarea { resize: vertical; min-height: 110px; line-height: 1.7; }
+select {
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%239CA3AF' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 42px;
+}
+.field { margin-bottom: 16px; }
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  display: block;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 420px) { .field-row { grid-template-columns: 1fr; } }
+
+/* Options */
+.options { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line-mid);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--card);
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.opt:hover { border-color: #CBD5E1; background: #FAFBFC; }
+.opt.selected { border-color: var(--blue); background: var(--blue-pale); }
+.opt input { display: none; }
+.opt-check {
+  width: 22px; height: 22px;
+  border: 2px solid var(--line-mid);
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.opt[data-type="radio"] .opt-check { border-radius: 50%; }
+.opt.selected .opt-check { border-color: var(--blue); background: var(--blue); }
+.opt.selected .opt-check svg { opacity: 1; }
+.opt-check svg { width: 14px; height: 14px; color: white; opacity: 0; transition: opacity 0.15s; }
+.opt-body { flex: 1; }
+.opt-title { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+.opt-desc { font-size: 12px; color: var(--ink-muted); margin-top: 2px; line-height: 1.4; }
+
+/* Rating */
+.rating-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.rating-btn {
+  flex: 1; padding: 14px 0;
+  border: 1.5px solid var(--line-mid);
+  border-radius: 10px;
+  background: var(--card);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.rating-btn:hover { border-color: #CBD5E1; }
+.rating-btn.selected { border-color: var(--blue); background: var(--blue); color: white; }
+.rating-labels { display: flex; justify-content: space-between; }
+.rating-labels span { font-size: 11px; color: var(--ink-muted); }
+
+/* Bottom Nav */
+.bottombar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 560px;
+  z-index: 100;
+  background: rgba(250,250,250,0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--line);
+  padding: 16px 24px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+.nav-row { display: flex; gap: 10px; }
+.btn {
+  flex: 1; padding: 15px 20px;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+}
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-back {
+  background: var(--card); color: var(--ink-soft);
+  border: 1.5px solid var(--line-mid);
+  flex: 0 0 auto; padding: 15px 18px;
+}
+.btn-back:hover { background: var(--line); }
+.btn-next { background: var(--ink); color: white; }
+.btn-next:hover { background: #1F2937; }
+.btn-submit { background: var(--blue); color: white; }
+.btn-submit:hover { background: #1D4ED8; }
+.btn:active { transform: scale(0.97); }
+
+/* Completion */
+.completion-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 32px;
+  min-height: 70vh;
+}
+.completion-screen.show {
+  display: flex;
+  animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.done-circle {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+  animation: popIn 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+.done-circle svg { width: 32px; height: 32px; color: var(--green); }
+.completion-screen h2 { font-size: 24px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+.completion-screen p { font-size: 15px; color: var(--ink-soft); line-height: 1.7; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.max-select-hint {
+  font-size: 12px; color: var(--blue);
+  background: var(--blue-pale);
+  padding: 6px 12px; border-radius: 8px;
+  margin-bottom: 12px; display: inline-block;
+}
+
+.warn-msg {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FEF2F2;
+  color: #DC2626;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #FECACA;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 200;
+  white-space: nowrap;
+  animation: warnIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  max-width: 90%;
+  text-align: center;
+}
+@keyframes warnIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.btn:disabled {
+  cursor: default;
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="topbar" id="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-title">AI 단체교육 사전 설문</span>
+      <span class="step-indicator" id="stepLabel">시작</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="slides-viewport" id="viewport">
+
+    <!-- Q0: Intro -->
+    <div class="slide active" data-idx="0">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:40px;margin-bottom:16px;">🎯</div>
+        <div class="slide-question" style="font-size:26px;">맞춤형 AI 교육을 위한<br>사전 설문조사</div>
+        <div class="slide-desc" style="margin-bottom:0;">
+          응답 내용을 바탕으로 귀사에 최적화된<br>교육 커리큘럼을 설계합니다.<br><br>
+          <span style="color:var(--ink-soft);font-weight:500;">⏱ 예상 소요시간: 약 5분</span><br>
+          <span style="color:var(--ink-soft);font-weight:500;">📋 총 12개 질문</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="slide" data-idx="1">
+      <div class="slide-number">Q1</div>
+      <div class="slide-question">기본 정보를 알려주세요</div>
+      <div class="slide-desc">교육 의뢰 기업과 담당자 정보입니다.</div>
+      <div class="field-row">
+        <div class="field"><label class="field-label">회사명 *</label><input type="text" name="company" placeholder="(주)ABC테크"></div>
+        <div class="field"><label class="field-label">담당자명 *</label><input type="text" name="name" placeholder="홍길동"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label class="field-label">직책</label><input type="text" name="position" placeholder="대표이사, 팀장 등"></div>
+        <div class="field"><label class="field-label">연락처 *</label><input type="tel" name="phone" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="field"><label class="field-label">이메일</label><input type="email" name="email" placeholder="example@company.com"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="slide" data-idx="2">
+      <div class="slide-number">Q2</div>
+      <div class="slide-question">어떤 분야의 회사인가요?</div>
+      <div class="slide-desc">업종에 맞는 AI 활용 사례를 준비합니다.</div>
+      <div class="field" style="margin-bottom:20px;">
+        <label class="field-label">업종 / 산업 분야 *</label>
+        <select name="industry"><option value="">선택해주세요</option><option>제조업</option><option>IT / 소프트웨어</option><option>금융 / 보험</option><option>유통 / 물류</option><option>의료 / 바이오</option><option>건설 / 부동산</option><option>교육</option><option>서비스업</option><option>공공기관</option><option>기타</option></select>
+      </div>
+      <div class="field"><label class="field-label">교육 대상 인원 수</label><input type="number" name="headcount" value="10" min="1" max="200"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="slide" data-idx="3">
+      <div class="slide-number">Q3</div>
+      <div class="slide-question">교육 대상자의 직무는?</div>
+      <div class="slide-desc">해당하는 부서를 모두 선택해주세요.</div>
+      <div class="options">
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="경영/기획"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">경영 / 기획</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="영업/마케팅"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">영업 / 마케팅</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="인사/총무/관리"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">인사 / 총무 / 관리</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="생산/제조/품질"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">생산 / 제조 / 품질</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="IT/개발"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">IT / 개발 / 기술</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="디자인/콘텐츠"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">디자인 / 콘텐츠</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="dept" value="연구/R&D"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">연구 / R&D</span></label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="slide" data-idx="4">
+      <div class="slide-number">Q4</div>
+      <div class="slide-question">대상자의 연령대와<br>IT 활용 수준은?</div>
+      <div class="slide-desc">교육 난이도 설계에 참고합니다.</div>
+      <div class="field-label" style="margin-bottom:8px;">연령대 (다수 선택 가능)</div>
+      <div class="options" style="margin-bottom:24px;">
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="age" value="20대"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">20대</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="age" value="30대"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">30대</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="age" value="40대"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">40대</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="age" value="50대 이상"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">50대 이상</span></label>
+      </div>
+      <div class="field-label" style="margin-bottom:8px;">IT 활용 수준 *</div>
+      <div class="options">
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'it_level')"><input type="radio" name="it_level" value="초급"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">초급</div><div class="opt-desc">기본 문서 작업(한글, 엑셀) 가능</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'it_level')"><input type="radio" name="it_level" value="중급"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">중급</div><div class="opt-desc">업무 소프트웨어 능숙 활용</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'it_level')"><input type="radio" name="it_level" value="고급"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">고급</div><div class="opt-desc">코딩, 데이터 분석 등 기술 작업 가능</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'it_level')"><input type="radio" name="it_level" value="혼재"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">혼재 (수준이 다양)</div><div class="opt-desc">초급~고급까지 섞여 있음</div></div></label>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="slide" data-idx="5">
+      <div class="slide-number">Q5</div>
+      <div class="slide-question">현재 AI 도구를<br>사용하고 계신가요?</div>
+      <div class="slide-desc">조직의 AI 활용 수준을 파악합니다.</div>
+      <div class="options">
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'ai_usage')"><input type="radio" name="ai_usage" value="전혀 사용 안함"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">전혀 사용하지 않음</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'ai_usage')"><input type="radio" name="ai_usage" value="가끔 사용"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">일부 직원만 가끔 사용</div><div class="opt-desc">개인적으로 ChatGPT 등을 사용하는 직원이 일부 있음</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'ai_usage')"><input type="radio" name="ai_usage" value="적극 사용"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">팀/회사 차원에서 적극 활용 중</div><div class="opt-desc">AI 도구를 공식적으로 도입하여 사용</div></div></label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="slide" data-idx="6">
+      <div class="slide-number">Q6</div>
+      <div class="slide-question">알고 있거나 사용 중인<br>AI 도구가 있나요?</div>
+      <div class="slide-desc">해당하는 항목을 모두 선택해주세요.</div>
+      <div class="options">
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="ChatGPT"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">ChatGPT (OpenAI)</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="Claude"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">Claude (Anthropic)</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="Gemini"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">Gemini (Google)</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="Copilot"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">Copilot (Microsoft)</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="이미지생성AI"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">이미지 생성 AI (Midjourney 등)</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="ai_tools" value="없음"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">알고 있거나 사용하는 도구 없음</span></label>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="slide" data-idx="7">
+      <div class="slide-number">Q7</div>
+      <div class="slide-question">AI에 대한 조직의<br>전반적인 인식은?</div>
+      <div class="slide-desc">1(부정적/잘 모름) ~ 5(매우 긍정적)</div>
+      <div class="rating-row">
+        <button type="button" class="rating-btn" onclick="pickRating(this,1)">1</button>
+        <button type="button" class="rating-btn" onclick="pickRating(this,2)">2</button>
+        <button type="button" class="rating-btn" onclick="pickRating(this,3)">3</button>
+        <button type="button" class="rating-btn" onclick="pickRating(this,4)">4</button>
+        <button type="button" class="rating-btn" onclick="pickRating(this,5)">5</button>
+      </div>
+      <div class="rating-labels"><span>부정적 / 잘 모름</span><span>매우 긍정적</span></div>
+      <input type="hidden" name="ai_perception" id="ratingValue">
+    </div>
+
+    <!-- Q8 -->
+    <div class="slide" data-idx="8">
+      <div class="slide-number">Q8</div>
+      <div class="slide-question">이번 교육의<br>주된 목적은?</div>
+      <div class="max-select-hint">최대 3개까지 선택 가능</div>
+      <div class="options">
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="AI 기초 이해"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">AI 기초 이해</div><div class="opt-desc">AI 작동 원리와 기본 개념</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="업무 생산성 향상"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">업무 생산성 향상</div><div class="opt-desc">반복 업무 자동화, 속도 개선</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="AI 도구 실습"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">AI 도구 실무 활용 (실습)</div><div class="opt-desc">ChatGPT, Claude 등 실제 업무 적용</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="프롬프트 엔지니어링"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">프롬프트 엔지니어링</div><div class="opt-desc">AI에게 효과적으로 지시하는 방법</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="AI 도입 전략"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">AI 도입 전략 수립</div><div class="opt-desc">우리 회사에 AI 도입 방향 설정</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="데이터 분석"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">AI 기반 데이터 분석</div><div class="opt-desc">엑셀, 보고서를 AI로 분석</div></div></label>
+        <label class="opt" onclick="toggleOpt(this,3)"><input type="checkbox" name="purpose" value="콘텐츠 제작"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">AI 콘텐츠 제작</div><div class="opt-desc">보고서, 마케팅 문구, 이미지 생성</div></div></label>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="slide" data-idx="9">
+      <div class="slide-number">Q9</div>
+      <div class="slide-question">특별히 배우고 싶은<br>AI 활용 분야는?</div>
+      <div class="slide-desc">해당하는 항목을 모두 선택해주세요.</div>
+      <div class="options">
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="문서/보고서"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">문서 작성 / 보고서 자동 생성</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="이메일/커뮤니케이션"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">이메일 / 비즈니스 커뮤니케이션</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="엑셀/데이터"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">엑셀 / 데이터 처리</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="마케팅/SNS"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">마케팅 콘텐츠 / SNS 운영</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="이미지/디자인"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">이미지 생성 / 디자인</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="회의/일정"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">회의록 작성 / 일정 관리</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="고객응대"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">고객 응대 / 챗봇</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="topics" value="코딩/자동화"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">간단한 코딩 / 업무 자동화</span></label>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="slide" data-idx="10">
+      <div class="slide-number">Q10</div>
+      <div class="slide-question">업무 고충과<br>AI 관련 우려사항</div>
+      <div class="slide-desc">교육 내용에 직접 반영됩니다.</div>
+      <div class="field" style="margin-bottom:24px;">
+        <label class="field-label">가장 시간이 많이 걸리는 반복 작업은?</label>
+        <textarea name="pain_point" placeholder="예: 매주 영업 보고서 취합에 반나절이 걸립니다."></textarea>
+      </div>
+      <div class="field-label" style="margin-bottom:8px;">AI 활용 관련 우려사항</div>
+      <div class="options">
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="concerns" value="보안/기밀유출"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">회사 기밀/개인정보 유출 우려</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="concerns" value="정확성"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">AI 결과물의 정확성/신뢰성</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="concerns" value="일자리 불안"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">AI로 인한 일자리 대체 불안</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="concerns" value="비용 부담"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">유료 AI 도구의 비용 부담</span></label>
+        <label class="opt" onclick="toggleOpt(this)"><input type="checkbox" name="concerns" value="학습 난이도"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">직원들이 따라올 수 있을지 걱정</span></label>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="slide" data-idx="11">
+      <div class="slide-number">Q11</div>
+      <div class="slide-question">교육 운영은 어떻게<br>희망하시나요?</div>
+      <div class="slide-desc">형태, 시간, 일정, 실습 환경을 알려주세요.</div>
+      <div class="field-label" style="margin-bottom:8px;">교육 형태 *</div>
+      <div class="options" style="margin-bottom:20px;">
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'format')"><input type="radio" name="format" value="오프라인"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">오프라인 집합교육</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'format')"><input type="radio" name="format" value="온라인"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">온라인 실시간 (Zoom 등)</div></div></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'format')"><input type="radio" name="format" value="혼합형"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><div class="opt-body"><div class="opt-title">혼합형 (오프라인 + 온라인)</div></div></label>
+      </div>
+      <div class="field-row" style="margin-bottom:16px;">
+        <div class="field"><label class="field-label">교육 시간 *</label><select name="duration"><option value="">선택</option><option>2시간 (특강형)</option><option>3시간 (반일)</option><option>6시간 (1일)</option><option>12시간 (2일)</option><option>기타 (협의)</option></select></div>
+        <div class="field"><label class="field-label">희망 일정</label><input type="text" name="schedule" placeholder="예: 5월 셋째 주"></div>
+      </div>
+      <div class="field-label" style="margin-bottom:8px;">실습 환경</div>
+      <div class="options">
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'equipment')"><input type="radio" name="equipment" value="개인 노트북"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">직원 개인 노트북 지참 가능</span></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'equipment')"><input type="radio" name="equipment" value="회사 PC"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">회사 PC 사용 가능</span></label>
+        <label class="opt" data-type="radio" onclick="selectOpt(this,'equipment')"><input type="radio" name="equipment" value="강의형 희망"><span class="opt-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span><span class="opt-title">별도 장비 없음 (강의형 희망)</span></label>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="slide" data-idx="12">
+      <div class="slide-number">Q12</div>
+      <div class="slide-question">마지막으로,<br>예산과 추가 요청사항</div>
+      <div class="slide-desc">거의 다 끝났어요! 🎉</div>
+      <div class="field" style="margin-bottom:20px;">
+        <label class="field-label">교육 예산 범위</label>
+        <select name="budget"><option value="">선택해주세요</option><option>50만원 이하</option><option>50만원 ~ 100만원</option><option>100만원 ~ 200만원</option><option>200만원 ~ 300만원</option><option>300만원 이상</option><option>미정 (협의 후 결정)</option></select>
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label class="field-label">교육 후 기대하는 변화</label>
+        <textarea name="expectation" placeholder="예: 직원들이 하루 1시간 이상 절약할 수 있기를 바랍니다."></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">추가 요청사항</label>
+        <textarea name="additional" placeholder="교육 관련 추가 전달 사항을 자유롭게 적어주세요."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottombar" id="bottombar">
+    <div class="nav-row">
+      <button type="button" class="btn btn-back" id="btnBack" onclick="goBack()" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="btn btn-next" id="btnNext" onclick="goNext()">
+        시작하기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Completion -->
+  <div class="completion-screen" id="doneScreen">
+    <div class="done-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>설문이 완료되었습니다!</h2>
+    <p>소중한 응답 감사합니다.<br>내용을 바탕으로 맞춤 교육 커리큘럼을<br>준비하여 연락드리겠습니다.</p>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 13;
+let current = 0;
+
+const slides = document.querySelectorAll('.slide');
+const btnBack = document.getElementById('btnBack');
+const btnNext = document.getElementById('btnNext');
+const stepLabel = document.getElementById('stepLabel');
+const progressBar = document.getElementById('progressBar');
+
+// ── 슬라이드별 필수 항목 정의 ──
+// 'input:이름' = text/tel/email/number input
+// 'select:이름' = select
+// 'radio:이름' = 라디오 그룹 중 하나 선택
+// 'check:이름' = 체크박스 그룹 중 하나 이상 선택
+const REQUIRED = {
+  0: [],                                           // 인트로 - 없음
+  1: ['input:company', 'input:name', 'input:phone'], // 회사명, 담당자, 연락처
+  2: ['select:industry'],                           // 업종
+  3: ['check:dept'],                                // 직무 1개 이상
+  4: ['radio:it_level'],                            // IT수준
+  5: ['radio:ai_usage'],                            // AI사용현황
+  6: [],                                            // AI도구 - 선택
+  7: [],                                            // AI인식 - 선택
+  8: ['check:purpose'],                             // 교육목적 1개 이상
+  9: [],                                            // 학습분야 - 선택
+  10: [],                                           // 고충/우려 - 선택
+  11: ['radio:format', 'select:duration'],           // 교육형태, 교육시간
+  12: []                                            // 예산/추가 - 선택
+};
+
+// 필수 항목 한글 라벨
+const REQ_LABELS = {
+  'input:company': '회사명', 'input:name': '담당자명', 'input:phone': '연락처',
+  'select:industry': '업종', 'check:dept': '직무/부서',
+  'radio:it_level': 'IT 활용 수준', 'radio:ai_usage': 'AI 사용 현황',
+  'check:purpose': '교육 목적', 'radio:format': '교육 형태',
+  'select:duration': '교육 시간'
+};
+
+function validateSlide(idx) {
+  const rules = REQUIRED[idx] || [];
+  if (rules.length === 0) return { valid: true, missing: [] };
+
+  const slide = slides[idx];
+  const missing = [];
+
+  rules.forEach(rule => {
+    const [type, name] = rule.split(':');
+    if (type === 'input') {
+      const el = slide.querySelector('input[name="' + name + '"]');
+      if (!el || !el.value.trim()) missing.push(rule);
+    } else if (type === 'select') {
+      const el = slide.querySelector('select[name="' + name + '"]');
+      if (!el || !el.value) missing.push(rule);
+    } else if (type === 'radio') {
+      const checked = slide.querySelector('input[name="' + name + '"]:checked');
+      if (!checked) missing.push(rule);
+    } else if (type === 'check') {
+      const checked = slide.querySelectorAll('input[name="' + name + '"]:checked');
+      if (checked.length === 0) missing.push(rule);
+    }
+  });
+
+  return { valid: missing.length === 0, missing };
+}
+
+function updateUI() {
+  const pct = current === 0 ? 0 : Math.round((current / (TOTAL - 1)) * 100);
+  progressBar.style.width = pct + '%';
+  stepLabel.textContent = current === 0 ? '시작' : current + ' / ' + (TOTAL - 1);
+  btnBack.style.display = current === 0 ? 'none' : 'flex';
+
+  // 버튼 텍스트
+  if (current === 0) {
+    btnNext.innerHTML = '시작하기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.className = 'btn btn-next';
+  } else if (current === TOTAL - 1) {
+    btnNext.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg> 제출하기';
+    btnNext.className = 'btn btn-submit';
+  } else {
+    btnNext.innerHTML = '다음 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.className = 'btn btn-next';
+  }
+
+  // 유효성 체크 → 버튼 활성/비활성
+  updateBtnState();
+
+  // 기존 경고 메시지 제거
+  const oldWarn = slides[current].querySelector('.warn-msg');
+  if (oldWarn) oldWarn.remove();
+}
+
+function updateBtnState() {
+  const { valid } = validateSlide(current);
+  btnNext.disabled = !valid;
+  if (valid) {
+    btnNext.style.opacity = '1';
+    btnNext.style.pointerEvents = 'auto';
+  } else {
+    btnNext.style.opacity = '0.35';
+    btnNext.style.pointerEvents = 'auto'; // 클릭은 되게 (안내 메시지 표시용)
+  }
+}
+
+function showWarning() {
+  const slide = slides[current];
+  // 기존 경고 제거
+  const old = slide.querySelector('.warn-msg');
+  if (old) old.remove();
+
+  const { missing } = validateSlide(current);
+  if (missing.length === 0) return;
+
+  const labels = missing.map(r => REQ_LABELS[r] || r.split(':')[1]).join(', ');
+  const warn = document.createElement('div');
+  warn.className = 'warn-msg';
+  warn.innerHTML = '⚠️ <strong>' + labels + '</strong> 항목을 입력해주세요';
+  slide.appendChild(warn);
+
+  // 자동 제거
+  setTimeout(() => { if (warn.parentNode) warn.remove(); }, 3000);
+}
+
+function goTo(idx, direction) {
+  if (idx < 0 || idx >= TOTAL) return;
+  const prev = slides[current];
+  const next = slides[idx];
+
+  prev.classList.remove('active');
+  prev.classList.add(direction === 'forward' ? 'exit-left' : 'exit-right');
+
+  next.classList.remove('exit-left', 'exit-right');
+  next.style.transition = 'none';
+  next.style.transform = direction === 'forward' ? 'translateX(80px)' : 'translateX(-80px)';
+  next.style.opacity = '0';
+  void next.offsetWidth;
+  next.style.transition = '';
+  next.classList.add('active');
+  next.style.transform = '';
+  next.style.opacity = '';
+
+  setTimeout(() => {
+    prev.classList.remove('exit-left', 'exit-right');
+    prev.style.transform = '';
+    prev.style.opacity = '';
+  }, 500);
+
+  current = idx;
+  updateUI();
+  next.scrollTop = 0;
+}
+
+function goNext() {
+  const { valid } = validateSlide(current);
+  if (!valid) {
+    showWarning();
+    // 버튼 흔들림
+    btnNext.style.animation = 'shake 0.35s ease';
+    setTimeout(() => btnNext.style.animation = '', 400);
+    return;
+  }
+  if (current === TOTAL - 1) { submitForm(); return; }
+  goTo(current + 1, 'forward');
+}
+function goBack() { goTo(current - 1, 'backward'); }
+
+// Touch swipe
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (dx < 0) goNext(); else goBack();
+  }
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'Enter') goNext();
+  if (e.key === 'ArrowLeft') goBack();
+});
+
+// ── input/select 변경 시 버튼 상태 실시간 갱신 ──
+document.addEventListener('input', () => updateBtnState());
+document.addEventListener('change', () => updateBtnState());
+
+function toggleOpt(el, maxSelect) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  if (!cb) return;
+  if (maxSelect && !cb.checked) {
+    const checked = document.querySelectorAll('input[name="' + cb.name + '"]:checked');
+    if (checked.length >= maxSelect) {
+      el.style.animation = 'shake 0.35s ease';
+      setTimeout(() => el.style.animation = '', 400);
+      return;
+    }
+  }
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+  updateBtnState();
+}
+
+function selectOpt(el, name) {
+  const radio = el.querySelector('input[type="radio"]');
+  if (!radio) return;
+  document.querySelectorAll('input[name="' + name + '"]').forEach(r => {
+    r.closest('.opt').classList.remove('selected');
+  });
+  radio.checked = true;
+  el.classList.add('selected');
+  updateBtnState();
+}
+
+function pickRating(btn, val) {
+  document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('ratingValue').value = val;
+  updateBtnState();
+}
+
+// ★★★ 아래 URL을 Google Apps Script 웹앱 URL로 교체하세요 ★★★
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyhH3uCyj8Di-jr_1B1AMX47Q0qK_LhuZzglDmgoQv88KZ8IOq3olxTrXPwYZ7OoaG6/exec';
+
+async function submitForm() {
+  const data = {};
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (!el.name) return;
+    if (el.type === 'checkbox') {
+      if (el.checked) { data[el.name] = data[el.name] || []; data[el.name].push(el.value); }
+    } else if (el.type === 'radio') {
+      if (el.checked) data[el.name] = el.value;
+    } else if (el.value) {
+      data[el.name] = el.value;
+    }
+  });
+
+  // 배열은 쉼표로 합치기
+  Object.keys(data).forEach(k => {
+    if (Array.isArray(data[k])) data[k] = data[k].join(', ');
+  });
+
+  // 제출 시간 추가
+  data['submitted_at'] = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+  // 버튼 로딩 상태
+  const btn = document.getElementById('btnNext');
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> 제출 중...';
+  btn.disabled = true;
+
+  try {
+    if (GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+      // GAS URL 미설정 시 콘솔에만 출력 (테스트 모드)
+      console.log('📋 [테스트 모드] 설문 응답:', JSON.stringify(data, null, 2));
+      console.log('⚠️ GAS_URL을 설정하면 구글시트 저장 + 이메일 발송이 됩니다.');
+    } else {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    }
+
+    // 성공 화면
+    document.getElementById('topbar').style.display = 'none';
+    document.getElementById('viewport').style.display = 'none';
+    document.getElementById('bottombar').style.display = 'none';
+    document.getElementById('doneScreen').classList.add('show');
+
+  } catch (err) {
+    console.error('전송 오류:', err);
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+    alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }
+}
+
+updateUI();
+</script>
+</body>
+</html>
