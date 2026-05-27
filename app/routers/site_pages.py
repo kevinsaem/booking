@@ -51,19 +51,11 @@ async def tuition_youth(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/tuition-youth.html")
 
 
-@router.get("/tuition/adult", response_class=HTMLResponse)
-async def tuition_adult(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(request, "site/tuition-adult.html")
-
 
 @router.get("/tuition/corporate", response_class=HTMLResponse)
 async def tuition_corporate(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/tuition-corporate.html")
 
-
-@router.get("/tuition/autobiography", response_class=HTMLResponse)
-async def tuition_autobiography(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(request, "site/tuition-autobiography.html")
 
 
 @router.get("/corporate-survey", response_class=HTMLResponse)
