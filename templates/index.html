@@ -881,6 +881,7 @@
 
   /* 헤더 */
   .header-logo-text { font-size: var(--fs-body-lg); }
+  .header-menu { padding: 6px 10px; font-size: var(--fs-base); }
   .header-login { padding: 6px 12px; font-size: var(--fs-base); }
 
   /* 푸터 */
@@ -1035,6 +1036,24 @@
   .header-logo-text span {
     color: var(--primary);
   }
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-menu {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .header-menu:hover {
+    color: var(--primary);
+    background: var(--primary-light);
+  }
   .header-login {
     display: flex;
     align-items: center;
@@ -1156,13 +1175,16 @@
       </svg>
       <span class="header-logo-text">케빈샘<span>AI코딩</span></span>
     </a>
-    <a href="/booking/" class="header-login">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <circle cx="9" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M3 16.5c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-      </svg>
-      로그인
-    </a>
+    <nav class="header-nav">
+      <a href="https://game.kevinsaem.com/plaza.html" class="header-menu">작품소개</a>
+      <a href="https://game.kevinsaem.com/" class="header-login">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M3 16.5c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+        로그인
+      </a>
+    </nav>
   </div>
 </header>
 
