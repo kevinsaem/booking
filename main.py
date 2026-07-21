@@ -15,7 +15,7 @@ from starlette.concurrency import run_in_threadpool
 from app.config import settings
 from app.database import init_db, close_db
 from app.routers import booking_pages, admin_pages, api, auth, payment, teacher_pages, message, agreement, site_pages
-from app.services.pageview_service import LANDING_PAGES, is_bot, record_pageview, ensure_pageview_table
+from app.services.pageview_service import TRACKED_PAGES, OUTBOUND_PAGES, is_bot, record_pageview, ensure_pageview_table
 
 # 프로덕션 JWT 시크릿 키 검증
 if settings.DB_MODE == "production" and "not-for-production" in settings.JWT_SECRET:
@@ -70,17 +70,21 @@ async def pageview_tracker(request: Request, call_next):
     response: Response = await call_next(request)
     try:
         path = request.url.path.rstrip("/") or "/"
+        # 일반 랜딩페이지는 200 응답만, 외부 중계 경로(/plaza 등)는 리다이렉트 시점에 기록
+        ok = response.status_code == 200 or (
+            path in OUTBOUND_PAGES and response.status_code in (302, 307, 308)
+        )
         if (
             request.method == "GET"
-            and path in LANDING_PAGES
-            and response.status_code == 200
+            and path in TRACKED_PAGES
+            and ok
             and not is_bot(request.headers.get("user-agent", ""))
         ):
             referrer = request.headers.get("referer", "")
             ua = request.headers.get("user-agent", "")
             ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() \
                 or (request.client.host if request.client else "")
-            await run_in_threadpool(record_pageview, path, referrer, ua, ip)
+            await run_in_threadpool(record_pageview, path, request.url.query, referrer, ua, ip)
     except Exception as e:
         print(f"⚠️ 방문 기록 실패 (응답에는 영향 없음): {e}")
     return response

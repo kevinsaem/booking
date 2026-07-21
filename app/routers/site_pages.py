@@ -3,7 +3,7 @@
 # 라우트: /, /youth, /adult, /corporate, /autobiography, /privacy, /refund, /tuition/*
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.database import execute_query
 
@@ -61,6 +61,12 @@ async def tuition_corporate(request: Request) -> HTMLResponse:
 @router.get("/corporate-survey", response_class=HTMLResponse)
 async def corporate_survey(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/corporate-survey.html")
+
+
+@router.get("/plaza")
+async def plaza():
+    """작품소개 중계: 클릭 수 기록(미들웨어) 후 game.kevinsaem.com으로 이동"""
+    return RedirectResponse("https://game.kevinsaem.com/plaza.html", status_code=302)
 
 
 @router.get("/campus", response_class=HTMLResponse)
