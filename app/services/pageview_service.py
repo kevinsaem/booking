@@ -81,8 +81,41 @@ def _parse_utm(query_string: str) -> tuple:
         return "", "", ""
 
 
+# 스키마 동기화 대상 컬럼: 컬럼명 → (SQLite 타입, MS-SQL 타입)
+# 컬럼을 새로 추가하면 여기에도 등록할 것 — 기존 테이블에 자동으로 ALTER 된다.
+_SYNC_COLUMNS = {
+    "pv_query": ("TEXT DEFAULT ''", "NVARCHAR(500) DEFAULT ''"),
+    "pv_ref_host": ("TEXT DEFAULT ''", "VARCHAR(100) DEFAULT ''"),
+    "pv_utm_source": ("TEXT DEFAULT ''", "NVARCHAR(100) DEFAULT ''"),
+    "pv_utm_medium": ("TEXT DEFAULT ''", "NVARCHAR(100) DEFAULT ''"),
+    "pv_utm_campaign": ("TEXT DEFAULT ''", "NVARCHAR(200) DEFAULT ''"),
+    "pv_device": ("TEXT DEFAULT ''", "VARCHAR(10) DEFAULT ''"),
+}
+
+
+def _sync_missing_columns() -> None:
+    """구버전 스키마로 만들어진 테이블에 빠진 컬럼을 자동 추가 (재발 방지)"""
+    if DB_MODE == "development":
+        rows = execute_query("SELECT name FROM pragma_table_info('ek_PageView')")
+        existing = {r["name"] for r in rows}
+    else:
+        rows = execute_query(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'ek_PageView'"
+        )
+        existing = {r["COLUMN_NAME"] for r in rows}
+    if not existing:
+        return
+    for col, (sqlite_type, mssql_type) in _SYNC_COLUMNS.items():
+        if col not in existing:
+            if DB_MODE == "development":
+                execute_query(f"ALTER TABLE ek_PageView ADD COLUMN {col} {sqlite_type}", fetch="none")
+            else:
+                execute_query(f"ALTER TABLE ek_PageView ADD {col} {mssql_type}", fetch="none")
+            print(f"🔧 ek_PageView 컬럼 추가: {col}")
+
+
 def ensure_pageview_table() -> None:
-    """ek_PageView 테이블이 없으면 생성 (배포 시 수동 마이그레이션 불필요)"""
+    """ek_PageView 테이블이 없으면 생성, 있으면 빠진 컬럼 자동 추가 (배포 시 수동 마이그레이션 불필요)"""
     if DB_MODE == "development":
         execute_query("""
             CREATE TABLE IF NOT EXISTS ek_PageView (
@@ -130,6 +163,7 @@ def ensure_pageview_table() -> None:
                 CREATE INDEX IX_PageView_date ON ek_PageView(created_at);
             END
         """, fetch="none")
+    _sync_missing_columns()
     print("✅ ek_PageView 테이블 준비 완료 (랜딩페이지 접속통계)")
 
 
