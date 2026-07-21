@@ -1,0 +1,110 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}접속 통계{% endblock %}
+{% block page_title %}접속 통계{% endblock %}
+
+{% block content %}
+<!-- 요약 카드 -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">오늘 방문</p>
+    <p class="text-2xl font-bold text-green-600">{{ "{:,}".format(totals.today) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">최근 7일</p>
+    <p class="text-2xl font-bold text-slate-800">{{ "{:,}".format(totals.d7) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">최근 30일</p>
+    <p class="text-2xl font-bold text-slate-800">{{ "{:,}".format(totals.d30) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <p class="text-xs text-slate-500 mb-1">전체 누적</p>
+    <p class="text-2xl font-bold text-slate-800">{{ "{:,}".format(totals.total) }}</p>
+  </div>
+</div>
+
+<!-- 최근 14일 일별 방문 그래프 -->
+<div class="bg-white rounded-xl border border-slate-200 mb-6">
+  <div class="px-4 py-3 border-b border-slate-200">
+    <h2 class="text-sm font-semibold text-slate-800">최근 14일 일별 방문</h2>
+  </div>
+  <div class="p-4">
+    <div class="flex items-end gap-1 lg:gap-2 h-40">
+      {% for d in daily %}
+      <div class="flex-1 flex flex-col items-center justify-end h-full" title="{{ d.day }} · {{ d.cnt }}회">
+        <span class="text-[10px] text-slate-500 mb-1">{{ d.cnt if d.cnt > 0 else "" }}</span>
+        <div class="w-full max-w-[28px] bg-green-500 rounded-t"
+             style="height: {{ (d.cnt / daily_max * 100) | round(1) }}%; min-height: {{ '2px' if d.cnt > 0 else '0' }};"></div>
+        <span class="text-[10px] text-slate-400 mt-1">{{ d.short }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- 페이지별 방문 통계 -->
+<div class="bg-white rounded-xl border border-slate-200 mb-6">
+  <div class="px-4 py-3 border-b border-slate-200">
+    <h2 class="text-sm font-semibold text-slate-800">랜딩페이지별 방문</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">페이지</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">경로</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">오늘</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">7일</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">30일</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">전체</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for p in page_stats %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 text-slate-700 font-medium">{{ p.label }}</td>
+          <td class="px-4 py-2.5 text-slate-400 text-xs">{{ p.pv_path }}</td>
+          <td class="px-4 py-2.5 text-right {% if p.cnt_today > 0 %}text-green-600 font-semibold{% else %}text-slate-400{% endif %}">{{ "{:,}".format(p.cnt_today) }}</td>
+          <td class="px-4 py-2.5 text-right text-slate-700">{{ "{:,}".format(p.cnt_7d) }}</td>
+          <td class="px-4 py-2.5 text-right text-slate-700">{{ "{:,}".format(p.cnt_30d) }}</td>
+          <td class="px-4 py-2.5 text-right text-slate-500">{{ "{:,}".format(p.cnt_total) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="px-4 py-8 text-center text-slate-400">아직 기록된 방문이 없습니다. 방문이 발생하면 자동으로 집계됩니다.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 외부 유입 경로 -->
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="px-4 py-3 border-b border-slate-200">
+    <h2 class="text-sm font-semibold text-slate-800">외부 유입 경로 TOP 10 <span class="font-normal text-xs text-slate-400">(최근 30일)</span></h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-left">
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500">유입 출처</th>
+          <th class="px-4 py-2.5 text-xs font-medium text-slate-500 text-right">방문 수</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for r in referrers %}
+        <tr class="hover:bg-slate-50">
+          <td class="px-4 py-2.5 text-slate-700 break-all">{{ r.pv_referrer }}</td>
+          <td class="px-4 py-2.5 text-right text-slate-700">{{ "{:,}".format(r.cnt) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2" class="px-4 py-8 text-center text-slate-400">아직 외부 유입 기록이 없습니다.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
