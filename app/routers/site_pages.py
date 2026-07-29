@@ -36,6 +36,12 @@ async def corporate(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/corporate.html")
 
 
+@router.get("/mymission", response_class=HTMLResponse)
+async def mymission(request: Request) -> HTMLResponse:
+    """나만의 미션 — AI 맞춤 교과학습 (독립 랜딩페이지)"""
+    return templates.TemplateResponse(request, "site/mymission.html")
+
+
 @router.get("/privacy", response_class=HTMLResponse)
 async def privacy(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/privacy.html")

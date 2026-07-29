@@ -1,10 +1,10 @@
 {% extends "site/base.html" %}
 
-{% block title %}기업 AI교육 | AI로 일하는 팀, 하루 만에 체감합니다 | 케빈샘AI코딩{% endblock %}
-{% block description %}이론이 아닌 실전. 직원들이 자기 업무에 직접 AI를 적용해보는 실습 중심 기업 교육. 기업 출강 2시간, 10명 이상. AI 에이전트 협업 시연 + 참여형 실습. 케빈샘AI코딩학원.{% endblock %}
+{% block title %}기업 AI자동화 | 반복 업무는 AI 팀에게, 구축부터 교육까지 | 케빈샘AI코딩{% endblock %}
+{% block description %}교육만으로는 부족합니다. 케빈샘이 먼저 귀사의 업무 자동화를 구축하고, 담당 직원이 직접 운영하도록 교육합니다. 세무·문서·고객응대·정산 반복 업무 자동화. 안산 케빈샘랩.{% endblock %}
 
 {% block head_extra %}
-<meta name="keywords" content="안산코딩학원, 기업AI교육, 임직원AI교육, 기업코딩교육, AI연수, 직원AI교육, 기업맞춤AI교육, 바이브코딩기업교육, 사내AI교육, 기업출장교육, ChatGPT교육, AI업무교육, 기업디지털전환교육, Claude Code Teams">
+<meta name="keywords" content="기업AI자동화, 업무자동화, 기업AI교육, AI에이전트, 반복업무자동화, 세무자동화, 문서처리자동화, 고객응대자동화, 기업맞춤AI, Claude Code Teams, 담당자교육, 기술이전, 안산 케빈샘랩">
 <style>
   /* 기업 페이지: nav 초기 상태 — 다크 히어로에 맞게 */
   nav .logo { color: var(--white); }
@@ -14,7 +14,9 @@
 
   /* 히어로 다크 배경 */
   .corp-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 50%, #1a1a2e 100%);
+    background:
+      linear-gradient(135deg, rgba(26,26,46,0.93) 0%, rgba(45,43,85,0.82) 50%, rgba(26,26,46,0.94) 100%),
+      url('/static/site/images/ai_corp_hero.png') center/cover no-repeat;
     min-height: auto;
     padding: 140px 40px 100px;
     position: relative;
@@ -30,366 +32,106 @@
     background: radial-gradient(circle, var(--corp-glow) 0%, transparent 70%);
     pointer-events: none;
   }
-  .corp-hero-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 2;
-  }
+  .corp-hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 2; }
   .corp-hero-tag {
-    font-size: var(--fs-sm);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 24px;
-    font-weight: 500;
+    font-size: var(--fs-sm); letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px; font-weight: 500;
   }
   .corp-hero h1 {
-    font-family: 'Pretendard', sans-serif;
-    font-size: var(--fs-clamp-display);
-    font-weight: 700;
-    line-height: 1.3;
-    color: white;
-    margin-bottom: 24px;
-    word-break: keep-all;
+    font-family: 'Pretendard', sans-serif; font-size: var(--fs-clamp-display);
+    font-weight: 700; line-height: 1.3; color: white; margin-bottom: 24px; word-break: keep-all;
   }
   .corp-hero h1 span { color: var(--gold); }
   .corp-hero .hero-desc {
-    font-size: var(--fs-body-lg);
-    color: rgba(255,255,255,0.6);
-    line-height: 1.8;
-    margin-bottom: 48px;
-    max-width: 600px;
-    word-break: keep-all;
-    border-left: 3px solid var(--gold);
-    padding-left: 20px;
+    font-size: var(--fs-body-lg); color: rgba(255,255,255,0.6); line-height: 1.8;
+    margin-bottom: 48px; max-width: 600px; word-break: keep-all;
+    border-left: 3px solid var(--gold); padding-left: 20px;
   }
-  .corp-hero-meta {
-    display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
-    padding-top: 40px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-  .corp-hero-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .corp-hero-meta-label {
-    font-size: var(--fs-base-sm);
-    color: rgba(255,255,255,0.35);
-    font-weight: 500;
-  }
-  .corp-hero-meta-value {
-    font-size: var(--fs-body);
-    color: white;
-    font-weight: 600;
-  }
+  .corp-hero-meta { display: flex; gap: 40px; flex-wrap: wrap; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .corp-hero-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .corp-hero-meta-label { font-size: var(--fs-base-sm); color: rgba(255,255,255,0.35); font-weight: 500; }
+  .corp-hero-meta-value { font-size: var(--fs-body); color: white; font-weight: 600; }
 
   /* Before/After 비교 카드 */
-  .compare-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 24px;
-    align-items: center;
-    margin-top: 40px;
-  }
-  .compare-card {
-    padding: 40px 32px;
-    border-radius: 14px;
-    text-align: left;
-  }
-  .compare-card.before {
-    background: var(--white);
-    border: 1px solid var(--line);
-  }
-  .compare-card.after {
-    background: linear-gradient(135deg, #1a1a2e, #2d2b55);
-    color: white;
-  }
-  .compare-card .compare-tag {
-    font-size: var(--fs-sm);
-    letter-spacing: 2px;
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
+  .compare-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; margin-top: 40px; }
+  .compare-card { padding: 40px 32px; border-radius: 14px; text-align: left; }
+  .compare-card.before { background: var(--white); border: 1px solid var(--line); }
+  .compare-card.after { background: linear-gradient(135deg, #1a1a2e, #2d2b55); color: white; }
+  .compare-card .compare-tag { font-size: var(--fs-sm); letter-spacing: 2px; font-weight: 600; margin-bottom: 16px; }
   .compare-card.before .compare-tag { color: var(--ink4); }
   .compare-card.after .compare-tag { color: var(--gold); }
-  .compare-card h3 {
-    font-size: var(--fs-heading);
-    font-weight: 700;
-    margin-bottom: 16px;
-    line-height: 1.3;
-  }
+  .compare-card h3 { font-size: var(--fs-heading); font-weight: 700; margin-bottom: 16px; line-height: 1.3; }
   .compare-card.after h3 span { color: var(--gold); }
-  .compare-card p {
-    font-size: var(--fs-base-lg);
-    line-height: 1.7;
-  }
-  .compare-card.before p { color: var(--ink3); }
-  .compare-card.after p { color: rgba(255,255,255,0.6); }
-  .compare-arrow {
-    font-size: var(--fs-display);
-    color: var(--corp);
-    font-weight: 300;
-    text-align: center;
-  }
+  .compare-card ul { list-style: none; }
+  .compare-card li { font-size: var(--fs-base-lg); line-height: 1.7; padding-left: 22px; position: relative; margin: 10px 0; }
+  .compare-card.before li { color: var(--ink3); }
+  .compare-card.after li { color: rgba(255,255,255,0.75); }
+  .compare-card.before li::before { content: '–'; position: absolute; left: 4px; color: var(--ink4); }
+  .compare-card.after li::before { content: '✓'; position: absolute; left: 2px; color: var(--gold); font-weight: 700; }
+  .compare-arrow { font-size: var(--fs-display); color: var(--corp); font-weight: 300; text-align: center; }
+
+  /* 3-기둥 (우리가 하는 일) */
+  .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
+  .pillar-card { padding: 34px 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-align: left; transition: all 0.3s; }
+  .pillar-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(45,43,85,0.12); }
+  .pillar-card .idx { font-size: var(--fs-base-sm); font-weight: 700; letter-spacing: 2px; color: var(--ink4); }
+  .pillar-card h3 { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink); margin: 12px 0 10px; }
+  .pillar-card p { font-size: var(--fs-base); color: var(--ink3); line-height: 1.7; }
+  .pillar-card.flag { background: linear-gradient(135deg, #1a1a2e, #2d2b55); border-color: transparent; color: white; }
+  .pillar-card.flag .idx { color: var(--gold); }
+  .pillar-card.flag h3 { color: white; }
+  .pillar-card.flag p { color: rgba(255,255,255,0.7); }
+  .pillar-card.flag .badge { display: inline-block; font-size: var(--fs-xs); font-weight: 700; letter-spacing: 1px; color: #231602; background: var(--gold); padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
 
   /* 강점 카드 */
-  .strength-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 40px;
-  }
-  .strength-card {
-    padding: 32px 28px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--white);
-    transition: all 0.3s;
-  }
-  .strength-card:hover {
-    border-color: var(--corp);
-    box-shadow: 0 8px 32px var(--corp-glow);
-  }
-  .strength-card .strength-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    font-size: 24px;
-  }
-  .strength-card h3 {
-    font-size: var(--fs-body-lg);
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .strength-card p {
-    font-size: var(--fs-base);
-    color: var(--ink3);
-    line-height: 1.7;
-  }
+  .strength-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+  .strength-card { padding: 32px 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-align: left; transition: all 0.3s; }
+  .strength-card:hover { border-color: var(--corp); box-shadow: 0 8px 32px var(--corp-glow); }
+  .strength-card .strength-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 24px; }
+  .strength-card h3 { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .strength-card p { font-size: var(--fs-base); color: var(--ink3); line-height: 1.7; }
 
-  /* 특별 제공 사항 */
-  .benefit-box {
-    max-width: 900px;
-    margin: 40px auto 0;
-    padding: 40px;
-    border-radius: 14px;
-    background: var(--white);
-    border: 2px solid var(--corp);
-    box-shadow: 0 4px 20px var(--corp-glow);
-  }
-  .benefit-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-  .benefit-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--corp-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    flex-shrink: 0;
-  }
-  .benefit-for {
-    text-align: center;
-    padding: 16px 24px;
-    background: var(--dark-surface);
-    border-radius: 10px;
-    margin-bottom: 28px;
-  }
-  .benefit-for .for-label {
-    font-size: var(--fs-sm);
-    color: var(--ink4);
-    letter-spacing: 2px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  .benefit-for .for-value {
-    font-size: var(--fs-heading);
-    font-weight: 700;
-    color: var(--corp);
-  }
-  .benefit-for .for-desc {
-    font-size: var(--fs-base-sm);
-    color: var(--ink3);
-    margin-top: 4px;
-  }
-  .benefit-features {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .benefit-feat {
-    text-align: center;
-    padding: 16px;
-  }
-  .benefit-feat-icon {
-    font-size: 28px;
-    margin-bottom: 8px;
-  }
-  .benefit-feat h4 {
-    font-size: var(--fs-base-lg);
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 6px;
-  }
-  .benefit-feat p {
-    font-size: var(--fs-base-sm);
-    color: var(--ink3);
-    line-height: 1.6;
-  }
+  /* 적용 분야 */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 40px; }
+  .field-card { display: flex; gap: 18px; align-items: flex-start; padding: 26px 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-align: left; transition: border-color 0.2s; }
+  .field-card:hover { border-color: var(--corp); }
+  .field-card .k { font-size: var(--fs-heading-sm); font-weight: 800; color: var(--corp); min-width: 30px; line-height: 1.1; }
+  .field-card h3 { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .field-card p { font-size: var(--fs-base); color: var(--ink3); line-height: 1.65; }
 
   /* 기대 효과 카드 */
-  .outcome-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 40px;
-  }
-  .outcome-card {
-    padding: 36px 28px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--white);
-    text-align: center;
-  }
-  .outcome-card .outcome-term {
-    font-size: var(--fs-sm);
-    letter-spacing: 2px;
-    font-weight: 600;
-    color: var(--corp);
-    margin-bottom: 4px;
-  }
-  .outcome-card .outcome-label {
-    font-size: var(--fs-body);
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-  .outcome-card .outcome-period {
-    font-size: var(--fs-base-sm);
-    color: var(--ink4);
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--line);
-  }
-  .outcome-card .outcome-num {
-    font-family: 'Pretendard', sans-serif;
-    font-size: var(--fs-display);
-    font-weight: 700;
-    color: var(--gold);
-    margin-bottom: 6px;
-    line-height: 1;
-  }
-  .outcome-card .outcome-desc {
-    font-size: var(--fs-base);
-    font-weight: 600;
-    color: var(--ink);
-    margin-bottom: 20px;
-  }
-  .outcome-card ul {
-    list-style: none;
-    text-align: left;
-    font-size: var(--fs-base-sm);
-    color: var(--ink3);
-    line-height: 2;
-  }
-  .outcome-card ul li::before {
-    content: '·';
-    margin-right: 8px;
-    color: var(--corp);
-    font-weight: 700;
-  }
-
-
-  /* 강사 프로필 */
-  .instructor-split {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 48px;
-    align-items: center;
-    max-width: 800px;
-    margin: 40px auto 0;
-  }
-  .instructor-photo {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid var(--corp-bg);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-  }
-  .instructor-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 16px 0;
-  }
-  .instructor-tag {
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--line);
-    font-size: var(--fs-base-sm);
-    font-weight: 500;
-    color: var(--ink2);
-    background: var(--white);
-  }
-  .instructor-quote {
-    margin-top: 20px;
-    padding: 20px 24px;
-    background: var(--corp-bg);
-    border-radius: 10px;
-    border: 1px solid var(--corp);
-  }
-  .instructor-quote p {
-    font-size: var(--fs-body);
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.7;
-  }
+  .outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .outcome-card { padding: 36px 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-align: center; }
+  .outcome-card .outcome-term { font-size: var(--fs-sm); letter-spacing: 2px; font-weight: 600; color: var(--corp); margin-bottom: 4px; }
+  .outcome-card .outcome-label { font-size: var(--fs-body); font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .outcome-card .outcome-period { font-size: var(--fs-base-sm); color: var(--ink4); margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .outcome-card .outcome-num { font-family: 'Pretendard', sans-serif; font-size: var(--fs-display); font-weight: 700; color: var(--gold); margin-bottom: 6px; line-height: 1; }
+  .outcome-card .outcome-desc { font-size: var(--fs-base); font-weight: 600; color: var(--ink); margin-bottom: 20px; }
+  .outcome-card ul { list-style: none; text-align: left; font-size: var(--fs-base-sm); color: var(--ink3); line-height: 2; }
+  .outcome-card ul li::before { content: '·'; margin-right: 8px; color: var(--corp); font-weight: 700; }
 
   /* 주의 배너 */
-  .notice-banner {
-    max-width: 900px;
-    margin: 24px auto 0;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #1a1a2e, #2d2b55);
-    border-radius: 10px;
-    text-align: center;
-  }
-  .notice-banner p {
-    font-size: var(--fs-base-lg);
-    color: rgba(255,255,255,0.8);
-    line-height: 1.7;
-  }
-  .notice-banner strong {
-    color: var(--gold);
-  }
+  .notice-banner { max-width: 900px; margin: 24px auto 0; padding: 16px 24px; background: linear-gradient(135deg, #1a1a2e, #2d2b55); border-radius: 10px; text-align: center; }
+  .notice-banner p { font-size: var(--fs-base-lg); color: rgba(255,255,255,0.8); line-height: 1.7; }
+  .notice-banner strong { color: var(--gold); }
+
+  /* 문의 카드 */
+  .contact-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 32px; }
+  .contact-method { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); text-decoration: none; transition: all 0.2s; }
+  .contact-method:hover { border-color: var(--corp); box-shadow: 0 8px 24px var(--corp-glow); transform: translateY(-3px); }
+  .contact-method .cm-label { font-size: var(--fs-base-sm); color: var(--ink4); font-weight: 600; }
+  .contact-method .cm-value { font-size: var(--fs-body); font-weight: 700; color: var(--ink); }
 
   @media (max-width: 900px) {
     .corp-hero { padding: 120px 20px 60px; }
     .corp-hero-meta { gap: 24px; }
-    .about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-    .about-circle { width: 220px !important; height: 220px !important; }
     .compare-grid { grid-template-columns: 1fr; }
     .compare-arrow { transform: rotate(90deg); }
+    .pillar-grid { grid-template-columns: 1fr; }
     .strength-grid { grid-template-columns: 1fr; }
-    .benefit-features { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
     .outcome-grid { grid-template-columns: 1fr; }
-    .instructor-split { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+    .contact-methods { grid-template-columns: 1fr; }
   }
   @media (max-width: 600px) {
     .corp-hero { padding: 100px 16px 48px; }
@@ -400,351 +142,272 @@
 
 {% block content %}
 
-<!-- ===== 1. HERO — "AI로 일하는 팀, 하루 만에 체감합니다" ===== -->
+<!-- ===== 1. HERO ===== -->
 <section class="corp-hero">
   <div class="corp-hero-inner">
-    <div class="corp-hero-tag rv">PROPOSAL · 2026</div>
-    <p class="rv" style="font-size: var(--fs-body); color: rgba(255,255,255,0.5); margin-bottom: 12px;">귀사 임직원을 위한</p>
-    <h1 class="rv">AI로 일하는 팀,<br><span>하루 만에 체감합니다</span></h1>
+    <div class="corp-hero-tag rv">AI 업무 자동화 · 케빈샘랩</div>
+    <p class="rv" style="font-size: var(--fs-body); color: rgba(255,255,255,0.5); margin-bottom: 12px;">직원이 야근하던 반복 업무를</p>
+    <h1 class="rv">반복 업무는 <span>AI 팀</span>에게,<br>직원은 판단에 집중합니다</h1>
     <div class="hero-desc rv">
-      이론이 아닌 실전. 직원들이 자기 업무에 직접<br>
-      AI를 적용해보는 실습 중심 기업 교육입니다.
+      자료 입력 · 문서 처리 · 고객 응대 — 사람이 반복하던 일을 AI 팀이 처리합니다.<br>
+      케빈샘이 먼저 <strong style="color:#fff;">자동화를 구축</strong>하고, 담당 직원이 직접 운영하도록 <strong style="color:#fff;">교육</strong>까지 합니다.
     </div>
     <div class="hero-ctas rv" style="margin-bottom: 48px;">
-      <a href="/survey" class="btn btn-corp" style="padding: 16px 36px; font-size: var(--fs-body); border-radius: 8px;" target="_blank">교육 문의하기</a>
-      <a href="#cta" class="btn btn-t" style="font-size: var(--fs-body); padding: 16px 36px;">맞춤 교육 상담받기</a>
+      <a href="#cta" class="btn btn-corp" style="padding: 16px 36px; font-size: var(--fs-body); border-radius: 8px;">무료 상담 신청</a>
+      <a href="#process" class="btn btn-t" style="font-size: var(--fs-body); padding: 16px 36px;">도입 절차 보기</a>
     </div>
     <div class="corp-hero-meta rv">
       <div class="corp-hero-meta-item">
-        <div class="corp-hero-meta-label">교육 방식</div>
-        <div class="corp-hero-meta-value">기업 출강 · 오프라인 · 2시간</div>
+        <div class="corp-hero-meta-label">진행 방식</div>
+        <div class="corp-hero-meta-value">자동화 구축 → 운영 → 담당자 교육</div>
       </div>
       <div class="corp-hero-meta-item">
-        <div class="corp-hero-meta-label">교육 인원</div>
-        <div class="corp-hero-meta-value">협의</div>
+        <div class="corp-hero-meta-label">대상</div>
+        <div class="corp-hero-meta-value">반복 업무가 많은 기업·기관</div>
       </div>
       <div class="corp-hero-meta-item">
-        <div class="corp-hero-meta-label">교육 형태</div>
-        <div class="corp-hero-meta-value">AI 에이전트 협업 시연 + 참여형 실습</div>
+        <div class="corp-hero-meta-label">강점</div>
+        <div class="corp-hero-meta-value">AI 팀 협업 + 사람 검수</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== 2. ABOUT US — 안산 유일 AI·코딩 전문 교육기관 ===== -->
-<section class="sec" style="background: var(--white);">
-  <div class="sec-inner">
-    <div class="about-grid" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center;">
-      <div class="rv" style="word-break: keep-all;">
-        <div class="sec-tag" style="color: var(--corp);">ABOUT US</div>
-        <h2 class="sec-h">안산 유일 AI·코딩<br>전문 교육기관</h2>
-        <p style="font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.8; margin-bottom: 32px;">케빈샘랩이 운영하는 교육 브랜드 · 2018년부터 8년간 쌓아온 교육 노하우</p>
-        <h3 style="font-size: var(--fs-subtitle); font-weight: 700; color: var(--ink); margin-bottom: 12px;">청소년부터 60대 직장인까지,<br>모두가 <span style="color: var(--corp);">AI로 만드는 교육</span>을 합니다.</h3>
-        <p style="font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.8; margin-bottom: 28px;">안산 선부·초지 2개 캠퍼스 운영 · 청소년 진로코딩, 성인 1:1 AI 활용, 기업·단체 맞춤 교육까지 다양한 연령대와 분야의 교육 경험을 보유하고 있습니다.</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div style="padding: 20px; background: var(--dark-surface); border-radius: 10px;">
-            <div style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink);">8년+</div>
-            <div style="font-size: var(--fs-base-sm); color: var(--ink3);">AI·코딩 교육 경력</div>
-          </div>
-          <div style="padding: 20px; background: var(--dark-surface); border-radius: 10px;">
-            <div style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink);">2</div>
-            <div style="font-size: var(--fs-base-sm); color: var(--ink3);">안산 캠퍼스 (선부·초지)</div>
-          </div>
-          <div style="padding: 20px; background: var(--dark-surface); border-radius: 10px;">
-            <div style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink);">100%</div>
-            <div style="font-size: var(--fs-base-sm); color: var(--ink3);">실습 중심 커리큘럼</div>
-          </div>
-          <div style="padding: 20px; background: var(--dark-surface); border-radius: 10px;">
-            <div style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink);">1:1</div>
-            <div style="font-size: var(--fs-base-sm); color: var(--ink3);">맞춤 멘토링 시스템</div>
-          </div>
-        </div>
-      </div>
-      <div class="rv" style="text-align: center;">
-        <div class="about-circle" style="background: linear-gradient(135deg, #1a1a2e, #2d2b55); border-radius: 50%; width: 280px; height: 280px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
-          <div style="font-size: var(--fs-sm); letter-spacing: 2px; color: rgba(255,255,255,0.5); font-weight: 600; margin-bottom: 8px;">CUMULATIVE</div>
-          <div style="font-size: var(--fs-display-xl); font-weight: 700; color: var(--gold); line-height: 1;">1,439</div>
-          <div style="font-size: var(--fs-base-lg); color: rgba(255,255,255,0.7); margin-top: 8px;">누적 교육 참가자</div>
-        </div>
-        <p class="rv" style="margin-top: 20px; font-size: var(--fs-body); font-weight: 700; color: var(--ink);">숫자가 증명합니다</p>
-        <p class="rv" style="font-size: var(--fs-base-sm); color: var(--ink4); letter-spacing: 2px;">SINCE 2018</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 3. INSTRUCTOR — 강사 소개 ===== -->
-<section class="sec" style="background: var(--dark-surface);">
-  <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">INSTRUCTOR</div>
-    <h2 class="sec-h rv">강사 소개</h2>
-    <p class="sec-p rv">이번 교육을 직접 진행하는 강사입니다</p>
-    <div class="instructor-split">
-      <div class="rv">
-        <img src="/static/site/images/instructor_kevin.png" alt="케빈샘" class="instructor-photo" loading="lazy">
-      </div>
-      <div class="rv" style="text-align: left;">
-        <h3 style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink); margin-bottom: 4px;">케빈샘</h3>
-        <p style="font-size: var(--fs-base-lg); color: var(--ink3); margin-bottom: 16px;">케빈샘AI코딩학원 원장 · AI·코딩 교육 전문가</p>
-        <div class="instructor-tags">
-          <span class="instructor-tag">AI·코딩 교육 8년+</span>
-          <span class="instructor-tag">누적 수강생 1,439명</span>
-          <span class="instructor-tag">바이브코딩 전문</span>
-          <span class="instructor-tag">기업 교육 커리큘럼 설계</span>
-        </div>
-        <div class="instructor-quote">
-          <p>"이론 0%, 실습 100%" — 교육 당일부터 쓸 수 있는<br>AI 활용법을, 현장 업무 중심으로 전달합니다.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 4. CONCEPT — Before/After 비교 ===== -->
+<!-- ===== 2. BEFORE / AFTER — 문제 제기 ===== -->
 <section class="sec" style="background: var(--white);">
   <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">CONCEPT</div>
-    <h2 class="sec-h rv" style="word-break: keep-all;">이번 교육의 핵심 메시지</h2>
-    <p class="sec-p rv">AI를 "하나의 도구"가 아닌 "협업하는 팀"으로 보여드립니다</p>
+    <div class="sec-tag rv" style="color: var(--corp);">THE PROBLEM</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">사람을 더 뽑아도,<br>같은 반복은 계속됩니다</h2>
+    <p class="sec-p rv">교육만으로는 담당자들이 두려워하고 어려워했습니다. 그래서 방식을 바꿨습니다.</p>
     <div class="compare-grid">
       <div class="compare-card before rv">
         <div class="compare-tag">BEFORE · 기존 방식</div>
-        <h3>"AI 한 대가 일한다"</h3>
-        <p>프롬프트 입력 → 결과 확인<br>단일 AI에 의존하는 방식</p>
+        <h3>사람이 반복에 갈려나감</h3>
+        <ul>
+          <li>영수증·전표·거래내역을 하나씩 수기 입력</li>
+          <li>비슷한 문의에 매번 사람이 응대</li>
+          <li>문서 정리·정산으로 신고철마다 야근</li>
+          <li>담당자가 바뀌면 처음부터 다시</li>
+        </ul>
       </div>
       <div class="compare-arrow rv">→</div>
       <div class="compare-card after rv">
-        <div class="compare-tag">AFTER · 케빈샘 교육</div>
-        <h3>"AI 팀이 <span>협업한다</span>"</h3>
-        <p>여러 AI 에이전트가 역할을 나눠<br>하나의 업무를 완성하는 방식</p>
+        <div class="compare-tag">AFTER · 케빈샘랩 자동화</div>
+        <h3>AI 팀이 처리, <span>사람은 판단만</span></h3>
+        <ul>
+          <li>여러 AI 에이전트가 역할을 나눠 반복 처리</li>
+          <li>사람은 애매한 것만 검수·최종 판단</li>
+          <li>처리 시간 크게 단축, 야근·실수 감소</li>
+          <li>업무 노하우가 시스템에 자산으로 축적</li>
+        </ul>
       </div>
-    </div>
-    <div class="notice-banner rv" style="margin-top: 40px;">
-      <p>귀사 실무에 바로 적용 가능한 사례로 시연하여,<br>직원들이 <strong>"AI를 이렇게 쓰는 거구나"</strong>를 명확히 체감하게 됩니다.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== 5. WHY CLAUDE CODE TEAMS — 4가지 강점 ===== -->
+<!-- ===== 3. WHAT WE DO — 구축→운영→교육 ===== -->
 <section class="sec" style="background: var(--dark-surface);">
   <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">WHY CLAUDE CODE TEAMS</div>
-    <h2 class="sec-h rv" style="word-break: keep-all;">이번 시연의 주인공 — <span style="color: var(--corp);">Claude Code Teams</span></h2>
-    <p class="sec-p rv">단일 AI로는 불가능한, "AI 팀 협업"만의 4가지 강점</p>
+    <div class="sec-tag rv" style="color: var(--corp);">WHAT WE DO</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">구축에서 끝나지 않습니다.<br>운영과 교육까지 함께합니다</h2>
+    <p class="sec-p rv" style="max-width: 680px;">많은 자동화 업체는 만들어주고 사라집니다. 케빈샘랩은 8년 교육 노하우로, 귀사가 <strong style="color: var(--ink);">직접 운영</strong>할 수 있게 만드는 것까지 책임집니다.</p>
+    <div class="pillar-grid">
+      <div class="pillar-card rv">
+        <div class="idx">01</div>
+        <h3>자동화 구축</h3>
+        <p>귀사의 실제 업무 흐름을 분석해, 반복 업무를 처리하는 맞춤 AI 워크플로우를 설계하고 구축합니다.</p>
+      </div>
+      <div class="pillar-card rv">
+        <div class="idx">02</div>
+        <h3>운영 · 유지</h3>
+        <p>예외 처리, 개선, 업데이트까지 책임집니다. 자동화가 계속 정확하게 돌도록 관리합니다.</p>
+      </div>
+      <div class="pillar-card flag rv">
+        <span class="badge">케빈샘랩만의 강점</span>
+        <div class="idx">03</div>
+        <h3>담당자 교육 · 기술이전</h3>
+        <p>귀사 담당자가 직접 운영하도록 교육합니다. 교육만으로 어려워하던 담당자도, 이미 만들어진 자동화를 쓰며 자연스럽게 익힙니다.</p>
+      </div>
+    </div>
+    <div class="notice-banner rv" style="margin-top: 32px;">
+      <p>교육만 받으면 담당자는 두려워합니다. <strong>먼저 만들어드리고, 쓰면서 배우게</strong> 하는 것이 핵심입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. WHY AI TEAM — 4가지 강점 ===== -->
+<section class="sec" style="background: var(--white);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">WHY AN AI TEAM</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">AI 한 대가 아니라, <span style="color: var(--corp);">AI 팀</span>이 협업합니다</h2>
+    <p class="sec-p rv">Claude Code Teams 기반 · 여러 AI 에이전트가 역할을 나눠 하나의 업무를 완성하고, 서로의 결과를 검증합니다</p>
     <div class="strength-grid">
       <div class="strength-card rv">
         <div class="strength-icon" style="background: var(--corp-bg);">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <h3>역할 분담 협업</h3>
-        <p>기획자 · 개발자 · 검토자 AI가 각자 전문 영역을 맡아 하나의 결과물 완성. 혼자 일하는 AI가 아닌 <strong>"AI 팀"</strong>이 움직입니다.</p>
+        <p>분류 · 처리 · 검토 AI가 각자 전문 영역을 맡아 하나의 결과물을 완성합니다.</p>
       </div>
       <div class="strength-card rv">
         <div class="strength-icon" style="background: var(--corp-bg);">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
         <h3>AI끼리 직접 소통</h3>
-        <p>사람 중재 없이 AI들이 서로 <strong>질문·답변</strong>을 주고받으며 작업. "이 부분 확인 필요해" 같은 메시지가 눈앞에서 오갑니다.</p>
+        <p>사람 중재 없이 AI들이 질문·답변을 주고받으며 작업을 이어갑니다.</p>
       </div>
       <div class="strength-card rv">
         <div class="strength-icon" style="background: var(--corp-bg);">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <h3>동시 병렬 실행</h3>
-        <p>3~5개 작업이 <strong>동시에 진행</strong>되어 속도가 수배로. 단일 AI가 순차 처리할 일을 팀 전체가 한 번에 끝냅니다.</p>
+        <p>여러 작업이 동시에 진행되어, 순차 처리보다 몇 배 빠르게 끝냅니다.</p>
       </div>
       <div class="strength-card rv">
         <div class="strength-icon" style="background: var(--corp-bg);">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
         </div>
-        <h3>AI끼리 상호 검증</h3>
-        <p>검토자 AI가 <strong>"이 답 틀렸다"</strong>고 반박하고 수정을 요구. AI 한 대의 실수를 AI 팀이 잡아냅니다 — 정확성 우려 해소.</p>
+        <h3>상호 검증 (정확성)</h3>
+        <p>검토 AI가 다른 AI의 결과를 반박·수정합니다. 한 대의 실수를 팀이 잡아냅니다.</p>
       </div>
     </div>
     <div class="notice-banner rv" style="margin-top: 32px;">
-      <p>기업 교육 현장에서 가장 빈번한 우려인 <strong>"AI 정확성"</strong> 문제를,<br>Claude Code Teams의 상호 검증 구조가 직접 해결합니다.</p>
+      <p>기업 자동화의 가장 큰 우려인 <strong>"AI가 틀리면 어쩌죠?"</strong>를,<br>AI끼리의 상호 검증과 사람 검수 단계로 이중 방어합니다.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== 6. SPECIAL BENEFITS — 특별 제공 사항 ===== -->
-<section class="sec" style="background: var(--white);">
-  <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">SPECIAL BENEFITS</div>
-    <h2 class="sec-h rv" style="word-break: keep-all;">교육 효과를 극대화하는 <span style="color: var(--corp);">특별 제공 사항</span></h2>
-    <p class="sec-p rv">단체교육만으로는 부족합니다 · 학원에서 1:1 맞춤 수업을 추가로 제공합니다</p>
-    <div class="benefit-box rv">
-      <div class="benefit-header">
-        <div class="benefit-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div style="text-align: left;">
-          <h3 style="font-size: var(--fs-heading-sm); font-weight: 700; color: var(--ink); margin-bottom: 4px;">참석 직원 1:1 업무특화 수업 제공</h3>
-          <p style="font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.7; word-break: keep-all;">학원 방문 시 전담 멘토 선생님과 1:1로 진행하며, 수업 시간과 요일은 수강자 일정에 맞춰 협의 후 결정합니다. 본인 실제 업무를 가져와 AI로 풀어보는 밀착 맞춤 세션입니다.</p>
-        </div>
-      </div>
-      <div class="benefit-for">
-        <div class="for-label">FOR</div>
-        <div class="for-value">최대 2명</div>
-        <div class="for-desc">스탠다드 과정 1회 · 학원 방문</div>
-      </div>
-      <div class="benefit-features">
-        <div class="benefit-feat">
-          <div class="benefit-feat-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-          </div>
-          <h4>본인 업무 직접 적용</h4>
-          <p>단체교육에서 본 사례를<br>본인 업무에 실제 적용</p>
-        </div>
-        <div class="benefit-feat">
-          <div class="benefit-feat-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <h4>일정 협의 가능</h4>
-          <p>수강자 일정에 맞춰<br>시간·요일 맞춤 조율</p>
-        </div>
-        <div class="benefit-feat">
-          <div class="benefit-feat-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          </div>
-          <h4>즉시 활용 가능한 결과물</h4>
-          <p>수업 종료 시점에<br>바로 쓸 수 있는 결과물 확보</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== 7. PROCESS — 진행 절차 ===== -->
+<!-- ===== 5. FIELDS — 적용 분야 ===== -->
 <section class="sec" style="background: var(--dark-surface);">
   <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">PROCESS</div>
-    <h2 class="sec-h rv">진행 절차</h2>
-    <p class="sec-p rv">4단계로 꼼꼼하게 준비하고 실행합니다</p>
+    <div class="sec-tag rv" style="color: var(--corp);">WHERE IT FITS</div>
+    <h2 class="sec-h rv">이런 반복 업무에 강합니다</h2>
+    <p class="sec-p rv">사람이 매번 손으로 하던 정형화된 반복 업무일수록 효과가 큽니다</p>
+    <div class="field-grid">
+      <div class="field-card rv"><span class="k">A</span><div><h3>세무·회계 자료처리</h3><p>영수증·카드전표·통장 거래내역을 분류하고 정형 데이터로 입력. 신고철 야근을 줄입니다.</p></div></div>
+      <div class="field-card rv"><span class="k">B</span><div><h3>문서·견적·발주 처리</h3><p>이메일·엑셀·스캔으로 들어온 문서를 자동으로 읽어 정리·입력합니다.</p></div></div>
+      <div class="field-card rv"><span class="k">C</span><div><h3>고객 문의 응대</h3><p>반복되는 문의를 1차 자동 응대·분류하고, 필요한 것만 사람에게 넘깁니다.</p></div></div>
+      <div class="field-card rv"><span class="k">D</span><div><h3>리포트·정산 자동화</h3><p>정기 보고서·정산 자료를 자동으로 취합하고 초안을 작성합니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 6. PROCESS — 진행 절차 ===== -->
+<section class="sec" id="process" style="background: var(--white);">
+  <div class="sec-inner center">
+    <div class="sec-tag rv" style="color: var(--corp);">HOW IT WORKS</div>
+    <h2 class="sec-h rv">4단계로 도입합니다</h2>
+    <p class="sec-p rv">진단부터 담당자 자립까지, 단계마다 함께합니다</p>
     <div class="grid-4 mt-36">
       <div class="circle-step rv">
         <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">1</div>
-        <h4>사전 협의</h4>
-        <p style="word-break: keep-all;">귀사 업무 유형 파악 · 맞춤 사례 선정</p>
+        <h4>진단</h4>
+        <p style="word-break: keep-all;">귀사 업무를 파악하고, 자동화 가능 영역과 예상 효과를 무료로 진단합니다</p>
       </div>
       <div class="circle-step rv">
         <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">2</div>
-        <h4>커리큘럼 설계</h4>
-        <p style="word-break: keep-all;">귀사 맞춤 교안 최종 확정 · 사례 녹여내기</p>
+        <h4>설계 · 구축</h4>
+        <p style="word-break: keep-all;">맞춤 워크플로우를 설계·구축하고, 파일럿으로 실제 효과를 검증합니다</p>
       </div>
       <div class="circle-step rv">
         <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">3</div>
-        <h4>단체교육 실시</h4>
-        <p style="word-break: keep-all;">협의된 일정에 회사 출강 · 2시간 교육</p>
+        <h4>운영 · 유지</h4>
+        <p style="word-break: keep-all;">실무에 투입해 예외 처리·개선을 지속합니다. 사람 검수 단계를 포함합니다</p>
       </div>
       <div class="circle-step rv">
         <div class="circle-num corp" style="font-family: 'Pretendard', sans-serif;">4</div>
-        <h4>1:1 체험 제공</h4>
-        <p style="word-break: keep-all;">직원별 일정 조율 · 학원 방문 · 업무특화 수업</p>
+        <h4>교육 · 기술이전</h4>
+        <p style="word-break: keep-all;">담당자 교육으로 귀사가 직접 운영하도록 지원합니다</p>
       </div>
     </div>
     <div class="notice-banner rv" style="margin-top: 32px;">
-      <p>단계마다 귀사와 꼼꼼히 소통하며, <strong>"우리 회사에 맞춰진 교육"</strong>을 완성합니다.</p>
+      <p>운영은 귀사에 넘기고, 개선·유지·장애 대응은 저희가 — <strong>비용은 낮추고, 자립은 높입니다.</strong></p>
     </div>
   </div>
 </section>
 
-<!-- ===== 8. OUTCOMES — 기대 효과 ===== -->
-<section class="sec" style="background: var(--white);">
+<!-- ===== 7. OUTCOMES — 기대 효과 ===== -->
+<section class="sec" style="background: var(--dark-surface);">
   <div class="sec-inner center">
     <div class="sec-tag rv" style="color: var(--corp);">OUTCOMES</div>
-    <h2 class="sec-h rv">기대 효과</h2>
-    <p class="sec-p rv">교육 직후부터 장기적으로 이어지는 변화</p>
+    <h2 class="sec-h rv">도입 직후부터, 오래 이어지는 변화</h2>
+    <p class="sec-p rv">단기 체감부터 장기 자산화까지</p>
     <div class="outcome-grid">
-      <!-- 단기 -->
       <div class="outcome-card rv">
         <div class="outcome-term">SHORT-TERM</div>
         <div class="outcome-label">단기 효과</div>
-        <div class="outcome-period">교육 직후 ~ 1주일</div>
-        <div class="outcome-num">100%</div>
-        <div class="outcome-desc">임직원 AI 도구 활용 가능</div>
+        <div class="outcome-period">도입 1주 이내</div>
+        <div class="outcome-num">즉시</div>
+        <div class="outcome-desc">반복 업무 자동 처리 시작</div>
         <ul>
-          <li>Claude Code Teams 기반 AI 협업 활용법 체득</li>
-          <li>보고서·메일·제안서에 즉시 적용</li>
-          <li>개별 업무 과제 해결 경험</li>
+          <li>구축된 자동화가 실무에 바로 투입</li>
+          <li>반복 작업 시간이 즉시 감소</li>
+          <li>야근·단순 실수 체감 감소</li>
         </ul>
       </div>
-      <!-- 중기 -->
       <div class="outcome-card rv">
         <div class="outcome-term">MID-TERM</div>
         <div class="outcome-label">중기 효과</div>
         <div class="outcome-period">1개월 이내</div>
-        <div class="outcome-num">30~50%</div>
-        <div class="outcome-desc">반복 업무 처리 시간 단축</div>
+        <div class="outcome-num">30~80%</div>
+        <div class="outcome-desc">처리 시간 단축</div>
         <ul>
-          <li>회의 자료·고객 대응 문서 품질 향상</li>
-          <li>개별 업무 자동화 아이디어 발굴</li>
-          <li>AI 활용에 대한 심리적 장벽 해소</li>
+          <li>직원은 더 중요한 일에 시간 사용</li>
+          <li>담당자가 직접 운영 가능해짐</li>
+          <li>추가 자동화 아이디어 발굴</li>
         </ul>
       </div>
-      <!-- 장기 -->
       <div class="outcome-card rv">
         <div class="outcome-term">LONG-TERM</div>
         <div class="outcome-label">장기 효과</div>
         <div class="outcome-period">지속적</div>
-        <div class="outcome-num" style="font-size: var(--fs-display-lg);">∞</div>
-        <div class="outcome-desc">조직의 AI 역량 자산화</div>
+        <div class="outcome-num">자산화</div>
+        <div class="outcome-desc">조직의 AI 역량 축적</div>
         <ul>
-          <li>신규 업무에 AI 도입이 자연스러워짐</li>
-          <li>심화 교육·컨설팅으로 확장 가능</li>
-          <li>기업 전체 생산성 향상 기여</li>
+          <li>업무 방식 자체가 바뀜</li>
+          <li>노하우가 시스템에 남음</li>
+          <li>신규 업무로 자동화 확장</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== 9. INQUIRY — 교육 문의 ===== -->
-<section class="sec" id="inquiry" style="background: var(--dark-surface);">
+<!-- ===== 8. INQUIRY — 문의 ===== -->
+<section class="sec" id="inquiry" style="background: var(--white);">
   <div class="sec-inner center">
-    <div class="sec-tag rv" style="color: var(--corp);">INQUIRY</div>
-    <h2 class="sec-h rv">교육 문의</h2>
-    <p class="sec-p rv">교육 인원 · 시간 · 커리큘럼에 따라 맞춤 제안을 드립니다</p>
-    <div class="rv" style="max-width: 600px; margin: 40px auto 0; padding: 48px 40px; background: var(--white); border-radius: 14px; border: 2px solid var(--corp); box-shadow: 0 4px 20px var(--corp-glow); text-align: center;">
-      <div style="font-size: 48px; margin-bottom: 20px;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--corp)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <h3 style="font-size: var(--fs-heading); font-weight: 700; color: var(--ink); margin-bottom: 12px;">간단한 설문으로 시작하세요</h3>
-      <p style="font-size: var(--fs-base-lg); color: var(--ink3); line-height: 1.8; margin-bottom: 32px; word-break: keep-all;">
-        귀사의 교육 목적과 환경을 파악하여<br>
-        <strong style="color: var(--ink);">최적의 맞춤 교육안</strong>을 무료로 제안드립니다.
-      </p>
-      <a href="/survey" class="btn btn-corp" style="display: inline-block; padding: 18px 48px; font-size: var(--fs-body); border-radius: 8px; font-weight: 700;" target="_blank">사전 설문 작성하기</a>
-      <div style="margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--line);">
-        <p style="font-size: var(--fs-base-sm); color: var(--ink4); margin-bottom: 8px;">설문 외 문의 방법</p>
-        <p style="font-size: var(--fs-base-lg); color: var(--ink2); line-height: 2;">
-          <strong>전화</strong> 0507-1307-9398<br>
-          <strong>이메일</strong> kevin@kevinsaem.com<br>
-          <strong>카카오톡</strong> <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" style="color: var(--corp); text-decoration: underline;">채널 상담</a>
-        </p>
-      </div>
+    <div class="sec-tag rv" style="color: var(--corp);">무료 상담</div>
+    <h2 class="sec-h rv" style="word-break: keep-all;">어떤 업무를<br>자동화하고 싶으신가요?</h2>
+    <p class="sec-p rv" style="max-width: 620px;">귀사 업무를 듣고, 자동화 가능 여부와 예상 효과를 무료로 진단해 드립니다. 편한 방법으로 연락 주세요.</p>
+    <div class="contact-methods" style="max-width: 720px; margin-left: auto; margin-right: auto;">
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" rel="noopener" class="contact-method rv">
+        <span class="cm-label">카카오톡</span>
+        <span class="cm-value">채널 상담</span>
+      </a>
+      <a href="tel:0507-1307-9398" class="contact-method rv">
+        <span class="cm-label">전화</span>
+        <span class="cm-value">0507-1307-9398</span>
+      </a>
+      <a href="mailto:kevin@kevinsaem.com" class="contact-method rv">
+        <span class="cm-label">이메일</span>
+        <span class="cm-value">kevin@kevinsaem.com</span>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- ===== 10. CTA ===== -->
+<!-- ===== 9. CTA ===== -->
 <section class="cta-end" id="cta" style="background: linear-gradient(135deg, var(--corp-dark), var(--corp));">
   <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.2); z-index: 1;"></div>
   <div class="inner">
-    <h2 class="rv" style="font-family: 'Pretendard', sans-serif;">AI로 일하는 팀,<br>하루 만에 체감하세요</h2>
-    <p class="cd rv">무료 사전 상담으로 귀사에 맞는 최적의 교육을 제안받으세요</p>
+    <h2 class="rv" style="font-family: 'Pretendard', sans-serif;">반복 업무는 AI 팀에게,<br>직원은 진짜 일에 집중하세요</h2>
+    <p class="cd rv">무료 상담으로 귀사에 맞는 자동화 가능 영역을 진단받으세요</p>
     <div class="cbs rv">
-      <a href="/corporate-survey" class="btn" style="background: white; color: var(--corp); font-size: var(--fs-body); padding: 16px 36px; border-radius: 1000px; font-weight: 700;" target="_blank">사전 설문 작성</a>
-      <a href="http://pf.kakao.com/_xgnxoUj/chat" class="btn btn-w" target="_blank">맞춤 교육 제안서 받기</a>
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" class="btn" style="background: white; color: var(--corp); font-size: var(--fs-body); padding: 16px 36px; border-radius: 1000px; font-weight: 700;" target="_blank">카카오톡 상담</a>
       <a href="tel:0507-1307-9398" class="btn btn-t">전화 상담</a>
     </div>
     <div class="info rv">케빈샘랩 · 대표 이관희 · kevin@kevinsaem.com · 0507-1307-9398</div>
   </div>
 </section>
 
-{% endblock %}
-
-{% block scripts %}
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% endblock %}

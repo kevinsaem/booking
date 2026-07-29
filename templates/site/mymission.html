@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나만의 미션 | AI 맞춤 교과학습 · 케빈샘</title>
+  <meta name="description" content="반 전체가 똑같은 진도를 나가는 주입식 교과학원과 다릅니다. AI가 아이 한 명 한 명에게 딱 맞는 국·영·수·과 미션을 만들고, 케빈샘이 직접 확인하는 1:1 맞춤 교과학습. 안산 선부동.">
+  <meta name="keywords" content="안산 교과학원, 안산 초등교과, AI 맞춤학습, 개인별 맞춤학습, 안산 선부동 학원, 국영수과, 1:1 맞춤 교과, 케빈샘, 나만의 미션">
+  <link rel="icon" href="/static/site/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/site/images/favicon-192.png">
+  <link rel="canonical" href="https://kevinsaem.com/mymission">
+  <meta property="og:title" content="나만의 미션 | AI 맞춤 교과학습">
+  <meta property="og:description" content="주입식 교과학원과 다릅니다. AI가 아이에게 딱 맞는 국·영·수·과 미션을 만들고, 케빈샘이 직접 확인하는 1:1 맞춤 교과학습.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="/static/site/css/style.css">
+  <style>
+    /* ── 나만의 미션 전용 스타일 (독립 페이지) ── */
+    :root { --mm: #1E6FD9; --mm-dark: #1858B0; --mm-bg: rgba(30,111,217,0.07); }
+
+    /* 헤더 */
+    .mm-header {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; background: rgba(255,255,255,0.9);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .mm-header .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .mm-header .brand-mark { font-size: var(--fs-subtitle); font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+    .mm-header .brand-mark em { font-style: normal; color: var(--mm); }
+    .mm-header .brand-sub { font-size: var(--fs-xs); color: var(--ink4); font-weight: 600; }
+    .mm-header .head-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 1000px; background: #FEE500; color: #3C1E1E;
+      font-size: var(--fs-base-sm); font-weight: 700; text-decoration: none;
+    }
+
+    /* 히어로 */
+    .mm-hero {
+      padding: 84px 24px 88px;
+      background:
+        radial-gradient(1000px 400px at 50% -10%, var(--mm-bg), transparent 70%),
+        var(--white);
+      text-align: center;
+    }
+    .mm-hero .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 18px; border-radius: 20px; background: var(--mm-bg);
+      border: 1px solid var(--youth-glow); margin-bottom: 22px;
+      font-size: var(--fs-sm); font-weight: 700; color: var(--mm);
+    }
+    .mm-hero h1 {
+      font-size: var(--fs-clamp-display); font-weight: 800; color: var(--ink);
+      line-height: 1.25; letter-spacing: -1px; word-break: keep-all; margin-bottom: 20px;
+    }
+    .mm-hero .lead {
+      font-size: var(--fs-clamp-body); color: var(--ink3); line-height: 1.85;
+      max-width: 640px; margin: 0 auto 34px; word-break: keep-all;
+    }
+    .mm-hero .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* 비교 카드 */
+    .mm-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 780px; margin: 44px auto 0; text-align: left; }
+    .mm-compare .col { border-radius: 16px; padding: 28px; }
+    .mm-compare .col.bad { border: 1px solid var(--line); background: var(--dark-surface); }
+    .mm-compare .col.good { border: 2px solid var(--mm); background: var(--mm-bg); }
+    .mm-compare .col h4 { font-size: var(--fs-base); letter-spacing: 0.5px; margin-bottom: 18px; }
+    .mm-compare .col.bad h4 { color: var(--ink4); font-weight: 700; }
+    .mm-compare .col.good h4 { color: var(--mm); font-weight: 800; }
+    .mm-compare ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
+    .mm-compare li { font-size: var(--fs-base); line-height: 1.6; display: flex; gap: 9px; align-items: flex-start; }
+    .mm-compare .col.bad li { color: var(--ink3); }
+    .mm-compare .col.good li { color: var(--ink); font-weight: 500; }
+    .mm-compare .mk { flex-shrink: 0; font-weight: 800; }
+    .mm-compare .col.bad .mk { color: var(--ink4); }
+    .mm-compare .col.good .mk { color: var(--mm); }
+
+    /* 특징 4카드 */
+    .mm-feats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 44px; text-align: left; }
+    .mm-feat { border: 1px solid var(--line); border-radius: 16px; padding: 28px; background: var(--white); }
+    .mm-feat .ico { font-size: 30px; margin-bottom: 14px; }
+    .mm-feat h4 { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .mm-feat p { font-size: var(--fs-base-sm); color: var(--ink3); line-height: 1.7; }
+
+    /* 두 갈래 경로 */
+    .mm-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 780px; margin: 44px auto 0; text-align: left; }
+    .mm-path { border-radius: 16px; padding: 30px; border: 1px solid var(--line); background: var(--white); }
+    .mm-path .kicker { font-size: var(--fs-sm); font-weight: 800; color: var(--mm); letter-spacing: 0.5px; margin-bottom: 10px; }
+    .mm-path h4 { font-size: var(--fs-heading-sm); font-weight: 700; color: var(--ink); margin-bottom: 10px; line-height: 1.4; }
+    .mm-path p { font-size: var(--fs-base); color: var(--ink3); line-height: 1.75; }
+    .mm-subjects { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 34px; }
+    .mm-subjects span { padding: 9px 20px; border-radius: 1000px; background: var(--mm-bg); color: var(--mm); font-weight: 700; font-size: var(--fs-base); border: 1px solid var(--youth-glow); }
+
+    /* CTA */
+    .mm-cta { padding: 88px 24px; text-align: center; background: linear-gradient(135deg, var(--mm-dark), #0f2540); color: var(--white); }
+    .mm-cta h2 { font-size: var(--fs-clamp-cta); font-weight: 800; line-height: 1.3; margin-bottom: 16px; word-break: keep-all; }
+    .mm-cta p { font-size: var(--fs-body-lg); color: rgba(255,255,255,0.72); margin-bottom: 34px; word-break: keep-all; }
+    .mm-cta .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .mm-cta .info { margin-top: 24px; font-size: var(--fs-base-sm); color: rgba(255,255,255,0.6); }
+
+    /* 풋터 */
+    .mm-footer { padding: 40px 24px; background: var(--dark); color: rgba(255,255,255,0.55); text-align: center; font-size: var(--fs-base-sm); line-height: 1.9; }
+    .mm-footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .mm-footer a:hover { color: #fff; }
+
+    @media (max-width: 640px) {
+      .mm-compare, .mm-paths { grid-template-columns: 1fr; }
+      .mm-hero { padding: 56px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header class="mm-header">
+    <a href="/mymission" class="brand">
+      <span class="brand-mark">나만의 <em>미션</em></span>
+      <span class="brand-sub">by 케빈샘AI코딩</span>
+    </a>
+    <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" rel="noopener" class="head-cta">카톡 문의</a>
+  </header>
+
+  <!-- 히어로 -->
+  <section class="mm-hero">
+    <div class="badge rv">AI 맞춤 교과학습</div>
+    <h1 class="rv">지난 학기는 채우고,<br>다음 학기는 먼저 준비합니다</h1>
+    <p class="lead rv">「나만의 미션」은 AI가 아이 한 명 한 명에게 딱 맞는 <strong style="color: var(--ink);">국·영·수·과 미션</strong>을 만들고, 케빈샘이 직접 확인하는 <strong style="color: var(--ink);">1:1 맞춤 교과학습</strong>입니다.</p>
+    <div class="ctas rv">
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" rel="noopener" class="btn" style="background:#FEE500; color:#3C1E1E; padding:15px 32px; border-radius:1000px; font-weight:700;">카카오톡으로 문의하기</a>
+      <a href="tel:0507-1307-9398" class="btn" style="background:var(--white); color:var(--ink); border:1px solid var(--line); padding:15px 32px; border-radius:1000px; font-weight:700;">전화 문의</a>
+    </div>
+  </section>
+
+  <!-- WHY: 문제 제기 + 비교 -->
+  <section class="sec" style="background: var(--dark-surface);">
+    <div class="sec-inner center">
+      <div class="sec-tag rv" style="color: var(--mm);">WHY</div>
+      <h2 class="sec-h rv" style="word-break: keep-all;">반 전체가 똑같은 진도를 나가는<br>주입식 교과학원, 정말 괜찮으신가요?</h2>
+      <p class="sec-p rv" style="max-width: 680px;">교실에 아이들을 몰아넣고 똑같은 진도를 빼는 학원에서는, 우리 아이가 어디서 막혔는지 아무도 모릅니다. 잘하는 아이는 지루하고, 뒤처진 아이는 그냥 넘어갑니다.</p>
+
+      <div class="mm-compare rv">
+        <div class="col bad">
+          <h4>일반 교과학원</h4>
+          <ul>
+            <li><span class="mk">✕</span> 반 전체가 똑같은 진도</li>
+            <li><span class="mk">✕</span> 못 따라가도 그냥 넘어감</li>
+            <li><span class="mk">✕</span> 외우고 문제 푸는 주입식</li>
+            <li><span class="mk">✕</span> 오늘 뭘 했는지 부모는 모름</li>
+          </ul>
+        </div>
+        <div class="col good">
+          <h4>케빈샘 나만의 미션</h4>
+          <ul>
+            <li><span class="mk">✓</span> 아이마다 다른 맞춤 미션</li>
+            <li><span class="mk">✓</span> 수준에 맞춰 난이도 자동 조정</li>
+            <li><span class="mk">✓</span> 스스로 해내는 학습 경험</li>
+            <li><span class="mk">✓</span> 매일 부모님께 학습 리포트</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW: 4가지 특징 -->
+  <section class="sec" style="background: var(--white);">
+    <div class="sec-inner center">
+      <div class="sec-tag rv" style="color: var(--mm);">HOW IT WORKS</div>
+      <h2 class="sec-h rv" style="word-break: keep-all;">아이 한 명을 위한 학습,<br>이렇게 만듭니다</h2>
+      <p class="sec-p rv" style="max-width: 640px;">AI는 아이에게 딱 맞는 문제를 만들고, 사람이 확인하고 이끕니다.</p>
+
+      <div class="mm-feats">
+        <div class="mm-feat rv">
+          <div class="ico">🎯</div>
+          <h4>아이별 맞춤 미션</h4>
+          <p>AI가 학생의 수준을 파악해, 아이에게 딱 맞는 미션을 매일 새로 만들어 줍니다.</p>
+        </div>
+        <div class="mm-feat rv">
+          <div class="ico">✅</div>
+          <h4>케빈샘이 직접 확인</h4>
+          <p>AI에게만 맡기지 않습니다. 선생님이 아이의 학습을 하나하나 점검하고 이끕니다.</p>
+        </div>
+        <div class="mm-feat rv">
+          <div class="ico">📈</div>
+          <h4>적응형 난이도</h4>
+          <p>아이가 푼 결과에 따라 다음 내용과 난이도를 자동으로 맞춰 줍니다.</p>
+        </div>
+        <div class="mm-feat rv">
+          <div class="ico">📩</div>
+          <h4>매일 학습 리포트</h4>
+          <p>오늘 무엇을 얼마나 했는지, 매일 부모님께 학습 결과를 보내 드립니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CURRICULUM: 두 갈래 경로 + 과목 -->
+  <section class="sec" style="background: var(--dark-surface);">
+    <div class="sec-inner center">
+      <div class="sec-tag rv" style="color: var(--mm);">두 갈래 학습</div>
+      <h2 class="sec-h rv" style="word-break: keep-all;">복습이 필요하면 채우고,<br>앞서고 싶으면 나아갑니다</h2>
+      <p class="sec-p rv" style="max-width: 640px;">아이의 상황에 맞춰, 두 가지 학습 경로 중에서 선택할 수 있습니다.</p>
+
+      <div class="mm-paths">
+        <div class="mm-path rv">
+          <div class="kicker">복습 미션</div>
+          <h4>지난 학기의 빈틈을 채웁니다</h4>
+          <p>어디서 막혔는지 AI가 찾아, 놓친 부분부터 차근차근 다시 다집니다. 뒤처진 채 넘어가지 않습니다.</p>
+        </div>
+        <div class="mm-path rv">
+          <div class="kicker">선행 미션</div>
+          <h4>다음 학기를 미리 준비합니다</h4>
+          <p>이미 잘하는 아이는 지루하지 않게, 한 걸음 앞선 내용으로 나아갑니다. 아이의 속도에 맞춥니다.</p>
+        </div>
+      </div>
+
+      <div class="mm-subjects rv">
+        <span>국어</span><span>영어</span><span>수학</span><span>과학</span>
+      </div>
+      <p class="rv" style="font-size: var(--fs-base); color: var(--ink4); margin-top: 16px;">아이가 원하는 과목으로 시작할 수 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- WHY KEVINSAEM: 신뢰 -->
+  <section class="sec" style="background: var(--white);">
+    <div class="sec-inner center">
+      <div class="sec-tag rv" style="color: var(--mm);">WHY KEVINSAEM</div>
+      <h2 class="sec-h rv" style="word-break: keep-all;">AI에게 아이를 맡기지 않습니다.<br>케빈샘이 직접 봅니다</h2>
+      <p class="sec-p rv" style="max-width: 660px;">8년간 1,439명의 아이들과 함께해 온 케빈샘AI코딩이 만든 학습법입니다. AI는 아이에게 맞는 문제를 만들고, 확인하고 이끄는 것은 결국 <strong style="color: var(--ink);">사람 — 케빈샘</strong>입니다. 그래서 아이는 혼자 방치되지 않습니다.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="mm-cta">
+    <h2 class="rv">우리 아이에게 맞는 학습,<br>상담으로 시작하세요</h2>
+    <p class="rv">우리 아이가 어디서 막혔는지, 어떤 미션이 맞는지 — 편하게 물어보세요.</p>
+    <div class="ctas rv">
+      <a href="http://pf.kakao.com/_xgnxoUj/chat" target="_blank" rel="noopener" class="btn" style="background:#FEE500; color:#3C1E1E; padding:16px 36px; border-radius:1000px; font-weight:700;">카카오톡 문의</a>
+      <a href="tel:0507-1307-9398" class="btn" style="background:#fff; color:#1a1a2e; padding:16px 36px; border-radius:1000px; font-weight:700;">전화 문의</a>
+    </div>
+    <div class="info rv">케빈샘AI코딩 선부캠퍼스 · 안산시 단원구 선부로 183 화성프라자 8층 · 0507-1307-9398 · 월~토 10:50–22:00</div>
+  </section>
+
+  <!-- 풋터 -->
+  <footer class="mm-footer">
+    「나만의 미션」은 <a href="https://kevinsaem.com" target="_blank" rel="noopener">케빈샘AI코딩</a>의 AI 맞춤 교과학습 프로그램입니다.<br>
+    © 케빈샘AI코딩 · 안산 선부동 · 초지동
+  </footer>
+
+  <script>
+    // 등장 애니메이션 (base.html과 동일 로직 — 독립 페이지용)
+    var rvEls = document.querySelectorAll('.rv');
+    var rvOb = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en, i) {
+        if (en.isIntersecting) {
+          setTimeout(function() { en.target.classList.add('vis'); }, i * 40);
+          rvOb.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+    rvEls.forEach(function(el) { rvOb.observe(el); });
+  </script>
+
+</body>
+</html>
