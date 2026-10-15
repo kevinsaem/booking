@@ -1,0 +1,152 @@
+{% extends "site/base.html" %}
+
+{% block title %}우리가 만든 서비스 | 케빈샘AI코딩{% endblock %}
+{% block description %}케빈샘AI코딩학원이 직접 기획·개발·운영하는 실제 서비스들. 골프 조편성 '티메이트', 보험설계사 음성 CRM '엘라', 숏폼 영상 자동화 '케빈샘스튜디오'.{% endblock %}
+
+{% block head_extra %}
+<meta property="og:title" content="우리가 만든 서비스 | 케빈샘AI코딩">
+<meta property="og:description" content="가르치기만 하지 않습니다. 직접 만듭니다. 케빈샘AI코딩이 직접 개발·운영하는 실제 AI 서비스들.">
+<link rel="canonical" href="https://kevinsaem.com/services">
+<style>
+  /* ── 우리가 만든 서비스 (포트폴리오) 전용 ── */
+  .svc-hero {
+    padding: 120px 40px 80px;
+    text-align: center;
+    background:
+      radial-gradient(900px 360px at 50% -10%, var(--brand-bg), transparent 70%),
+      var(--white);
+  }
+  .svc-hero .sec-tag { justify-content: center; }
+  .svc-hero h1 {
+    font-size: var(--fs-clamp-cta); font-weight: 800; color: var(--ink);
+    line-height: 1.28; letter-spacing: -1px; word-break: keep-all; margin-bottom: 20px;
+  }
+  .svc-hero .lead {
+    font-size: var(--fs-clamp-body); color: var(--ink3); line-height: 1.85;
+    max-width: 660px; margin: 0 auto; word-break: keep-all;
+  }
+
+  .svc-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px; max-width: 1100px; margin: 0 auto;
+  }
+  .svc-card {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line); border-radius: 20px; padding: 36px 32px;
+    background: var(--white); text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .svc-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    border-color: var(--ac);
+  }
+  .svc-card .ico {
+    width: 60px; height: 60px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; background: var(--ac-bg); margin-bottom: 22px;
+  }
+  .svc-card .kicker { font-size: var(--fs-sm); font-weight: 800; color: var(--ac); letter-spacing: 0.5px; margin-bottom: 8px; }
+  .svc-card h3 { font-size: var(--fs-heading-sm); font-weight: 800; color: var(--ink); margin-bottom: 10px; letter-spacing: -0.5px; }
+  .svc-card .tagline { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink); margin-bottom: 12px; word-break: keep-all; }
+  .svc-card p { font-size: var(--fs-base-sm); color: var(--ink3); line-height: 1.75; word-break: keep-all; margin-bottom: 24px; }
+  .svc-card .foot { margin-top: auto; }
+  .svc-card .go {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 24px; border-radius: 1000px; text-decoration: none;
+    background: var(--ac); color: #fff; font-weight: 700; font-size: var(--fs-base-sm);
+    transition: filter 0.2s ease;
+  }
+  .svc-card .go:hover { filter: brightness(1.08); }
+  .svc-card .url { display: block; margin-top: 12px; font-size: var(--fs-xs); color: var(--ink4); font-weight: 600; }
+
+  /* 곧 추가 (placeholder) */
+  .svc-soon {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 2px dashed var(--line); border-radius: 20px; padding: 36px 32px;
+    text-align: center; color: var(--ink4); background: var(--dark-surface);
+  }
+  .svc-soon .ico { font-size: 30px; margin-bottom: 14px; opacity: 0.6; }
+  .svc-soon h3 { font-size: var(--fs-body-lg); font-weight: 700; color: var(--ink4); margin-bottom: 6px; }
+  .svc-soon p { font-size: var(--fs-base-sm); color: var(--ink4); line-height: 1.7; }
+
+  @media (max-width: 640px) {
+    .svc-hero { padding: 84px 20px 56px; }
+    .svc-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 히어로 -->
+<section class="svc-hero">
+  <div class="sec-tag rv" style="color: var(--brand);">WHAT WE BUILD</div>
+  <h1 class="rv">가르치기만 하지 않습니다.<br>직접 만듭니다.</h1>
+  <p class="lead rv">케빈샘AI코딩은 AI코딩을 <strong style="color: var(--ink);">가르치는 학원</strong>이자, 그 기술로 <strong style="color: var(--ink);">실제 서비스를 만들어 운영하는 팀</strong>입니다. 아래는 저희가 직접 기획·개발·운영하고 있는 서비스들입니다.</p>
+</section>
+
+<!-- 서비스 카드 -->
+<section class="sec" style="padding-top: 20px; background: var(--white);">
+  <div class="svc-grid">
+
+    <!-- 티메이트 -->
+    <div class="svc-card rv" style="--ac: var(--adult); --ac-bg: var(--adult-bg);">
+      <div class="ico">⛳</div>
+      <div class="kicker">TEEMATE · 골프</div>
+      <h3>티메이트</h3>
+      <div class="tagline">다음 라운드, 원하는 사람과 같은 조로.</div>
+      <p>참가자들이 "같이 치고 싶은 사람"을 순서대로 고르면, 전원의 만족도가 가장 높은 조편성을 자동으로 찾아주는 골프 라운딩 서비스입니다.</p>
+      <div class="foot">
+        <a href="https://golf.kevinsaem.com" target="_blank" rel="noopener" class="go">서비스 바로가기 →</a>
+        <span class="url">golf.kevinsaem.com</span>
+      </div>
+    </div>
+
+    <!-- 엘라 -->
+    <div class="svc-card rv" style="--ac: var(--corp); --ac-bg: var(--corp-bg);">
+      <div class="ico">🎙️</div>
+      <div class="kicker">ELLA · 음성 CRM</div>
+      <h3>엘라</h3>
+      <div class="tagline">말로만 쓰는 고객관리 비서.</div>
+      <p>운전 중에도 마이크 한 번으로 고객·약속·상담 내용을 기록합니다. 타이핑이 필요 없는, 보험설계사를 위한 AI 음성 고객관리(CRM) 서비스입니다.</p>
+      <div class="foot">
+        <a href="https://ella.kevinsaem.com" target="_blank" rel="noopener" class="go">서비스 바로가기 →</a>
+        <span class="url">ella.kevinsaem.com</span>
+      </div>
+    </div>
+
+    <!-- 케빈샘스튜디오 -->
+    <div class="svc-card rv" style="--ac: var(--youth); --ac-bg: var(--youth-bg);">
+      <div class="ico">🎬</div>
+      <div class="kicker">STUDIO · 숏폼</div>
+      <h3>케빈샘스튜디오</h3>
+      <div class="tagline">영상 하나가 숏폼 여러 개로.</div>
+      <p>긴 영상을 AI가 자동으로 숏폼으로 잘라 여러 SNS에 맞춰 올립니다. 영상 편집·발행을 자동화하는 숏폼 콘텐츠 제작 도구입니다.</p>
+      <div class="foot">
+        <a href="https://studio.kevinsaem.com" target="_blank" rel="noopener" class="go">서비스 바로가기 →</a>
+        <span class="url">studio.kevinsaem.com</span>
+      </div>
+    </div>
+
+    <!-- 곧 추가 -->
+    <div class="svc-soon rv">
+      <div class="ico">✨</div>
+      <h3>더 많은 서비스가 준비 중입니다</h3>
+      <p>케빈샘AI코딩이 만드는<br>다음 서비스를 기대해 주세요.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA: 학원으로 연결 -->
+<section class="sec" style="background: linear-gradient(135deg, var(--brand-dark), #0f2540); color: var(--white); text-align: center;">
+  <div class="sec-inner center">
+    <h2 class="rv" style="font-size: var(--fs-clamp-cta); font-weight: 800; line-height: 1.3; margin-bottom: 16px; word-break: keep-all;">이런 걸 직접 만들고 싶으신가요?</h2>
+    <p class="rv" style="font-size: var(--fs-body-lg); color: rgba(255,255,255,0.72); margin-bottom: 34px; max-width: 620px; margin-left: auto; margin-right: auto; word-break: keep-all;">케빈샘AI코딩에서는 AI로 실제 서비스를 만드는 법을 가르칩니다. 아이디어만 있다면, 만드는 건 함께 배울 수 있습니다.</p>
+    <div class="rv" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="/#cta" class="btn" style="background:#fff; color:#1a1a2e; padding:16px 36px; border-radius:1000px; font-weight:700;">무료 상담 예약</a>
+      <a href="/adult" class="btn btn-t" style="padding:16px 36px; border-radius:1000px;">성인 1:1 AI활용 보기 →</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -17,6 +17,7 @@ LANDING_PAGES = {
     "/corporate": "기업 AI교육",
     "/autobiography": "AI자서전 출판",
     "/campus": "캠퍼스",
+    "/services": "우리가 만든 서비스",
     "/corporate-survey": "기업 설문",
     "/tuition/youth": "청소년 수강료",
     "/tuition/corporate": "기업 수강료",

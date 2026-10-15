@@ -42,6 +42,12 @@ async def mymission(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/mymission.html")
 
 
+@router.get("/services", response_class=HTMLResponse)
+async def services(request: Request) -> HTMLResponse:
+    """우리가 만든 서비스 — 학원이 직접 개발·운영하는 서비스 포트폴리오"""
+    return templates.TemplateResponse(request, "site/services.html")
+
+
 @router.get("/privacy", response_class=HTMLResponse)
 async def privacy(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "site/privacy.html")
